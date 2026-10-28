@@ -2,7 +2,7 @@
 // Paths in PUBLIC_PATHS stay reachable without a password, e.g. for Daisycon review.
 
 // Daisycon reviews these before the site is public (plan section 5, phase 0).
-export const PUBLIC_PATHS = ["/over", "/go", "/privacy", "/informatie-voor-webshops", "/api/health", "/api/revalidate", "/api/stripe/webhook"];
+export const PUBLIC_PATHS = ["/over", "/go", "/privacy", "/informatie-voor-webshops", "/api/health", "/api/revalidate", "/api/stripe/webhook", "/badge"];
 
 export function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some(

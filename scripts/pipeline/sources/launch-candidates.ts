@@ -5,6 +5,8 @@
 import { normalizeDomain } from "../domain";
 
 export const LAUNCH_SOURCE = "scout:launch-list";
+/** Second category (Tuin & buiten, 2026-10-28): same columns, researched the same way, in garden-candidates.csv. */
+export const GARDEN_SOURCE = "scout:garden-list";
 export const QUEUED_FITS = ["strong", "medium"] as const;
 
 /** Not shops (hollandslicht.com is a blog), out of scope (brinkercarpets.com, fonq.nl), or a duplicate (spectrumdesign.nl shows Pastoe). */

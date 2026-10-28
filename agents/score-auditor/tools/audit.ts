@@ -14,6 +14,7 @@
 //   finish --run ID --status ok|failed --summary S      (adds the run's MAE to the summary)
 import { checkKillSwitch, connect, finishAgentRun, startAgentRun, type Sql } from "../../shared/audit";
 import { wrapUntrusted } from "../../shared/untrusted";
+import { agePoints, yearsOnline } from "../../../lib/scoring/compute";
 import { KEURMERK_FLOOR, MAX_POINTS, PATTERN_TOTAL_CAP } from "../../../lib/scoring/weights";
 
 const AGENT = "score-auditor";
@@ -130,7 +131,10 @@ async function main() {
         const note = need("note").slice(0, 2000);
         const score = await latestScore(sql, shopId);
         if (!score) throw new Error("shop has no score");
-        const [shop] = await sql<{ status: string; keurmerk_status: string }[]>`select status, keurmerk_status from public.shops where id = ${shopId}`;
+        const [shop] = await sql<{ status: string; keurmerk_status: string; domain_first_seen: Date | null }[]>`
+          select status, keurmerk_status, domain_first_seen from public.shops where id = ${shopId}`;
+        // Time online is a measured fact, as in the pipeline: the tool adds it, not the auditor.
+        sub.identity = Math.min(MAX_POINTS.identity, sub.identity + agePoints(yearsOnline(shop.domain_first_seen)));
         const total = auditorTotal(sub, mp === "true", shop.keurmerk_status === "verified");
         const delta = total - score.total;
         const pipelineMp = await pipelineSaysMarketplace(sql, shopId);

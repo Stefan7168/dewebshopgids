@@ -3,6 +3,7 @@
 // and returns the total, sub-scores, caps and publication band. The model never
 // sets the score; it only supplies the signals that reach this function.
 import {
+  AGE_POINTS,
   AUDIT_BAND_MAX,
   FOCUS_POINTS,
   IDENTITY_POINTS,
@@ -36,6 +37,8 @@ export type ScoringSignals = {
   dropship_indicators?: boolean | null;
   product_count_est?: number | null;
   keurmerk_verified?: boolean | null;
+  /** Whole years since shops.domain_first_seen; measured by code, not a model signal. */
+  years_online?: number | null;
 };
 
 export type SubScores = Record<keyof typeof MAX_POINTS, number>;
@@ -64,6 +67,25 @@ export function scalePoints(count: number | null | undefined): number {
   return Math.round(MAX_POINTS.scale * share);
 }
 
+/** Whole years between domain_first_seen and now; null when unknown. */
+export function yearsOnline(
+  firstSeen: string | Date | null | undefined,
+  now: Date = new Date(),
+): number | null {
+  if (!firstSeen) return null;
+  const t = new Date(firstSeen).getTime();
+  if (!Number.isFinite(t)) return null;
+  return Math.max(
+    0,
+    Math.floor((now.getTime() - t) / (365.25 * 24 * 3600 * 1000)),
+  );
+}
+
+export function agePoints(years: number | null | undefined): number {
+  if (years == null || !Number.isFinite(years)) return 0;
+  return AGE_POINTS.find((a) => years >= a.minYears)?.points ?? 0;
+}
+
 function originPoints(claims: OriginClaim[] | null | undefined): number {
   const set = new Set(claims ?? []);
   if (set.has("made_in_nl")) set.delete("made_in_eu");
@@ -72,26 +94,45 @@ function originPoints(claims: OriginClaim[] | null | undefined): number {
   return Math.min(sum, MAX_POINTS.origin);
 }
 
+/** years_online is not a signal from the site, so it does not help a shop out of draft. */
 function countValid(s: ScoringSignals): number {
-  return Object.values(s).filter((v) => v !== undefined && v !== null && !(Array.isArray(v) && v.length === 0)).length;
+  return Object.entries(s)
+    .filter(([k]) => k !== "years_online")
+    .map(([, v]) => v)
+    .filter(
+      (v) =>
+        v !== undefined && v !== null && !(Array.isArray(v) && v.length === 0),
+    ).length;
 }
 
 export function computeScore(s: ScoringSignals): ScoreResult {
   const caps: string[] = [];
-  const pattern = s.marketplace_pattern === true || s.dropship_indicators === true;
+  const pattern =
+    s.marketplace_pattern === true || s.dropship_indicators === true;
 
-  let maker = s.own_production ? MAKER_POINTS.own_production : s.brand_owner ? MAKER_POINTS.brand_owner : 0;
+  let maker = s.own_production
+    ? MAKER_POINTS.own_production
+    : s.brand_owner
+      ? MAKER_POINTS.brand_owner
+      : 0;
   if (pattern && maker > PATTERN_MAKER_CAP) {
     maker = PATTERN_MAKER_CAP;
     caps.push("pattern_maker_cap");
   }
   const sub: SubScores = {
     maker,
-    focus: s.focus ? (s.own_production ? Math.max(FOCUS_POINTS[s.focus], MAKER_FOCUS_FLOOR) : FOCUS_POINTS[s.focus]) : 0,
-    identity:
+    focus: s.focus
+      ? s.own_production
+        ? Math.max(FOCUS_POINTS[s.focus], MAKER_FOCUS_FLOOR)
+        : FOCUS_POINTS[s.focus]
+      : 0,
+    identity: Math.min(
+      MAX_POINTS.identity,
       (s.has_named_owner ? IDENTITY_POINTS.has_named_owner : 0) +
-      (s.has_address ? IDENTITY_POINTS.has_address : 0) +
-      (s.has_kvk ? IDENTITY_POINTS.has_kvk : 0),
+        (s.has_address ? IDENTITY_POINTS.has_address : 0) +
+        (s.has_kvk ? IDENTITY_POINTS.has_kvk : 0) +
+        agePoints(s.years_online),
+    ),
     scale: scalePoints(s.product_count_est),
     origin: originPoints(s.origin_claims),
   };

@@ -1,6 +1,7 @@
 // Pure presentation rules for public shop data (plan v3 sections 2 and 7).
 // No database access here, so the rules are unit tested.
 import {
+  AGE_POINTS,
   AUDIT_BAND_MAX,
   FOCUS_POINTS,
   IDENTITY_POINTS,
@@ -131,12 +132,12 @@ export const SUB_SCORE_NAMES: Record<keyof typeof MAX_POINTS, string> = {
 export function rankingExplanation(): string[] {
   return [
     "De volgorde is de echtheidsscore van 1 tot 100, van hoog naar laag. Bij gelijke score staat de naam op alfabet.",
-    `De score telt vijf onderdelen op: ${SUB_SCORE_NAMES.maker.toLowerCase()} (max ${MAX_POINTS.maker}), ${SUB_SCORE_NAMES.focus.toLowerCase()} (max ${MAX_POINTS.focus}), ${SUB_SCORE_NAMES.identity.toLowerCase()} (max ${MAX_POINTS.identity}: eigenaar ${IDENTITY_POINTS.has_named_owner}, adres ${IDENTITY_POINTS.has_address}, KvK ${IDENTITY_POINTS.has_kvk}), ${SUB_SCORE_NAMES.scale.toLowerCase()} (max ${MAX_POINTS.scale}: volle punten onder ${SCALE_FULL_BELOW} producten, 0 vanaf ${SCALE_ZERO_AT}) en ${SUB_SCORE_NAMES.origin.toLowerCase()} (max ${MAX_POINTS.origin}).`,
+    `De score telt vijf onderdelen op: ${SUB_SCORE_NAMES.maker.toLowerCase()} (max ${MAX_POINTS.maker}), ${SUB_SCORE_NAMES.focus.toLowerCase()} (max ${MAX_POINTS.focus}), ${SUB_SCORE_NAMES.identity.toLowerCase()} (max ${MAX_POINTS.identity}: eigenaar ${IDENTITY_POINTS.has_named_owner}, adres ${IDENTITY_POINTS.has_address}, KvK ${IDENTITY_POINTS.has_kvk}, ${AGE_POINTS.map((a) => `${a.points} bij ${a.minYears}+ jaar online`).join(", ")}), ${SUB_SCORE_NAMES.scale.toLowerCase()} (max ${MAX_POINTS.scale}: volle punten onder ${SCALE_FULL_BELOW} producten, 0 vanaf ${SCALE_ZERO_AT}) en ${SUB_SCORE_NAMES.origin.toLowerCase()} (max ${MAX_POINTS.origin}).`,
     `Focus: één niche ${FOCUS_POINTS.single_niche}, een paar verwante productgroepen ${FOCUS_POINTS.few_related}, breed ${FOCUS_POINTS.broad}; een webshop die zelf maakt krijgt minimaal ${MAKER_FOCUS_FLOOR}. Herkomst: handgemaakt ${ORIGIN_POINTS.handmade}, eigen atelier ${ORIGIN_POINTS.own_atelier}, gemaakt in Nederland ${ORIGIN_POINTS.made_in_nl}, gemaakt in de EU ${ORIGIN_POINTS.made_in_eu}.`,
     `Een gecontroleerd keurmerk geeft minimaal ${KEURMERK_FLOOR} punten, behalve bij kenmerken van een marktplaats of dropshipping. Een shop met kenmerken van een marktplaats of dropshipping krijgt hoogstens ${PATTERN_TOTAL_CAP} punten.`,
     `Onder ${LABEL_BELOW} punten tonen we het label "${MARKETPLACE_LABEL}" in plaats van een getal. Scores van ${LABEL_BELOW} tot en met ${AUDIT_BAND_MAX} tonen we pas na een tweede controle; tot die tijd staat er "In beoordeling". Die shops staan onder de shops met een getal.`,
     "Elk punt is gebaseerd op een zin die letterlijk op de site van de webshop staat, of op een meting zoals het aantal producten.",
-    "Betaling heeft geen invloed op de volgorde.",
+    "Betaling heeft geen invloed op de volgorde. Ook een plek in onze eigen lijsten of de gids levert geen punten op.",
   ];
 }
 

@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "score_version": "v2",
-  "method": "Each site's home page (or the page named in observed.url) was read on 2026-10-28 with a fetch tool that summarises pages; quotes are as it returned them. expected_band is a blind judgement on the plan's scale (100 = custom furniture maker, 1 = bol.com): it was set on 2026-10-28 by an agent that saw only the domain list, read each site again, and had not seen the weights, the scoring code, the prompts or the earlier bands. It weighs product uniqueness, maker versus reseller, brand count, company age, keurmerk and contact transparency; paid badges and ads play no part. confidence is low where the band leans on public knowledge beyond the home page. signals are what a careful reader finds on the site; fields in `assumed` were not verified (mostly product counts, which the crawler measures from the sitemap). known_disagreement marks shops where the v1 weights miss the blind band, with the reason. Full comparison: the first blind relabel, 2026-10-28.",
+  "score_version": "v3",
+  "method": "Each site's home page (or the page named in observed.url) was read on 2026-10-28 with a fetch tool that summarises pages; quotes are as it returned them. expected_band is a blind judgement on the plan's scale (100 = custom furniture maker, 1 = bol.com): it was set on 2026-10-28 by an agent that saw only the domain list, read each site again, and had not seen the weights, the scoring code, the prompts or the earlier bands. It weighs product uniqueness, maker versus reseller, brand count, company age, keurmerk and contact transparency; paid badges and ads play no part. confidence is low where the band leans on public knowledge beyond the home page. signals are what a careful reader finds on the site; fields in `assumed` were not verified (mostly product counts, which the crawler measures from the sitemap). known_disagreement marks shops where the v1 weights miss the blind band, with the reason. Full comparison: the first blind relabel, 2026-10-28. years_online (v3) is set to 10 only for long-established names where public knowledge puts the site online before 2016; it is listed in `assumed` and was not measured. Every other shop leaves it unknown (0 points); the crawler measures it from WHOIS or the Wayback first capture.",
   "not_scorable": [
     {
       "domain": "studiohenk.com",
@@ -78,10 +78,12 @@
           "made_in_nl"
         ],
         "marketplace_pattern": false,
-        "product_count_est": 150
+        "product_count_est": 150,
+        "years_online": 10
       },
       "assumed": [
-        "product_count_est"
+        "product_count_est",
+        "years_online (public knowledge, not measured)"
       ]
     },
     {
@@ -179,10 +181,12 @@
           "handmade"
         ],
         "marketplace_pattern": false,
-        "product_count_est": 100
+        "product_count_est": 100,
+        "years_online": 10
       },
       "assumed": [
-        "product_count_est"
+        "product_count_est",
+        "years_online (public knowledge, not measured)"
       ]
     },
     {
@@ -211,11 +215,13 @@
           "own_atelier"
         ],
         "marketplace_pattern": false,
-        "product_count_est": 500
+        "product_count_est": 500,
+        "years_online": 10
       },
       "assumed": [
         "product_count_est",
-        "own_production (about page not checked)"
+        "own_production (about page not checked)",
+        "years_online (public knowledge, not measured)"
       ],
       "known_disagreement": "v2 scores 64: the home page gives no address and no own-production quote, so the score depends on the crawler reading the about and contact pages."
     },
@@ -242,12 +248,13 @@
         "brand_owner": true,
         "focus": "broad",
         "marketplace_pattern": false,
-        "product_count_est": 2000
+        "product_count_est": 2000,
+        "years_online": 10
       },
       "assumed": [
-        "product_count_est"
-      ],
-      "known_disagreement": "Only brand_owner is found; the own-factory menu line and Thuiswinkel are not in the signals. Borderline (37 vs 40)."
+        "product_count_est",
+        "years_online (public knowledge, not measured)"
+      ]
     },
     {
       "domain": "dutchbone.com",
@@ -271,10 +278,12 @@
         "brand_owner": true,
         "focus": "broad",
         "marketplace_pattern": false,
-        "product_count_est": 1500
+        "product_count_est": 1500,
+        "years_online": 10
       },
       "assumed": [
-        "product_count_est"
+        "product_count_est",
+        "years_online (public knowledge, not measured)"
       ]
     },
     {
@@ -328,12 +337,13 @@
         "brand_owner": true,
         "focus": "broad",
         "marketplace_pattern": false,
-        "product_count_est": 3000
+        "product_count_est": 3000,
+        "years_online": 10
       },
       "assumed": [
-        "product_count_est"
-      ],
-      "known_disagreement": "Borderline (33 vs 35): broad focus and no identity on the home page."
+        "product_count_est",
+        "years_online (public knowledge, not measured)"
+      ]
     },
     {
       "domain": "moooi.com",
@@ -357,10 +367,12 @@
         "brand_owner": true,
         "focus": "broad",
         "marketplace_pattern": false,
-        "product_count_est": 600
+        "product_count_est": 600,
+        "years_online": 10
       },
       "assumed": [
-        "product_count_est"
+        "product_count_est",
+        "years_online (public knowledge, not measured)"
       ],
       "known_disagreement": "No address on the home page and broad focus. The blind band credits 25 years as a design label; company age is not a scored signal."
     },
@@ -415,12 +427,13 @@
         "focus": "few_related",
         "has_address": true,
         "marketplace_pattern": false,
-        "product_count_est": 150
+        "product_count_est": 150,
+        "years_online": 10
       },
       "assumed": [
-        "product_count_est"
-      ],
-      "known_disagreement": "Borderline (59 vs 60). A label since 1962; company age is not a scored signal."
+        "product_count_est",
+        "years_online (public knowledge, not measured)"
+      ]
     },
     {
       "domain": "graypants.com",
@@ -507,10 +520,12 @@
         "focus": "few_related",
         "has_address": true,
         "marketplace_pattern": false,
-        "product_count_est": 1500
+        "product_count_est": 1500,
+        "years_online": 10
       },
       "assumed": [
-        "product_count_est"
+        "product_count_est",
+        "years_online (public knowledge, not measured)"
       ],
       "known_disagreement": "brand_owner gives 20 maker points although about 8 of 18 brands sold are third-party."
     },
@@ -597,10 +612,12 @@
         "focus": "broad",
         "has_address": true,
         "marketplace_pattern": true,
-        "product_count_est": 20000
+        "product_count_est": 20000,
+        "years_online": 10
       },
       "assumed": [
-        "product_count_est"
+        "product_count_est",
+        "years_online (public knowledge, not measured)"
       ]
     },
     {
@@ -625,10 +642,12 @@
         "brand_owner": true,
         "focus": "everything",
         "marketplace_pattern": true,
-        "product_count_est": 50000
+        "product_count_est": 50000,
+        "years_online": 10
       },
       "assumed": [
-        "product_count_est"
+        "product_count_est",
+        "years_online (public knowledge, not measured)"
       ]
     },
     {
@@ -653,9 +672,12 @@
         "focus": "everything",
         "marketplace_pattern": true,
         "product_count_est": 1000000,
-        "keurmerk_verified": true
+        "keurmerk_verified": true,
+        "years_online": 10
       },
-      "assumed": []
+      "assumed": [
+        "years_online (public knowledge, not measured)"
+      ]
     },
     {
       "domain": "villalaura.nl",
@@ -744,11 +766,13 @@
         "brand_owner": true,
         "has_address": true,
         "marketplace_pattern": false,
-        "product_count_est": 200
+        "product_count_est": 200,
+        "years_online": 10
       },
       "assumed": [
         "product_count_est",
-        "brand_owner"
+        "brand_owner",
+        "years_online (public knowledge, not measured)"
       ],
       "known_disagreement": "Focus is unknown, so 0 focus points."
     },
@@ -837,10 +861,12 @@
         "focus": "broad",
         "has_address": true,
         "marketplace_pattern": false,
-        "product_count_est": 1500
+        "product_count_est": 1500,
+        "years_online": 10
       },
       "assumed": [
-        "product_count_est"
+        "product_count_est",
+        "years_online (public knowledge, not measured)"
       ],
       "known_disagreement": "A curated Dutch design gallery lands at 26: curation earns no points, so it looks like mass retail."
     },
@@ -922,12 +948,13 @@
         "brand_owner": true,
         "focus": "everything",
         "marketplace_pattern": true,
-        "product_count_est": 10000
+        "product_count_est": 10000,
+        "years_online": 10
       },
       "assumed": [
-        "product_count_est"
-      ],
-      "known_disagreement": "Borderline (5 vs 8): a national chain scores like a platform."
+        "product_count_est",
+        "years_online (public knowledge, not measured)"
+      ]
     },
     {
       "domain": "gispen.com",
@@ -950,10 +977,12 @@
         "brand_owner": true,
         "focus": "broad",
         "marketplace_pattern": false,
-        "product_count_est": 1000
+        "product_count_est": 1000,
+        "years_online": 10
       },
       "assumed": [
-        "product_count_est"
+        "product_count_est",
+        "years_online (public knowledge, not measured)"
       ],
       "known_disagreement": "The signals have brand_owner only; Gispen's own factory is not found on the home page. Broad focus costs 16 points."
     }

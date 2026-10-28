@@ -114,7 +114,8 @@ export function pageExcerpt(text: string): string {
 }
 
 export type CrawlPage = { url: string; pageType: string; text: string };
-export type RuleFacts = { productCountEst: number | null; platform: string | null; hasKvk: boolean | null };
+/** yearsOnline feeds the score only; it is not shown to the model. */
+export type RuleFacts = { productCountEst: number | null; platform: string | null; hasKvk: boolean | null; yearsOnline?: number | null };
 
 export function buildUserMessage(shop: { name: string; domain: string }, pages: CrawlPage[], facts: RuleFacts): string {
   const lines = [

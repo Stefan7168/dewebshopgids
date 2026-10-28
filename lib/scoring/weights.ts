@@ -1,7 +1,7 @@
 // Authenticity score weights (plan v3 section 2.1). The only place weights live.
 // Changing a number here is a new SCORE_VERSION; rescoring needs no LLM run.
 
-export const SCORE_VERSION = "v2";
+export const SCORE_VERSION = "v3";
 
 export const MAX_POINTS = {
   maker: 30,
@@ -22,6 +22,16 @@ export const MAKER_FOCUS_FLOOR = FOCUS_POINTS.few_related;
 
 /** Identity: booleans only, never the name or address text itself. */
 export const IDENTITY_POINTS = { has_named_owner: 7, has_address: 7, has_kvk: 6 } as const;
+
+/**
+ * Time online counts modestly, inside Identity and under its cap (v3). It comes from
+ * shops.domain_first_seen (WHOIS or Wayback), never from the model. Curation earns nothing:
+ * being on our own list must not raise a shop's score.
+ */
+export const AGE_POINTS = [
+  { minYears: 10, points: 4 },
+  { minYears: 5, points: 2 },
+] as const;
 
 /** Scale: full points under SCALE_FULL_BELOW products, linear to 0 at SCALE_ZERO_AT. */
 export const SCALE_FULL_BELOW = 300;

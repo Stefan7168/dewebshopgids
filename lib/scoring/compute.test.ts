@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeScore, scalePoints } from "./compute";
+import { agePoints, computeScore, scalePoints, yearsOnline } from "./compute";
 import { MARKETPLACE_LABEL } from "./weights";
 
 describe("scalePoints", () => {
@@ -98,5 +98,22 @@ describe("computeScore", () => {
 
   it("never returns 0", () => {
     expect(computeScore({}).total).toBe(1);
+  });
+
+  it("counts time online modestly inside identity, capped at 20, and not as a site signal", () => {
+    expect([null, 0, 4, 5, 9, 10, 30].map(agePoints)).toEqual([0, 0, 0, 2, 2, 4, 4]);
+    expect(computeScore({ has_address: true, years_online: 12 }).subScores.identity).toBe(11);
+    expect(computeScore({ has_named_owner: true, has_address: true, has_kvk: true, years_online: 12 }).subScores.identity).toBe(20);
+    const r = computeScore({ focus: "broad", years_online: 12 });
+    expect(r.validSignals).toBe(1);
+    expect(r.total).toBe(8);
+  });
+
+  it("measures whole years online from domain_first_seen", () => {
+    const now = new Date("2026-10-28T00:00:00Z");
+    expect(yearsOnline("2016-10-27", now)).toBe(10);
+    expect(yearsOnline("2021-11-01", now)).toBe(4);
+    expect(yearsOnline(null, now)).toBeNull();
+    expect(yearsOnline("not a date", now)).toBeNull();
   });
 });

@@ -23,7 +23,7 @@ export async function enforceRemovals(sql: Sql): Promise<{ summary: string; slug
 }
 
 /** Best effort: without REVALIDATE_URL the page drops out of the cache within the hour (cacheLife "hours"). */
-async function revalidate(slugs: string[]): Promise<void> {
+export async function revalidate(slugs: string[]): Promise<void> {
   const url = process.env.REVALIDATE_URL;
   const secret = process.env.REVALIDATE_SECRET;
   if (!url || !secret || slugs.length === 0) return;

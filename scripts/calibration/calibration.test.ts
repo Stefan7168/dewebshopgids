@@ -1,5 +1,5 @@
 // Calibration of the v1 weights against 30 real Dutch Home & Living shops (scripts/calibration/shops.json).
-// Every shop must land in its human-judged band, except the ones listed with a known_disagreement:
+// Every shop must land in its blind-judged band, except the ones listed with a known_disagreement:
 // those must still miss, so a weight change that fixes or breaks one shows up here and the file is updated.
 import { describe, expect, it } from "vitest";
 import { computeScore, type ScoringSignals } from "../../lib/scoring/compute";

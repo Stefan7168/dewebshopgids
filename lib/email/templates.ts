@@ -1,6 +1,7 @@
 // email_queue templates (plan v3 section 7). Plain-text Dutch emails built from typed slots.
 // The sender sends only templates listed here; agents can queue rows but never choose the text.
 import { REPLY_TEMPLATE_IDS, renderReply, validateReplySlots } from "../disputes/replies";
+import { badgeEmbed } from "../badge/svg";
 import { renderOutreach } from "../outreach/check";
 import { SITE } from "../site";
 import { renderPrenotice } from "./prenotice";
@@ -80,6 +81,34 @@ export const TEMPLATES: Record<string, Template> = {
       if (!subject || !body || !id || !slug || !link?.startsWith("https://")) return null;
       const pay = `${link}${link.includes("?") ? "&" : "?"}client_reference_id=${id}`;
       return { subject, text: renderOutreach(body, { pay, shopPage: `${SITE.url}/webshop/${slug}` }) };
+    },
+  },
+  // Monthly report to a paying badge shop (scripts/badge/report.ts). Service mail, not marketing.
+  badge_click_report: {
+    recipient: "shop",
+    render: (s) => {
+      const name = str(s.shop_name, 200);
+      const slug = typeof s.shop_slug === "string" && /^[a-z0-9-]{1,100}$/.test(s.shop_slug) ? s.shop_slug : null;
+      const month = typeof s.month === "string" && /^\d{4}-\d{2}$/.test(s.month) ? s.month : null;
+      const clicks = Number(s.clicks);
+      if (!name || !slug || !month || !Number.isInteger(clicks) || clicks < 0) return null;
+      const label = new Intl.DateTimeFormat("nl-NL", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${month}-01T00:00:00Z`));
+      return {
+        subject: `${name} in De Webshopgids: ${label}`,
+        text: [
+          "Hoi,",
+          "",
+          `In ${label} klikten lezers van De Webshopgids ${clicks} keer door naar ${name}.`,
+          `Je pagina: ${SITE.url}/webshop/${slug}`,
+          "",
+          "Wil je de badge Geverifieerd op je eigen site laten zien? Plak deze code waar je hem wilt hebben:",
+          badgeEmbed(slug),
+          "",
+          "De badge verandert niets aan je score of je plek in een lijst. Opzeggen kan elke maand via de link in je Stripe-bon.",
+          "",
+          "Groet, De Webshopgids",
+        ].join("\n"),
+      };
     },
   },
   // Consumed by scripts/ops/digest.ts, never sent on its own.

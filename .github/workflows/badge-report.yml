@@ -1,0 +1,32 @@
+# Monthly click report for shops with the paid "Geverifieerd" badge (plan v3 section 10).
+name: Badge click report
+
+on:
+  schedule:
+    - cron: "0 7 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: badge-report
+  cancel-in-progress: false
+
+jobs:
+  report:
+    if: vars.AGENTS_PAUSED != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Queue the reports
+        env:
+          DATABASE_URL: ${{ secrets.PIPELINE_DATABASE_URL }}
+        run: npx tsx scripts/badge/report.ts

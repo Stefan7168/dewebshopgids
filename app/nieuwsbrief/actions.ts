@@ -17,6 +17,7 @@ import {
   welcomeShops,
 } from "@/lib/newsletter/core";
 import { addToGuideSegment, ensureContact, sendToContact, setUnsubscribed } from "@/lib/newsletter/resend";
+import { parseUtm, sourceWithUtm } from "@/lib/newsletter/utm";
 import { MemoryLimiter, senderKey } from "@/lib/rate-limit";
 import { getPublishedShops } from "@/lib/shops/data";
 import { createServiceClient } from "@/lib/supabase/service";
@@ -32,7 +33,8 @@ export async function subscribe(_prev: FormState, formData: FormData): Promise<F
   if (formData.get("website")) return { ok: true, message: SAME_ANSWER }; // honeypot: bots fill every field
   const email = normaliseEmail(formData.get("email"));
   if (!email) return { ok: false, message: "Dit e-mailadres klopt niet. Probeer het nog eens." };
-  const sourcePath = String(formData.get("source") ?? "").slice(0, 200);
+  const sourcePath = String(formData.get("source") ?? "").slice(0, 120);
+  const utm = parseUtm(safeJson(formData.get("utm")));
   if (!perSender.allow(senderKey(await headers()))) return { ok: false, message: "Je hebt het formulier al een paar keer verstuurd. Probeer het over een uur nog eens." };
 
   try {
@@ -52,7 +54,7 @@ export async function subscribe(_prev: FormState, formData: FormData): Promise<F
     const token = newToken();
     const { data: row, error } = await db
       .from("subscribers")
-      .insert({ token_hash: hashToken(token), resend_contact_id: contactId, source_path: sourcePath.startsWith("/") ? sourcePath : null })
+      .insert({ token_hash: hashToken(token), resend_contact_id: contactId, source_path: sourcePath.startsWith("/") ? sourceWithUtm(sourcePath, utm) : null })
       .select("id")
       .single();
     if (error) throw new Error(error.message);
@@ -105,5 +107,15 @@ export async function unsubscribe(_prev: FormState, formData: FormData): Promise
   } catch (err) {
     console.error("newsletter unsubscribe failed", err);
     return { ok: false, message: "Er ging iets mis. Probeer het later nog eens of mail ons." };
+  }
+}
+
+function safeJson(v: FormDataEntryValue | null): Record<string, unknown> | null {
+  if (typeof v !== "string" || !v || v.length > 500) return null;
+  try {
+    const parsed: unknown = JSON.parse(v);
+    return parsed && typeof parsed === "object" ? (parsed as Record<string, unknown>) : null;
+  } catch {
+    return null;
   }
 }

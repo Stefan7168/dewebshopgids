@@ -1,10 +1,11 @@
 // Nightly pipeline (plan v3 section 8, step 10), started by .github/workflows/pipeline.yml.
 // Two UTC crons fire; the run exits unless it is 01:00 in Amsterdam (or FORCE_RUN=1).
 // Order: promote accepted candidates, collect ended score batches, crawl, domain age,
-// submit a new score batch, then publish due shops and send pre-notices. Every step is its own agent_runs row and is idempotent.
+// submit a new score batch, apply manual corrections, then publish due shops and send pre-notices. Every step is its own agent_runs row and is idempotent.
 // Ends with a health_checks row so /api/health and the uptime monitor see the result.
 import Anthropic from "@anthropic-ai/sdk";
 import { connect, runAgentJob, type RunStatus, type Sql } from "../../agents/shared/audit";
+import { applyOverrides } from "./apply-overrides";
 import { runCrawl } from "./crawl/run-crawl";
 import { runDomainAge } from "./domain-age-step";
 import { promoteCandidates } from "./promote-candidates";
@@ -61,6 +62,7 @@ async function main() {
       { agent: "retention", spendsTokens: false, work: () => runRetention(sql) },
       { agent: "score-submit", spendsTokens: true, work: async () => ({ summary: await submitIfIdle(sql, client) }) },
       { agent: "search-console", spendsTokens: false, work: () => importSearchConsole(sql) },
+      { agent: "apply-overrides", spendsTokens: false, work: () => applyOverrides(sql) },
       { agent: "publish", spendsTokens: false, work: () => runPublish(sql) },
     ]);
     console.log(results.map((r) => `${r.agent}: ${r.status}`).join("\n"));

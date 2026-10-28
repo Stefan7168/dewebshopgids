@@ -1,4 +1,4 @@
-// Stripe webhook for the "Geverifieerd" badge (plan v3 sections 10 and 15). No Stripe SDK: the
+// Stripe webhook for the "Geverifieerd" badge and the "Uitgelicht" placement (plan v3 sections 10, 12 and 15). No Stripe SDK: the
 // signature check follows Stripe's manual verification (HMAC-SHA256 over "{t}.{raw body}" with the
 // endpoint secret, any v1 may match during secret rotation, 5 minute tolerance), and only the few
 // fields below are read. Invoices use the 2025-03-31 "basil" shape (`parent.subscription_details`)
@@ -23,11 +23,13 @@ export function verifyStripeSignature(rawBody: string, header: string | null, se
 }
 
 export type BadgeAction =
-  | { kind: "link"; shopId: string; subscriptionId: string; until: string }
+  | { kind: "link"; product: Product; shopId: string; subscriptionId: string; until: string }
   | { kind: "extend"; subscriptionId: string; until: string }
   | { kind: "end"; subscriptionId: string }
   | { kind: "ignore"; reason: string };
 
+/** Which Payment Link was paid: the Uitgelicht link carries metadata product=uitgelicht; anything else is the badge. */
+export type Product = "badge" | "uitgelicht";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 type Obj = Record<string, unknown>;
 const obj = (v: unknown): Obj => (v && typeof v === "object" ? (v as Obj) : {});
@@ -37,7 +39,7 @@ function dateAfter(unixSeconds: number, days: number): string {
   return new Date((unixSeconds + days * 86400) * 1000).toISOString().slice(0, 10);
 }
 
-/** What a verified event means for the badge. Everything else is ignored. */
+/** What a verified event means for a badge or placement. Everything else is ignored. */
 export function badgeAction(event: unknown, nowSeconds = Math.floor(Date.now() / 1000)): BadgeAction {
   const e = obj(event);
   const o = obj(obj(e.data).object);
@@ -48,7 +50,8 @@ export function badgeAction(event: unknown, nowSeconds = Math.floor(Date.now() /
       if (o.mode !== "subscription" || typeof shopId !== "string" || !UUID.test(shopId) || !sub) return { kind: "ignore", reason: "not a badge checkout" };
       if (o.payment_status !== "paid") return { kind: "ignore", reason: "checkout not paid" };
       // The first invoice.paid sets the exact period; until then about one month.
-      return { kind: "link", shopId, subscriptionId: sub, until: dateAfter(nowSeconds, 31 + GRACE_DAYS) };
+      const product: Product = obj(o.metadata).product === "uitgelicht" ? "uitgelicht" : "badge";
+      return { kind: "link", product, shopId, subscriptionId: sub, until: dateAfter(nowSeconds, 31 + GRACE_DAYS) };
     }
     case "invoice.paid": {
       const parent = obj(o.parent);

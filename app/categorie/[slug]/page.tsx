@@ -3,11 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { JsonLd } from "@/components/json-ld";
+import { FeaturedBlock } from "@/components/featured-block";
 import { ShopFilterBar } from "@/components/shop-filters";
 import { ShopList } from "@/components/shop-list";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { getCategories, getPublishedShops } from "@/lib/shops/data";
+import { featuredFor } from "@/lib/featured/select";
+import { getCategories, getFeaturedPlacements, getPublishedShops } from "@/lib/shops/data";
 import { applyFilters, hasFilters, parseFilters } from "@/lib/shops/filters";
 import { MIN_SHOPS_TO_INDEX, rankShops, shopsInCategory } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
@@ -15,7 +17,7 @@ import { SITE } from "@/lib/site";
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
 
 async function load(slug: string) {
-  const [categories, shops] = await Promise.all([getCategories(), getPublishedShops()]);
+  const [categories, shops, placements] = await Promise.all([getCategories(), getPublishedShops(), getFeaturedPlacements()]);
   const category = categories.find((c) => c.slug === slug);
   if (!category) return null;
   return {
@@ -25,6 +27,7 @@ async function load(slug: string) {
     children: categories.filter((c) => c.parent_id === category.id),
     shops: rankShops(shopsInCategory(shops, category, categories)),
     allShops: shops,
+    featured: featuredFor(category, shops, placements),
   };
 }
 
@@ -45,7 +48,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 async function CategoryDetails({ params, searchParams }: Props) {
   const data = await load((await params).slug);
   if (!data) notFound();
-  const { category, parent, children, shops, allShops, categories } = data;
+  const { category, parent, children, shops, allShops, categories, featured } = data;
   const filters = parseFilters(await searchParams);
   const shown = applyFilters(shops, filters);
   const crumbs = [parent, category].filter((c) => c !== undefined);
@@ -71,6 +74,7 @@ async function CategoryDetails({ params, searchParams }: Props) {
           ))}
         </nav>
       )}
+      <FeaturedBlock shops={featured} />
       {shops.length > 0 && (
         <ShopFilterBar path={`/categorie/${category.slug}`} filters={filters} shown={shown.length} total={shops.length} />
       )}

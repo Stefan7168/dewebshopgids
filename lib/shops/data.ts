@@ -65,3 +65,9 @@ export async function getFeaturedPlacements(): Promise<FeaturedPlacement[]> {
   if (error) return [];
   return data as FeaturedPlacement[];
 }
+
+/** Today's date (YYYY-MM-DD), cached so prerendered pages can compare dates; badge grace covers the lag. */
+export async function cachedToday(): Promise<string> {
+  cacheLife("hours");
+  return new Date().toISOString().slice(0, 10);
+}

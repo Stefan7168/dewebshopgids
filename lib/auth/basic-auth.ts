@@ -1,7 +1,8 @@
 // Site-wide Basic Auth while the directory is private (removed at public launch).
 // Paths in PUBLIC_PATHS stay reachable without a password, e.g. for Daisycon review.
 
-export const PUBLIC_PATHS = ["/over", "/api/health", "/api/revalidate"];
+// Daisycon reviews these before the site is public (plan section 5, phase 0).
+export const PUBLIC_PATHS = ["/over", "/go", "/privacy", "/informatie-voor-webshops", "/api/health", "/api/revalidate"];
 
 export function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some(

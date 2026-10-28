@@ -8,6 +8,7 @@ describe("isPublicPath", () => {
     expect(isPublicPath("/over")).toBe(true);
     expect(isPublicPath("/over/team")).toBe(true);
     expect(isPublicPath("/api/health")).toBe(true);
+    expect(isPublicPath("/go/houtatelier")).toBe(true);
   });
   it("does not exempt look-alikes or the home page", () => {
     expect(isPublicPath("/")).toBe(false);

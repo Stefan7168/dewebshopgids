@@ -32,7 +32,7 @@ jobs:
 
   db:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     services:
       postgres:
         image: postgres:17
@@ -49,3 +49,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: scripts/db/test.sh
+      # Three nights of the real pipeline, email queue and gids on fixtures (docs/runbook.md).
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: scripts/e2e/run.sh

@@ -9,6 +9,7 @@ import { crawlShop, type CrawlResult } from "./crawl-shop";
 
 export const MAX_SHOPS_PER_NIGHT = 60;
 export const CONCURRENCY = 4;
+export const MIN_ERRORS_TO_FAIL = 3;
 export const MAX_ERROR_SHARE = 0.1;
 
 type Shop = { id: string; domain: string };
@@ -67,21 +68,29 @@ export async function storeCrawl(sql: Sql, shopId: string, r: CrawlResult): Prom
   });
 }
 
+/** Over 10% errors fails the step (plan v3 section 8), but only from MIN_ERRORS_TO_FAIL errors on: one or two unreachable sites on a small night are noise, not a broken crawler. */
+export function crawlFailed(failed: number, attempted: number): boolean {
+  return failed >= MIN_ERRORS_TO_FAIL && failed / attempted > MAX_ERROR_SHARE;
+}
+
 /** Crawl shops with a small pool; per-domain politeness lives inside the shared fetcher. */
 export async function runCrawl(sql: Sql, fetchPolite = createPoliteFetcher().fetchPolite) {
   const shops = await selectShops(sql);
   let failed = 0;
+  let robotsBlocked = 0;
   const queue = [...shops];
   async function worker() {
     for (let s = queue.shift(); s; s = queue.shift()) {
       const r = await crawlShop(fetchPolite, s.domain);
-      if (!r.ok) failed++;
+      // A shop whose robots.txt keeps us out made a choice; it is not a pipeline error.
+      if (!r.ok && r.error === "robots_disallowed") robotsBlocked++;
+      else if (!r.ok) failed++;
       await storeCrawl(sql, s.id, r);
     }
   }
   await Promise.all(Array.from({ length: Math.min(CONCURRENCY, shops.length) }, worker));
-  const summary = `crawled ${shops.length} shops, ${failed} failed`;
-  if (shops.length > 0 && failed / shops.length > MAX_ERROR_SHARE) throw new Error(`${summary}: over 10% errors`);
+  const summary = `crawled ${shops.length} shops, ${failed} failed, ${robotsBlocked} blocked by robots.txt`;
+  if (crawlFailed(failed, shops.length - robotsBlocked)) throw new Error(`${summary}: over 10% errors`);
   return { summary };
 }
 

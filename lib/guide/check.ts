@@ -7,6 +7,9 @@ import { parseGuideMarkdown, plainText } from "./markdown";
 export const MAX_WORDS = 350;
 const BANNED = [/onbetrouwbaar/i, /\breview/i, /advertentie/i, /gesponsord/i, /marketplace_pattern/i, /dropship/i, /aggregaterating/i, /korting/i];
 
+/** Own pages a gids may link to besides this week's shops and other gids issues. */
+export const SITE_PAGES = ["/hoe-wij-beoordelen", "/informatie-voor-webshops", "/gids"];
+
 export type Draft = { title_nl: string | null; intro_nl: string | null; body_md: string | null; shop_ids: string[] };
 
 /** Numbers the text may contain: from the snapshot, the week, and a few fixed phrases. */
@@ -45,7 +48,7 @@ export function checkDraft(d: Draft, s: GuideSnapshot): string[] {
   for (const m of (d.body_md ?? "").matchAll(/\]\(([^)]+)\)/g)) {
     const href = m[1];
     const shop = href.match(/^\/webshop\/([a-z0-9-]+)$/)?.[1];
-    if (!(shop ? slugs.has(shop) : /^\/gids\/[a-z0-9-]+$/.test(href))) findings.push(`link ${href} is not one of this week's shops`);
+    if (!(shop ? slugs.has(shop) : /^\/gids\/[a-z0-9-]+$/.test(href) || SITE_PAGES.includes(href))) findings.push(`link ${href} is not one of this week's shops`);
   }
 
   const allowed = allowedNumbers(s);

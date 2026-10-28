@@ -88,3 +88,7 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 
 ## 2026-10-28: Gids issues 3 and 4
 - Reference drafts for 2026-week-47 (gifts before Sinterklaas) and 2026-week-48 (the laid table) in `lib/guide/fixtures/`, from the editorial calendar. Only launch-list shops, only facts the snapshot holds; a test checks that no shop repeats across issues 1 to 4.
+
+## 2026-10-28: Tuin & buiten list 2
+- `garden-candidates.csv` grows to 39 queued shops (19 strong and 10 medium added, mostly growers). The SQL for setup is `garden-candidates-2-insert.sql`, folded into the one-paste setup file. The category stays hidden until 30 published shops (#89).
+- About 13 Home & Living candidates (Ofyr, Weltevree, Exotan and others) also fit the garden. They stay in Home & Living: `shops` has a single `category_id`, so a shop cannot count for both. Backlog: a secondary-category link table (migration plus filter and list changes), so such shops show in both categories.

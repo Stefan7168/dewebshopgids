@@ -55,7 +55,7 @@ describe("garden list", () => {
   const launch = launchCandidates(readFileSync(join(__dirname, "launch-candidates.csv"), "utf8"), SLUGS);
 
   it("queues the strong and medium garden shops only, in garden categories", () => {
-    expect(garden).toHaveLength(10);
+    expect(garden).toHaveLength(39);
     for (const c of garden) {
       expect(GARDEN).toContain(c.category);
       expect(c.reason).toMatch(/^(strong|medium) fit; /);

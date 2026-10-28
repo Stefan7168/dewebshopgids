@@ -1,0 +1,60 @@
+# Weekly gids (plan v3 section 8 step 12). Code jobs only; the Guide Editor and the Fact
+# Checker run as Claude Code routines in between (agents/guide-editor, agents/fact-checker).
+# Monday from 06:00 Amsterdam: create the issue after a green nightly run; later Monday crons
+# retry (max 3) and do nothing once the issue exists.
+# Wednesday and Thursday 10:00 Amsterdam: fallback page, then publish and send. Two UTC crons
+# per slot cover summer and winter time; the scripts exit unless it is the right local hour.
+name: Weekly gids
+
+on:
+  schedule:
+    - cron: "0 4 * * 1" # prepare, 06:00 CEST
+    - cron: "0 5 * * 1" # prepare, 06:00 CET (or the first retry in summer)
+    - cron: "0 6 * * 1" # prepare retry
+    - cron: "0 7 * * 1" # prepare retry
+    - cron: "0 8 * * 3,4" # publish, 10:00 CEST
+    - cron: "0 9 * * 3,4" # publish, 10:00 CET
+  workflow_dispatch:
+    inputs:
+      job:
+        description: "prepare, fallback or send"
+        required: true
+        default: prepare
+
+permissions:
+  contents: read
+
+concurrency:
+  group: guide
+  cancel-in-progress: false
+
+jobs:
+  guide:
+    if: vars.AGENTS_PAUSED != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Prepare this week's issue
+        if: (github.event_name == 'schedule' && github.event.schedule != '0 8 * * 3,4' && github.event.schedule != '0 9 * * 3,4') || inputs.job == 'prepare'
+        env:
+          DATABASE_URL: ${{ secrets.PIPELINE_DATABASE_URL }}
+        # Exit 75: tonight's nightly run is not green yet; the next Monday cron retries.
+        run: npx tsx scripts/guide/prepare.ts || { code=$?; [ "$code" = 75 ] && echo "nightly not green yet, retry at the next cron" && exit 0; exit $code; }
+      - name: Publish and send
+        if: (github.event_name == 'schedule' && (github.event.schedule == '0 8 * * 3,4' || github.event.schedule == '0 9 * * 3,4')) || inputs.job == 'fallback' || inputs.job == 'send'
+        env:
+          DATABASE_URL: ${{ secrets.PIPELINE_DATABASE_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          RESEND_GUIDE_SEGMENT_ID: ${{ secrets.RESEND_GUIDE_SEGMENT_ID }}
+          REVALIDATE_URL: ${{ vars.REVALIDATE_URL }}
+          REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
+          GUIDE_SLOT: ${{ github.event_name == 'workflow_dispatch' && inputs.job || '' }}
+        run: npx tsx scripts/guide/publish.ts

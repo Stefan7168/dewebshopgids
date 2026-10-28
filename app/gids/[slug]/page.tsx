@@ -30,7 +30,10 @@ async function Guide({ params }: Props) {
   const { slug } = await params;
   const g = parseGuideSlug(slug) ? await getGuide(slug) : null;
   if (!g) notFound();
-  const shops = (await getPublishedShops()).filter((s) => g.shop_ids.includes(s.id));
+  // In the order the editor chose, which is the order the body mentions them.
+  const shops = (await getPublishedShops())
+    .filter((s) => g.shop_ids.includes(s.id))
+    .sort((a, b) => g.shop_ids.indexOf(a.id) - g.shop_ids.indexOf(b.id));
   return (
     <article className="flex flex-col gap-6">
       <p className="text-sm text-muted-foreground">

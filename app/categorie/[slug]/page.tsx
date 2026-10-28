@@ -8,6 +8,7 @@ import { ShopFilterBar } from "@/components/shop-filters";
 import { ShopList } from "@/components/shop-list";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { liveTopics } from "@/lib/beste/topics";
 import { featuredFor } from "@/lib/featured/select";
 import { getCategories, getFeaturedPlacements, getPublishedShops } from "@/lib/shops/data";
 import { applyFilters, hasFilters, parseFilters } from "@/lib/shops/filters";
@@ -52,6 +53,11 @@ async function CategoryDetails({ params, searchParams }: Props) {
   const filters = parseFilters(await searchParams);
   const shown = applyFilters(shops, filters);
   const crumbs = [parent, category].filter((c) => c !== undefined);
+  // Lists for this category and its subcategories.
+  const lists = liveTopics(allShops, categories).filter((t) => {
+    const c = categories.find((x) => x.slug === t.categorySlug);
+    return c !== undefined && (c.id === category.id || c.parent_id === category.id);
+  });
 
   return (
     <div className="flex flex-col gap-6">
@@ -67,11 +73,16 @@ async function CategoryDetails({ params, searchParams }: Props) {
       {category.intro_nl && <p>{category.intro_nl}</p>}
       {children.length > 0 && (
         <nav aria-label="Subcategorieën" className="flex flex-wrap gap-2">
-          {children.map((c) => (
-            <Link key={c.id} href={`/categorie/${c.slug}`} className="rounded-full border px-3 py-2 text-sm hover:bg-muted">
-              {c.name_nl} ({shopsInCategory(allShops, c, categories).length})
-            </Link>
-          ))}
+          {children.map((c) => {
+            const count = shopsInCategory(allShops, c, categories).length;
+            // An empty subcategory is a dead end for a shopper.
+            if (count === 0) return null;
+            return (
+              <Link key={c.id} href={`/categorie/${c.slug}`} className="rounded-full border px-3 py-2 text-sm hover:bg-muted">
+                {c.name_nl} ({count})
+              </Link>
+            );
+          })}
         </nav>
       )}
       <FeaturedBlock shops={featured} />
@@ -82,6 +93,16 @@ async function CategoryDetails({ params, searchParams }: Props) {
         <p className="text-muted-foreground">Geen webshops met deze filters. Zet een filter uit om meer te zien.</p>
       ) : (
         <ShopList shops={shown} listName={`Webshops in ${category.name_nl}`} />
+      )}
+      {lists.length > 0 && (
+        <nav aria-label="Lijsten" className="flex flex-col gap-2">
+          <h2 className="text-lg font-semibold">Lijsten</h2>
+          {lists.map((t) => (
+            <Link key={t.slug} href={`/beste/webshops-${t.slug}`} className="inline-flex min-h-11 items-center underline">
+              {t.title}
+            </Link>
+          ))}
+        </nav>
       )}
       <JsonLd
         data={{

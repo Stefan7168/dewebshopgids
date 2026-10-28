@@ -5,6 +5,7 @@ import { ClaimRequestForm } from "@/components/claim-forms";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { CLAIMABLE_STATUSES } from "@/lib/claims/core";
+import { SITE } from "@/lib/site";
 import { createServiceClient } from "@/lib/supabase/service";
 
 export const metadata: Metadata = { title: "Je webshop beheren", robots: { index: false } };
@@ -17,7 +18,16 @@ async function Body({ searchParams }: { searchParams: Search }) {
     slug && /^[a-z0-9-]{1,100}$/.test(slug) && process.env.SUPABASE_SERVICE_ROLE_KEY
       ? (await createServiceClient().from("shops").select("slug, name, domain, status").eq("slug", slug).maybeSingle()).data
       : null;
-  if (!shop || !CLAIMABLE_STATUSES.includes(shop.status)) {
+  if (slug && (!shop || !CLAIMABLE_STATUSES.includes(shop.status))) {
+    // Came from a shop page, so "open it via the shop page" would send them in a circle.
+    return (
+      <p>
+        We kunnen deze pagina nu niet voor deze webshop openen. Mail je nieuwe beschrijving vanaf een adres op je eigen domein naar{" "}
+        <a href={`mailto:${SITE.email}`} className="underline">{SITE.email}</a>.
+      </p>
+    );
+  }
+  if (!shop) {
     return (
       <p>
         Open deze pagina via de pagina van je webshop: onderaan staat &ldquo;Is dit jouw webshop?&rdquo;. Of ga naar de{" "}

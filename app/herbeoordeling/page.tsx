@@ -5,6 +5,7 @@ import { DisputeForm } from "@/components/dispute-form";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ANSWER_DAYS, disputableStatus, parseDisputeType } from "@/lib/disputes/core";
+import { SITE } from "@/lib/site";
 import { createServiceClient } from "@/lib/supabase/service";
 
 export const metadata: Metadata = { title: "Herbeoordeling aanvragen", robots: { index: false } };
@@ -17,7 +18,16 @@ async function Body({ searchParams }: { searchParams: Search }) {
     slug && /^[a-z0-9-]{1,100}$/.test(slug) && process.env.SUPABASE_SERVICE_ROLE_KEY
       ? (await createServiceClient().from("shops").select("slug, name, domain, status").eq("slug", slug).maybeSingle()).data
       : null;
-  if (!shop || !disputableStatus(shop.status)) {
+  if (slug && (!shop || !disputableStatus(shop.status))) {
+    // Came from a shop page, so "open it via the shop page" would send them in a circle.
+    return (
+      <p>
+        We kunnen dit formulier nu niet voor deze webshop openen. Mail je vraag naar{" "}
+        <a href={`mailto:${SITE.email}`} className="underline">{SITE.email}</a> met de naam van de webshop; we antwoorden binnen {ANSWER_DAYS} dagen.
+      </p>
+    );
+  }
+  if (!shop) {
     return (
       <p>
         Open dit formulier via de pagina van de webshop: onderaan staat &ldquo;Klopt er iets niet?&rdquo;. Lukt dat niet? Mail ons via het adres onderaan deze pagina. Of ga naar de <Link href="/" className="underline">homepage</Link>.

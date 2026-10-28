@@ -7,6 +7,9 @@ export function SiteFooter() {
     <footer className="w-full border-t text-xs py-8">
       <div className="max-w-3xl mx-auto px-4 flex flex-col gap-2">
         <div className="flex flex-wrap gap-x-4">
+          <Link href="/gids" className="inline-flex min-h-8 items-center underline">
+            Webshopgids
+          </Link>
           <Link href="/over" className="inline-flex min-h-8 items-center underline">
             Over ons
           </Link>

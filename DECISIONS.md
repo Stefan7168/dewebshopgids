@@ -87,3 +87,10 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 
 ## 2026-10-28: Gids issues 3 and 4
 - Reference drafts for 2026-week-47 (gifts before Sinterklaas) and 2026-week-48 (the laid table) in `lib/guide/fixtures/`, from the editorial calendar. Only launch-list shops, only facts the snapshot holds; a test checks that no shop repeats across issues 1 to 4.
+
+## 2026-10-28: QA round 1 fixes
+- The sign-up form no longer says "Vanaf februari": `/gids` already publishes every week, so the promise contradicted the site. `GUIDE_START_MONTH` is null.
+- `/gids` and the live `/beste/` lists were orphan pages (only in the sitemap). Now linked: "Webshopgids" in the footer, a line on the home page, and a "Lijsten" block on the home page and on category pages (lists in hidden categories stay hidden). llms.txt also lists the live `/beste/` lists, the indexable keurmerk pages and `/gids`.
+- Category pages hide subcategory chips with 0 shops. The shops under a gids issue follow the editor's order (`shop_ids`).
+- `/herbeoordeling?shop=` and `/beheer?shop=` that cannot load the shop now point to the email address instead of back to the shop page.
+- "Informatie voor webshops" explains the description edit and names the paid options (badge, "Uitgelicht") and that neither changes score or order.

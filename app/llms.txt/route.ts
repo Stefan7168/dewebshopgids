@@ -1,3 +1,6 @@
+import { liveTopics } from "@/lib/beste/topics";
+import { getGuides } from "@/lib/guide/data";
+import { indexableKeurmerkPages } from "@/lib/keurmerk/pages";
 import { getCategories, getPublishedShops } from "@/lib/shops/data";
 import { MIN_SHOPS_TO_INDEX, promotedRoots, shopsInCategory } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
@@ -5,12 +8,13 @@ import { SITE } from "@/lib/site";
 // llms.txt (https://llmstxt.org): a plain summary for AI crawlers. Low expected value
 // (most llms.txt files are never fetched), but it costs nothing and states our method.
 export async function GET() {
-  const [categories, shops] = await Promise.all([getCategories(), getPublishedShops()]);
+  const [categories, shops, guides] = await Promise.all([getCategories(), getPublishedShops(), getGuides()]);
   const roots = promotedRoots(categories, shops);
   const rootIds = new Set(roots.map((c) => c.id));
   const listed = categories.filter(
     (c) => rootIds.has(c.parent_id ?? c.id) && shopsInCategory(shops, c, categories).length >= MIN_SHOPS_TO_INDEX,
   );
+  const lists = liveTopics(shops, categories).filter((t) => listed.some((c) => c.slug === t.categorySlug));
   const scope = roots.some((c) => c.slug === "tuin-buiten") ? "wonen, interieur en tuin" : "wonen en interieur";
   const body = [
     `# ${SITE.name}`,
@@ -24,6 +28,9 @@ export async function GET() {
     `- [Over ${SITE.name}](${SITE.url}/over): wie we zijn en hoe de score werkt`,
     `- [Hoe wij beoordelen](${SITE.url}/hoe-wij-beoordelen): de berekening van de echtheidsscore en waar de gegevens vandaan komen`,
     ...listed.map((c) => `- [${c.name_nl}](${SITE.url}/categorie/${c.slug}): webshops gerangschikt op echtheidsscore`),
+    ...lists.map((t) => `- [${t.title}](${SITE.url}/beste/webshops-${t.slug}): lijst gerangschikt op echtheidsscore`),
+    ...indexableKeurmerkPages(shops).map((p) => `- [Webshops met ${p.name}](${SITE.url}/keurmerk/${p.slug}): keurmerk gecontroleerd bij de keurmerkorganisatie`),
+    ...(guides.length ? [`- [De wekelijkse webshopgids](${SITE.url}/gids): elke week 5 webshops uit de gids`] : []),
     "",
     "## Gegevens per webshop",
     "",

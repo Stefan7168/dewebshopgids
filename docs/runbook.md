@@ -60,6 +60,8 @@ npm run db:dev      # local Postgres: every migration plus 24 fictional demo sho
 npm run dev:local   # http://localhost:3000 with the demo data, no Supabase account needed
 ```
 
+`npm run test:e2e` runs three nights of the pipeline, the email queue and the gids against fixture sites (`scripts/pipeline/fixtures`) and a fake Anthropic client; CI runs it in the `db` job.
+
 `dev:local` serves the public pages from the local database through `scripts/dev/rest.ts`, a read-only stand-in for Supabase's REST API that queries as the real `anon` role, so RLS behaves as in production. `/admin`, the forms and `/go` need a real Supabase project and `.env.local`.
 
 ## 7. Release

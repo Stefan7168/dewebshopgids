@@ -29,7 +29,7 @@ Plan of record: `docs/plan.md` (product development plan v3). Build tasks are it
 | `.claude/skills/` | thin pointers to `agents/<name>/instructions.md` |
 | `proxy.ts` | Basic Auth gate, then Supabase session refresh |
 
-Commands: `npm run dev`, `npm run lint`, `npm run typecheck`, `npm test` (vitest), `npm run build`, `npm run test:db` (applies all migrations to a fresh local Postgres and runs `supabase/tests/*.test.sql`; needs PGHOST, PGPORT, PGUSER). CI runs all of them on every PR.
+Commands: `npm run dev`, `npm run lint`, `npm run typecheck`, `npm test` (vitest), `npm run build`, `npm run test:db` (applies all migrations to a fresh local Postgres and runs `supabase/tests/*.test.sql`; needs PGHOST, PGPORT, PGUSER), `npm run test:e2e` (three nights of the real pipeline, email queue and gids on fixture sites and a fake Anthropic client; same PG* variables). CI runs all of them on every PR.
 
 ## 3. Data
 - No writes from the browser. Writes happen in server actions, route handlers, pipeline jobs or agent tools.

@@ -1,5 +1,5 @@
 import "server-only";
-// Minimal Resend REST calls for the newsletter (no SDK: three endpoints).
+// Minimal Resend REST calls for the newsletter and the dispute form (no SDK: three endpoints).
 // Docs: https://resend.com/docs/api-reference/contacts/create-contact
 
 const API = "https://api.resend.com";
@@ -41,8 +41,13 @@ export async function sendToContact(contactId: string, msg: { subject: string; t
   const contact = await call(`/contacts/${encodeURIComponent(contactId)}`);
   if (!contact.ok) throw new Error(`Resend contact ${contact.status}`);
   const { email } = (await contact.json()) as { email: string };
+  await sendEmail(email, msg, idempotencyKey);
+}
+
+/** Plain transactional send, also used by the dispute form. */
+export async function sendEmail(to: string, msg: { subject: string; text: string }, idempotencyKey: string): Promise<void> {
   const from = process.env.EMAIL_FROM;
   if (!from) throw new Error("EMAIL_FROM is not set");
-  const res = await call("/emails", { method: "POST", idempotencyKey, body: JSON.stringify({ from, to: [email], subject: msg.subject, text: msg.text }) });
+  const res = await call("/emails", { method: "POST", idempotencyKey, body: JSON.stringify({ from, to: [to], subject: msg.subject, text: msg.text }) });
   if (!res.ok) throw new Error(`Resend send ${res.status}`);
 }

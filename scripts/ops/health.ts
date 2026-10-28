@@ -19,6 +19,7 @@ export const CODE_SCHEDULES: ScheduleRow[] = [
   { agent: "escalations", cron: "45 */3 * * *", timezone: "UTC", max_gap_minutes: 240 },
   // Runs as the last step of escalations.yml and schedule-gaps.yml (every 90 minutes).
   { agent: "email-sender", cron: "30,45 */3 * * *", timezone: "UTC", max_gap_minutes: 240 },
+  { agent: "dispute-removals", cron: "5 * * * *", timezone: "UTC", max_gap_minutes: 120 },
   { agent: "digest", cron: "0 18 * * 0", timezone: "Europe/Amsterdam", max_gap_minutes: 10140 },
 ];
 

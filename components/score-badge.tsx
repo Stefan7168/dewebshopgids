@@ -1,7 +1,7 @@
 import { scoreDisplay, type PublicShop } from "@/lib/shops/present";
 import { cn } from "@/lib/utils";
 
-export function ScoreBadge({ shop, size = "sm" }: { shop: Pick<PublicShop, "score" | "score_label">; size?: "sm" | "lg" }) {
+export function ScoreBadge({ shop, size = "sm" }: { shop: Pick<PublicShop, "score" | "score_label" | "status">; size?: "sm" | "lg" }) {
   const d = scoreDisplay(shop);
   const box = size === "lg" ? "min-w-20 h-20 text-3xl" : "min-w-12 h-12 text-lg";
   if (d.kind === "number") {

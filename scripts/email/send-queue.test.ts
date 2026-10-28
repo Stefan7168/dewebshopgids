@@ -77,3 +77,35 @@ describe("dispute replies", () => {
     expect(r.summary).toContain("b (dispute_no_change)");
   });
 });
+
+describe("outreach badge offers", () => {
+  const shopId = "00000000-0000-4000-8000-0000000000a1";
+  const slots = { subject: "Atelier X in De Webshopgids", body: "Hoi,\n\nAanmelden kan hier: [betaallink]\n\nZie [shoppagina]", shop_id: shopId, shop_slug: "atelier-x" };
+  const row = { to: null, shop_id: shopId, template: "outreach_badge", slots, shop_email: "info@atelier-x.nl" };
+
+  it("goes to the shop's role address with the fixed payment link, never to opted-out shops", async () => {
+    process.env.STRIPE_BADGE_LINK = "https://buy.stripe.com/test_abc";
+    const { sql } = fakeSql([
+      { id: "a", ...row, shop_opted_out: false },
+      { id: "b", ...row, shop_opted_out: true },
+      { id: "c", ...row, to: "someone@evil.test", shop_opted_out: false },
+    ]);
+    const sent: Parameters<SendEmail>[0][] = [];
+    const r = await sendQueue(sql, async (m) => void sent.push(m), "o@x.nl");
+    expect(sent.map((m) => m.to)).toEqual(["info@atelier-x.nl"]);
+    expect(sent[0].text).toContain(`https://buy.stripe.com/test_abc?client_reference_id=${shopId}`);
+    expect(sent[0].text).toContain("https://dewebshopgids.nl/webshop/atelier-x");
+    expect(sent[0].text).toMatch(/Antwoord met "stop"/);
+    expect(r.summary).toContain("b (outreach_badge)");
+    expect(r.summary).toContain("c (outreach_badge)");
+  });
+
+  it("waits when no payment link is configured", async () => {
+    delete process.env.STRIPE_BADGE_LINK;
+    const { sql } = fakeSql([{ id: "a", ...row, shop_opted_out: false }]);
+    const r = await sendQueue(sql, async () => {
+      throw new Error("must not send");
+    }, "o@x.nl");
+    expect(r.summary).toContain("sent 0 of 1");
+  });
+});

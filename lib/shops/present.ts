@@ -67,6 +67,9 @@ export function scoreDisplay(s: Pick<PublicShop, "score" | "score_label">): Scor
   return { kind: "number", value: s.score };
 }
 
+/** Plan v3 section 9: category pages with fewer shops stay out of the index and the sitemap. */
+export const MIN_SHOPS_TO_INDEX = 5;
+
 const RANK_ORDER: Record<ScoreDisplay["kind"], number> = { number: 0, pending: 1, label: 2, none: 3 };
 
 /** Numbered shops by score, high to low; then the rest. Ties and the rest by name. */

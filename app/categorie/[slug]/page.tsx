@@ -7,13 +7,10 @@ import { ShopList } from "@/components/shop-list";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getCategories, getPublishedShops } from "@/lib/shops/data";
-import { rankShops, shopsInCategory } from "@/lib/shops/present";
+import { MIN_SHOPS_TO_INDEX, rankShops, shopsInCategory } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
-
-/** Plan v3 section 9: category pages with fewer than 5 shops stay out of the index. */
-const MIN_SHOPS_TO_INDEX = 5;
 
 async function load(slug: string) {
   const [categories, shops] = await Promise.all([getCategories(), getPublishedShops()]);

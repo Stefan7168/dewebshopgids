@@ -6,7 +6,7 @@ import { TEMPLATES, type Rendered } from "../../lib/email/templates";
 
 export const MAX_PER_RUN = 50;
 
-type Row = { id: string; to: string | null; shop_id: string | null; template: string; slots: Record<string, unknown> };
+type Row = { id: string; to: string | null; shop_id: string | null; template: string; slots: Record<string, unknown>; dispute_email?: string | null };
 export type SendEmail = (msg: Rendered & { to: string; idempotencyKey: string }) => Promise<void>;
 
 export function resendSender(apiKey = process.env.RESEND_API_KEY, from = process.env.EMAIL_FROM): SendEmail {
@@ -23,19 +23,21 @@ export function resendSender(apiKey = process.env.RESEND_API_KEY, from = process
   };
 }
 
-/** Owner mail goes to OWNER_EMAIL. Shop mail is not wired yet (pre-notice job, later task). */
+/** Owner mail goes to OWNER_EMAIL, dispute replies to the address on that dispute. Shop mail is not wired yet (pre-notice job). */
 function recipientFor(row: Row, ownerEmail: string | undefined): string | null {
   const t = TEMPLATES[row.template];
-  if (!t || t.recipient !== "owner") return null;
-  return row.to === "owner" && ownerEmail ? ownerEmail : null;
+  if (t?.recipient === "owner") return row.to === "owner" && ownerEmail ? ownerEmail : null;
+  if (t?.recipient === "dispute") return /^dispute:[0-9a-f-]{36}$/.test(row.to ?? "") && row.dispute_email ? row.dispute_email : null;
+  return null;
 }
 
 export async function sendQueue(sql: Sql, send: SendEmail, ownerEmail = process.env.OWNER_EMAIL): Promise<{ summary: string }> {
   const sendable = Object.entries(TEMPLATES).filter(([, t]) => t.recipient !== "internal").map(([k]) => k);
   const rows = await sql<Row[]>`
-    select id, "to", shop_id, template, slots from public.email_queue
-    where sent_at is null and send_after <= now() and template = any(${sendable})
-    order by priority, send_after limit ${MAX_PER_RUN}`;
+    select q.id, q."to", q.shop_id, q.template, q.slots, d.email as dispute_email
+    from public.email_queue q left join public.disputes d on q."to" = 'dispute:' || d.id::text
+    where q.sent_at is null and q.send_after <= now() and q.template = any(${sendable})
+    order by q.priority, q.send_after limit ${MAX_PER_RUN}`;
   let sent = 0;
   const skipped: string[] = [];
   for (const row of rows) {

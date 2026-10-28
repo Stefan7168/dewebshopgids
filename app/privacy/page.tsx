@@ -35,6 +35,10 @@ export default function Page() {
         antwoord te sturen. Je bericht wordt gelezen door ons en door een AI-assistent die ons helpt; die stuurt nooit zelf e-mail. Twaalf
         maanden na afhandeling verwijderen we je e-mailadres en je bericht.
       </p>
+      <p>
+        Vraag je via <Link href="/beheer">je webshop beheren</Link> een link aan, dan sturen we die naar een adres op het domein van de
+        webshop. Dat adres bewaren we niet. De tekst die je instuurt bewaren we bij de webshop, ook als we hem niet plaatsen.
+      </p>
 
       <h2>Webshops</h2>
       <p>

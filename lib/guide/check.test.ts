@@ -51,3 +51,16 @@ describe("guide markdown", () => {
     expect(html).toBe('<h2>Kop</h2>\n<p><strong>Vet</strong> &lt;b&gt;x&lt;/b&gt; <a href="https://dewebshopgids.nl/webshop/a-b">shop</a> weg</p>');
   });
 });
+
+describe("gids issue 1 reference draft", () => {
+  it("passes the code checks", async () => {
+    const { issue1Draft, issue1Snapshot } = await import("./fixtures/issue-1");
+    expect(checkDraft(issue1Draft, issue1Snapshot)).toEqual([]);
+  });
+
+  it("would be rejected with the outline's founding year and collection count, which are not inputs", async () => {
+    const { issue1Draft, issue1Snapshot } = await import("./fixtures/issue-1");
+    const body = issue1Draft.body_md!.replace("in Drenthe.", "in Drenthe. Op de eigen site staat het jaartal 1610.").replace("eigen atelier.", "eigen atelier, in 29 collecties.");
+    expect(checkDraft({ ...issue1Draft, body_md: body }, issue1Snapshot)).toEqual(["number 1610 is not in the inputs", "number 29 is not in the inputs"]);
+  });
+});

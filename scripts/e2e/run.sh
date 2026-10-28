@@ -22,3 +22,5 @@ TCPHOST="${PGHOST:-localhost}"; case "$TCPHOST" in /*) TCPHOST=localhost ;; esac
 export E2E_PIPELINE_URL="postgres://pipeline:$PW@$TCPHOST:${PGPORT:-5432}/$DB"
 export E2E_DB="$DB"
 npx tsx scripts/e2e/nightly.e2e.ts
+# Last: the kill switch locks the pipeline login used above.
+npx tsx scripts/e2e/kill-switch.e2e.ts

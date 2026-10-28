@@ -14,7 +14,7 @@ How to operate dewebshopgids.nl without any chat history. Read `CLAUDE.md` first
 | `guide.yml` | Weekly gids: prepare Monday 06:00, publish and send Wednesday/Thursday 10:00 | Weekly |
 | `digest.yml` | Weekly digest mail to `OWNER_EMAIL` | Sunday 18:00 |
 | `source-import.yml`, `ai-citations.yml`, `badge-report.yml` | Keurmerk source lists; monthly AI citation check; monthly badge click report | Weekly / monthly |
-| `kill-switch.yml` | Hard stop for every agent role | Manual only |
+| `kill-switch.yml` | Hard stop for every agent role and the `pipeline` role | Manual only |
 | Claude Code routines | One per agent in `agents/<name>/agent.json` (`schedule.cron`, Europe/Amsterdam) | See each `agent.json` |
 | `claude-developer.yml`, `claude-reviewer.yml` | Developer acts on issues a human labelled `agent-ok`; Reviewer reviews PRs | On label / PR |
 
@@ -29,7 +29,7 @@ Secrets: GitHub Environment `production` (bound to `main`) for jobs, Vercel env 
 ## 3. Stop everything
 
 - Soft: `/admin/agents`, type STOP: sets `agent_settings.agents_enabled = false`; every job exits at `checkKillSwitch()`. With `GITHUB_DISPATCH_TOKEN` set it also starts the hard stop.
-- Hard: run `kill-switch.yml`. Every agent role gets `NOLOGIN`, a random unknown password and its connections closed. Also pause each routine in the routines UI.
+- Hard: run `kill-switch.yml`. Every agent role and the `pipeline` role get `NOLOGIN`, a random unknown password and their connections closed. Also pause each routine in the routines UI. To restart the nightly pipeline afterwards, run `scripts/agents/set-role-password.ts pipeline` with the admin URL and put the new URL in the `PIPELINE_DATABASE_URL` secret.
 - Restart: the enable button in `/admin/agents`, then step 2.1 per role to give it a new password, and update each routine.
 
 ## 4. Common incidents

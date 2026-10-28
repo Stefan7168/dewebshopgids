@@ -12,7 +12,7 @@ import {
   welcomeEmail,
   welcomeShops,
 } from "@/lib/newsletter/core";
-import { ensureContact, sendToContact, setUnsubscribed } from "@/lib/newsletter/resend";
+import { addToGuideSegment, ensureContact, sendToContact, setUnsubscribed } from "@/lib/newsletter/resend";
 import { getPublishedShops } from "@/lib/shops/data";
 import { createServiceClient } from "@/lib/supabase/service";
 
@@ -61,6 +61,7 @@ export async function confirm(_prev: FormState, formData: FormData): Promise<For
 
   try {
     await setUnsubscribed(sub.resend_contact_id, false);
+    await addToGuideSegment(sub.resend_contact_id);
     await db.from("subscribers").update({ confirmed_at: new Date().toISOString() }).eq("id", sub.id);
     const since = new Date(Date.now() - 30 * 86_400_000).toISOString();
     const [{ data: clicks }, shops] = await Promise.all([

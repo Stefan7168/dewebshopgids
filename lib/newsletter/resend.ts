@@ -51,3 +51,15 @@ export async function sendEmail(to: string, msg: { subject: string; text: string
   const res = await call("/emails", { method: "POST", idempotencyKey, body: JSON.stringify({ from, to: [to], subject: msg.subject, text: msg.text }) });
   if (!res.ok) throw new Error(`Resend send ${res.status}`);
 }
+
+/**
+ * Puts a confirmed subscriber in the gids segment the Thursday Broadcast goes to.
+ * Docs: https://resend.com/docs/api-reference/contacts/add-contact-to-segment
+ * Without RESEND_GUIDE_SEGMENT_ID (not set up yet) it does nothing.
+ */
+export async function addToGuideSegment(contactId: string): Promise<void> {
+  const segment = process.env.RESEND_GUIDE_SEGMENT_ID;
+  if (!segment) return;
+  const res = await call(`/contacts/${encodeURIComponent(contactId)}/segments/${encodeURIComponent(segment)}`, { method: "POST" });
+  if (!res.ok) throw new Error(`Resend segment ${res.status}`);
+}

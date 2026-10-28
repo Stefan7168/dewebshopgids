@@ -2,6 +2,7 @@
 
 Record every decision that deviates from or adds to the plan. Newest first. Format: date, decision, reason.
 
+- 2026-10-28: Migrations 0002 to 0005 (plan tasks 5 to 8) ship in one PR with one file each. Reason: they are plain internal tables with the same RLS pattern; one review instead of four. `commissions` adds `network_transaction_id` (unique per network) so the Daisycon import is idempotent. `subscribers` stores no email address: Resend holds it.
 - 2026-10-28: `kill-switch.yml` runs on `workflow_dispatch` only, no cron. The `/admin` kill switch (later task) sets `agents_enabled = false` and dispatches the workflow. Reason: a 15-minute cron on a private repo would use about 2,900 of the 2,000 free Actions minutes per month. The kill job also sets `agents_enabled = false` itself, so the soft guards agree with the hard stop.
 - 2026-10-28: Agent jobs and the kill switch use the `postgres` npm client over a direct or Supavisor connection string (`DATABASE_URL`, `prepare: false`), not supabase-js. Reason: per-agent login roles need a real Postgres connection; the REST API only knows anon and service keys.
 - 2026-10-28: Migration 0001 also lets anon read `categories` (plan: anon reads only `shops_public`). Reason: categories are public navigation with no private data. Anon reads `shops` only for published rows and only public columns (column grant), so `contact_email` and `affiliate_url` never leave the server. Text columns with `check` constraints instead of Postgres enums, so agents can extend value lists in a plain migration.

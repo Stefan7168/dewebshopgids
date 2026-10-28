@@ -1,0 +1,9 @@
+{
+  "name": "developer",
+  "runs_on": "action",
+  "workflow": ".github/workflows/claude-developer.yml",
+  "trigger": "issue labelled agent-ok by a human; @claude comment by a human",
+  "max_turns": 40,
+  "timeout_minutes": 30,
+  "max_changed_lines": 400
+}

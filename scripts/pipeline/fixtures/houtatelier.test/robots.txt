@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /checkout
+Disallow: /account
+
+User-agent: DeWebshopgidsBot
+Disallow: /checkout
+Crawl-delay: 5
+
+Sitemap: https://houtatelier.test/sitemap.xml

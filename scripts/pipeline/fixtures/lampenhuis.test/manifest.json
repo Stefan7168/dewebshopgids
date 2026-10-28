@@ -1,0 +1,5 @@
+{
+  "https://lampenhuis.test/robots.txt": { "status": 404, "file": null },
+  "https://lampenhuis.test/": { "status": 200, "file": "index.html" },
+  "https://lampenhuis.test/collecties/hanglampen": { "status": 200, "file": "hanglampen.html" }
+}

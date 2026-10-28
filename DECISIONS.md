@@ -2,6 +2,7 @@
 
 Record every decision that deviates from or adds to the plan. Newest first. Format: date, decision, reason.
 
+- 2026-10-28: Task 12 (`fetchPolite()`) is built before task 10, because the source list import in task 10 fetches pages and must use it. robots.txt follows RFC 9309: 4xx means allow all, 5xx or network error means disallow all. Crawl-delay is honoured up to 30 s. Uses `robots-parser` 3.0.1 (MIT).
 - 2026-10-28: Agent roles are created NOLOGIN without passwords (plan: `create role ... with login password`). `scripts/agents/set-role-password.ts` enables one role and prints a fresh password once. Reason: no password may live in a migration or the repo; the same script re-enables a role after the kill switch.
 - 2026-10-28: The publish trigger blocks every role except `pipeline`, including `service_role` and `postgres`. Ops alert emails use the fixed recipient `owner`, resolved from `OWNER_EMAIL` at send time. The Dispute Handler can set `agent_replied` or `awaiting_human` but not `resolved`; code resolves. Role tests run in CI on local Postgres; on Supabase the MCP user cannot `SET ROLE` to agent roles, so there only the publish guard and NOLOGIN state were checked.
 - 2026-10-28: Migrations 0002 to 0005 (plan tasks 5 to 8) ship in one PR with one file each. Reason: they are plain internal tables with the same RLS pattern; one review instead of four. `commissions` adds `network_transaction_id` (unique per network) so the Daisycon import is idempotent. `subscribers` stores no email address: Resend holds it.

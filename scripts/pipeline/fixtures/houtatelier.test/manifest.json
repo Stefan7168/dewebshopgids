@@ -1,0 +1,5 @@
+{
+  "https://houtatelier.test/robots.txt": { "status": 200, "file": "robots.txt" },
+  "https://houtatelier.test/": { "status": 200, "file": "index.html" },
+  "https://houtatelier.test/over-ons": { "status": 200, "file": "over-ons.html" }
+}

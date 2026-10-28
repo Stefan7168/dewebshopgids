@@ -11,6 +11,7 @@ const GATES: { key: string; name: string; href?: string; note?: string }[] = [
   { key: "G4", name: "Herbeoordelingen die een mens nodig hebben", href: "/admin/herbeoordelingen" },
   { key: "G5", name: "Geld", note: "Stefan beslist buiten de site" },
   { key: "G6", name: "Nieuwe webshops goedkeuren", href: "/admin/kandidaten" },
+  { key: "G4b", name: "Beschrijvingen van webshops (claim)", href: "/admin/beschrijvingen" },
 ];
 
 async function AdminHome() {

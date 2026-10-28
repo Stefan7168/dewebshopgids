@@ -96,3 +96,12 @@ describe("earnedSubScores", () => {
     expect(earnedSubScores({ maker: 20 }, MAX_POINTS, [sig("brand_owner", null)])).toEqual([]);
   });
 });
+
+describe("verified badge", () => {
+  it("is active through its end date and off without one", async () => {
+    const { hasVerifiedBadge } = await import("./present");
+    expect(hasVerifiedBadge({ verified_badge_until: "2026-11-30" }, "2026-11-30")).toBe(true);
+    expect(hasVerifiedBadge({ verified_badge_until: "2026-11-29" }, "2026-11-30")).toBe(false);
+    expect(hasVerifiedBadge({ verified_badge_until: null }, "2026-11-30")).toBe(false);
+  });
+});

@@ -7,6 +7,7 @@ import { NewsletterForm } from "@/components/newsletter-form";
 import { ScoreBadge } from "@/components/score-badge";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { KEURMERK_PAGES } from "@/lib/keurmerk/pages";
 import { signupHeadline } from "@/lib/newsletter/core";
 import { getCategories, getShop } from "@/lib/shops/data";
 import { getEarnedSubScores } from "@/lib/shops/evidence";
@@ -121,6 +122,12 @@ async function ShopDetails({ params }: Props) {
               </div>
             ))}
         </dl>
+        {shop.keurmerk_status === "verified" &&
+          KEURMERK_PAGES.filter((p) => shop.keurmerk.includes(p.key)).map((p) => (
+            <Link key={p.slug} href={`/keurmerk/${p.slug}`} className="text-sm underline">
+              Meer webshops met {p.name}
+            </Link>
+          ))}
       </section>
       <Suspense fallback={null}>
         <EarnedSubScores shop={shop} />

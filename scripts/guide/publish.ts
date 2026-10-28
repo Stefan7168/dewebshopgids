@@ -2,7 +2,7 @@
 // slot (summer and winter time) start it; it acts only at 10:00 Amsterdam time.
 // - Wednesday 10:00: a draft that has not passed the Fact Checker becomes the code fallback page.
 // - Thursday 10:00: publish the page. Send the email only when it is approved (G2 tap) or, once
-//   G2 is lifted (agent_settings guide_g2_active = false), fact-checked. Otherwise the page is
+//   G2 is lifted (agent_settings gates.G2 = false, as on /admin), fact-checked. Otherwise the page is
 //   published and the email is skipped that week (the G2 safe default).
 // The email goes as one Resend Broadcast to the gids segment and links only to our own pages.
 import { connect, runAgentJob, type Sql } from "../../agents/shared/audit";
@@ -83,8 +83,8 @@ export async function runGuidePublish(sql: Sql, slot: "fallback" | "send", now: 
   if (slot === "fallback") return { summary: `${slug}: ${issue.status}, nothing to do on Wednesday` };
   if (issue.status === "fallback" || issue.status === "sent") return { summary: `${slug}: already ${issue.status}` };
 
-  const [g2] = await sql<{ value: unknown }[]>`select value from public.agent_settings where key = 'guide_g2_active'`;
-  const g2Active = g2?.value !== false;
+  const [gates] = await sql<{ value: Record<string, unknown> | null }[]>`select value from public.agent_settings where key = 'gates'`;
+  const g2Active = gates?.value?.G2 !== false;
   const mayEmail = issue.status === "approved" || (issue.status === "fact_checked" && !g2Active);
   if (issue.status !== "published") {
     await sql`update public.guide_issues set status = 'published', published_at = coalesce(published_at, now()) where id = ${issue.id}`;

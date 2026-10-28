@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { MARKETPLACE_LABEL, MAX_POINTS } from "@/lib/scoring/weights";
 import { earnedSubScores, subScoreFor, type SignalRow } from "./evidence-rules";
-import { keurmerkText, onlineSince, productCountText, rankingExplanation, rankShops, scoreDisplay, shopsInCategory, type Category } from "./present";
+import { countryName, keurmerkText, onlineSince, productCountText, rankingExplanation, rankShops, scoreDisplay, shopsInCategory, type Category } from "./present";
 
 describe("scoreDisplay", () => {
   it("shows the number only when no label is set", () => {
@@ -108,5 +108,15 @@ describe("verified badge", () => {
     expect(hasVerifiedBadge({ verified_badge_until: "2026-11-30" }, "2026-11-30")).toBe(true);
     expect(hasVerifiedBadge({ verified_badge_until: "2026-11-29" }, "2026-11-30")).toBe(false);
     expect(hasVerifiedBadge({ verified_badge_until: null }, "2026-11-30")).toBe(false);
+  });
+});
+
+describe("countryName", () => {
+  it("writes the Dutch country name and hides unknown codes", () => {
+    expect(countryName("NL")).toBe("Nederland");
+    expect(countryName("be")).toBe("België");
+    expect(countryName("XX")).toBeNull();
+    expect(countryName("Nederland")).toBeNull();
+    expect(countryName(null)).toBeNull();
   });
 });

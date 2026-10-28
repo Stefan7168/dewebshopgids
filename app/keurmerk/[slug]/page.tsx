@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { page, shops } = data;
   return {
     title: `Webshops met ${page.name}, gecontroleerd`,
-    description: `Nederlandse Home & Living webshops waarvan we het ${page.name}-keurmerk zelf hebben gecontroleerd, gerangschikt op echtheidsscore.`,
+    description: `Nederlandse woonwebshops waarvan we het ${page.name}-keurmerk zelf hebben gecontroleerd, gerangschikt op echtheidsscore.`,
     alternates: { canonical: `${SITE.url}/keurmerk/${page.slug}` },
     robots: shops.length < MIN_SHOPS_TO_INDEX ? { index: false, follow: true } : undefined,
   };

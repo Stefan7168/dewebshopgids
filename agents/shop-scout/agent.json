@@ -1,0 +1,10 @@
+{
+  "name": "shop-scout",
+  "runs_on": "routine",
+  "role": "agent_scout",
+  "schedule": { "cron": "0 6 * * *", "timezone": "Europe/Amsterdam" },
+  "max_gap_minutes": 1560,
+  "max_turns": 60,
+  "max_tokens": 200000,
+  "routine_prompt": "Run agents/shop-scout as described in its instructions.md."
+}

@@ -1,7 +1,7 @@
 // Newsletter double opt-in (plan v3 sections 6 and 10). Pure helpers, unit tested.
 // The email address lives only in Resend; we keep a hash of a random token per subscriber.
 import { createHash, randomBytes } from "node:crypto";
-import { rankShops, type PublicShop } from "@/lib/shops/present";
+import { rankShops, scoreDisplay, type PublicShop } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 
 /** Until the first guide (plan week 13) the form promises a start month. Set to null once guides go out. */
@@ -68,10 +68,31 @@ export function welcomeShops(shops: PublicShop[], clickedShopIds: string[], n = 
   return picked;
 }
 
-export function welcomeEmail(shops: PublicShop[], token: string): { subject: string; text: string } {
+/** Lead magnet (plan v3 section 11): "De 25 meest authentieke woonwebshops van Nederland". */
+export const LEAD_MAGNET_SIZE = 25;
+export const LEAD_MAGNET_TITLE = "De 25 meest authentieke woonwebshops van Nederland";
+
+/** The 25 published shops with the highest numeric score; empty until 25 qualify, so the promise is never half kept. */
+export function leadMagnetShops(shops: PublicShop[]): PublicShop[] {
+  const scored = rankShops(shops.filter((s) => scoreDisplay(s).kind === "number"));
+  return scored.length >= LEAD_MAGNET_SIZE ? scored.slice(0, LEAD_MAGNET_SIZE) : [];
+}
+
+export function welcomeEmail(shops: PublicShop[], token: string, magnet: PublicShop[] = []): { subject: string; text: string } {
+  const list = magnet.length
+    ? [
+        LEAD_MAGNET_TITLE,
+        // Ranking disclosure directly above the list (art. 6:193e BW); no paid entries.
+        "Hoe is deze volgorde bepaald? Alleen door de echtheidsscore (1 tot 100). Betalen voor een plek kan niet.",
+        "",
+        ...magnet.map((s, i) => `${i + 1}. ${s.name} (score ${s.score}): ${SITE.url}/webshop/${s.slug}`),
+        "",
+      ]
+    : [];
   const lines = [
     "Welkom bij De Webshopgids!",
     "",
+    ...list,
     signupHeadline() + ". Om alvast te beginnen: deze woonwinkels worden nu het meest bekeken.",
     "",
     ...shops.map((s, i) => `${i + 1}. ${s.name}: ${SITE.url}/webshop/${s.slug}`),

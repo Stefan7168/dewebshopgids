@@ -9,6 +9,7 @@ import {
   newToken,
   normaliseEmail,
   olderThan,
+  leadMagnetShops,
   welcomeEmail,
   welcomeShops,
 } from "@/lib/newsletter/core";
@@ -69,7 +70,7 @@ export async function confirm(_prev: FormState, formData: FormData): Promise<For
       getPublishedShops(),
     ]);
     const top = welcomeShops(shops, (clicks ?? []).map((c) => c.shop_id as string));
-    if (top.length > 0) await sendToContact(sub.resend_contact_id, welcomeEmail(top, token), `welcome/${sub.id}`);
+    if (top.length > 0) await sendToContact(sub.resend_contact_id, welcomeEmail(top, token, leadMagnetShops(shops)), `welcome/${sub.id}`);
     return { ok: true, message: "Gelukt! Je bent ingeschreven. Je welkomstmail is onderweg." };
   } catch (err) {
     console.error("newsletter confirm failed", err);

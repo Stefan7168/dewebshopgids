@@ -6,7 +6,10 @@ import { TEMPLATES, type Rendered } from "../../lib/email/templates";
 
 export const MAX_PER_RUN = 50;
 
-type Row = { id: string; to: string | null; shop_id: string | null; template: string; slots: Record<string, unknown>; dispute_email?: string | null };
+type Row = {
+  id: string; to: string | null; shop_id: string | null; template: string; slots: Record<string, unknown>;
+  dispute_email?: string | null; shop_email?: string | null; shop_opted_out?: boolean | null;
+};
 export type SendEmail = (msg: Rendered & { to: string; idempotencyKey: string }) => Promise<void>;
 
 export function resendSender(apiKey = process.env.RESEND_API_KEY, from = process.env.EMAIL_FROM): SendEmail {
@@ -23,9 +26,10 @@ export function resendSender(apiKey = process.env.RESEND_API_KEY, from = process
   };
 }
 
-/** Owner mail goes to OWNER_EMAIL, dispute replies to the address on that dispute. Shop mail is not wired yet (pre-notice job). */
+/** Owner mail goes to OWNER_EMAIL, dispute replies to the address on that dispute, shop mail to the shop's role address. */
 function recipientFor(row: Row, ownerEmail: string | undefined): string | null {
   const t = TEMPLATES[row.template];
+  if (t?.recipient === "shop") return row.to === null && row.shop_email && !(t.marketing && row.shop_opted_out) ? row.shop_email : null;
   if (t?.recipient === "owner") return row.to === "owner" && ownerEmail ? ownerEmail : null;
   if (t?.recipient === "dispute") return /^dispute:[0-9a-f-]{36}$/.test(row.to ?? "") && row.dispute_email ? row.dispute_email : null;
   return null;
@@ -34,8 +38,11 @@ function recipientFor(row: Row, ownerEmail: string | undefined): string | null {
 export async function sendQueue(sql: Sql, send: SendEmail, ownerEmail = process.env.OWNER_EMAIL): Promise<{ summary: string }> {
   const sendable = Object.entries(TEMPLATES).filter(([, t]) => t.recipient !== "internal").map(([k]) => k);
   const rows = await sql<Row[]>`
-    select q.id, q."to", q.shop_id, q.template, q.slots, d.email as dispute_email
-    from public.email_queue q left join public.disputes d on q."to" = 'dispute:' || d.id::text
+    select q.id, q."to", q.shop_id, q.template, q.slots, d.email as dispute_email,
+      s.contact_email as shop_email, s.outreach_opt_out_at is not null as shop_opted_out
+    from public.email_queue q
+    left join public.disputes d on q."to" = 'dispute:' || d.id::text
+    left join public.shops s on s.id = q.shop_id
     where q.sent_at is null and q.send_after <= now() and q.template = any(${sendable})
     order by q.priority, q.send_after limit ${MAX_PER_RUN}`;
   let sent = 0;

@@ -7,7 +7,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 const GATES: { key: string; name: string; href?: string; note?: string }[] = [
   { key: "G1", name: "Code-merge en agent-ok label", note: "in GitHub" },
   { key: "G2", name: "Gids versturen", href: "/admin/gids" },
-  { key: "G3", name: "Uitgaande mails en pins", note: "komt met outreach" },
+  { key: "G3", name: "Uitgaande mails (badge-aanbod)", href: "/admin/outreach" },
   { key: "G4", name: "Herbeoordelingen die een mens nodig hebben", href: "/admin/herbeoordelingen" },
   { key: "G5", name: "Geld", note: "Stefan beslist buiten de site" },
   { key: "G6", name: "Nieuwe webshops goedkeuren", href: "/admin/kandidaten" },

@@ -1,12 +1,17 @@
 // email_queue templates (plan v3 section 7). Plain-text Dutch emails built from typed slots.
 // The sender sends only templates listed here; agents can queue rows but never choose the text.
 import { REPLY_TEMPLATE_IDS, renderReply, validateReplySlots } from "../disputes/replies";
+import { renderOutreach } from "../outreach/check";
+import { SITE } from "../site";
 import { renderPrenotice } from "./prenotice";
 
 export type Rendered = { subject: string; text: string };
 type Slots = Record<string, unknown>;
 // "dispute": `to` is `dispute:<id>` and the sender resolves the address from that disputes row.
-type Template = { recipient: "owner" | "shop" | "dispute"; render: (slots: Slots) => Rendered | null } | { recipient: "internal" };
+// "shop": `shop_id` is set and the sender resolves shops.contact_email; `marketing` mail is skipped for opted-out shops.
+type Template =
+  | { recipient: "owner" | "shop" | "dispute"; marketing?: boolean; render: (slots: Slots) => Rendered | null }
+  | { recipient: "internal" };
 
 function str(v: unknown, max = 500): string | null {
   return typeof v === "string" && v.trim() ? v.trim().slice(0, max) : null;
@@ -58,6 +63,23 @@ export const TEMPLATES: Record<string, Template> = {
       const body = str(s.body, 60_000);
       if (!week || !body) return null;
       return { subject: `Weekoverzicht De Webshopgids ${week}`, text: body };
+    },
+  },
+  // Badge offer approved by Stefan in /admin/outreach (G3). Slots: { subject, body, shop_id, shop_slug }
+  // copied from the checked outreach draft. The payment link is the fixed Stripe Payment Link from
+  // STRIPE_BADGE_LINK with the shop id as client_reference_id; without it the row waits.
+  outreach_badge: {
+    recipient: "shop",
+    marketing: true,
+    render: (s) => {
+      const subject = str(s.subject, 150);
+      const body = str(s.body, 5000);
+      const id = typeof s.shop_id === "string" && /^[0-9a-f-]{36}$/.test(s.shop_id) ? s.shop_id : null;
+      const slug = typeof s.shop_slug === "string" && /^[a-z0-9-]{1,100}$/.test(s.shop_slug) ? s.shop_slug : null;
+      const link = process.env.STRIPE_BADGE_LINK;
+      if (!subject || !body || !id || !slug || !link?.startsWith("https://")) return null;
+      const pay = `${link}${link.includes("?") ? "&" : "?"}client_reference_id=${id}`;
+      return { subject, text: renderOutreach(body, { pay, shopPage: `${SITE.url}/webshop/${slug}` }) };
     },
   },
   // Consumed by scripts/ops/digest.ts, never sent on its own.

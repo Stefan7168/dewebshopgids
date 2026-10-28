@@ -1,0 +1,49 @@
+# Hourly dispute jobs (plan v3 section 7, step 9):
+# 1. backstop: every confirmed removal or objection is applied within the hour
+#    (the confirm action normally removes the shop at once);
+# 2. queue the Dispute Handler's template replies, then send due emails.
+name: Disputes
+
+on:
+  schedule:
+    - cron: "5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dispute-removals
+  cancel-in-progress: false
+
+jobs:
+  enforce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Apply confirmed removals
+        env:
+          DATABASE_URL: ${{ secrets.PIPELINE_DATABASE_URL }}
+          REVALIDATE_URL: ${{ vars.REVALIDATE_URL }}
+          REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
+        run: npx tsx scripts/disputes/enforce-removals.ts
+      - name: Queue dispute replies
+        if: ${{ !cancelled() }}
+        env:
+          DATABASE_URL: ${{ secrets.PIPELINE_DATABASE_URL }}
+        run: npx tsx scripts/disputes/queue-replies.ts
+      - name: Send due emails
+        if: ${{ !cancelled() }}
+        env:
+          DATABASE_URL: ${{ secrets.PIPELINE_DATABASE_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          OWNER_EMAIL: ${{ secrets.OWNER_EMAIL }}
+        run: npx tsx scripts/email/send-queue.ts

@@ -1,9 +1,11 @@
 // email_queue templates (plan v3 section 7). Plain-text Dutch emails built from typed slots.
 // The sender sends only templates listed here; agents can queue rows but never choose the text.
+import { REPLY_TEMPLATE_IDS, renderReply, validateReplySlots } from "../disputes/replies";
 
 export type Rendered = { subject: string; text: string };
 type Slots = Record<string, unknown>;
-type Template = { recipient: "owner" | "shop"; render: (slots: Slots) => Rendered | null } | { recipient: "internal" };
+// "dispute": `to` is `dispute:<id>` and the sender resolves the address from that disputes row.
+type Template = { recipient: "owner" | "shop" | "dispute"; render: (slots: Slots) => Rendered | null } | { recipient: "internal" };
 
 function str(v: unknown, max = 500): string | null {
   return typeof v === "string" && v.trim() ? v.trim().slice(0, max) : null;
@@ -59,4 +61,19 @@ export const TEMPLATES: Record<string, Template> = {
   },
   // Consumed by scripts/ops/digest.ts, never sent on its own.
   digest_summary: { recipient: "internal" },
+  // Dispute replies: slots are { reply: <agent slots>, shop_name, shop_slug }, the last two filled by code.
+  ...Object.fromEntries(
+    REPLY_TEMPLATE_IDS.map((id): [string, Template] => [
+      id,
+      {
+        recipient: "dispute",
+        render: (s) => {
+          const v = validateReplySlots(id, s.reply);
+          const name = str(s.shop_name, 200);
+          const slug = typeof s.shop_slug === "string" && /^[a-z0-9-]{1,100}$/.test(s.shop_slug) ? s.shop_slug : null;
+          return v.ok && name && slug ? renderReply(v.slots, { name, slug }) : null;
+        },
+      },
+    ]),
+  ),
 };

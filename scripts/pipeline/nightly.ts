@@ -8,6 +8,7 @@ import { connect, runAgentJob, type RunStatus, type Sql } from "../../agents/sha
 import { runCrawl } from "./crawl/run-crawl";
 import { runDomainAge } from "./domain-age-step";
 import { promoteCandidates } from "./promote-candidates";
+import { importSearchConsole } from "./search-console/import";
 import { collectBatches, submitIfIdle } from "./score/run-scoring";
 
 export function amsterdamHour(now: Date): number {
@@ -56,6 +57,7 @@ async function main() {
       { agent: "crawl", spendsTokens: false, work: () => runCrawl(sql) },
       { agent: "domain-age", spendsTokens: false, work: () => runDomainAge(sql) },
       { agent: "score-submit", spendsTokens: true, work: async () => ({ summary: await submitIfIdle(sql, client) }) },
+      { agent: "search-console", spendsTokens: false, work: () => importSearchConsole(sql) },
     ]);
     console.log(results.map((r) => `${r.agent}: ${r.status}`).join("\n"));
     if (results.some((r) => r.status === "error" || r.status === "failed")) process.exitCode = 1;

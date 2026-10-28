@@ -3,6 +3,7 @@
 export const SITE = {
   name: "De Webshopgids",
   domain: "dewebshopgids.nl",
+  url: "https://dewebshopgids.nl", // canonical origin for JSON-LD and canonical links
   email: "info@dewebshopgids.nl",
   legalName: null as string | null, // e.g. "Peek Media" (trade name from the KvK extract)
   kvk: null as string | null, // 8 digits

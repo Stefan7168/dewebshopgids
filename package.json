@@ -8,7 +8,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:db": "scripts/db/test.sh",
-    "test:e2e": "scripts/e2e/run.sh"
+    "test:e2e": "scripts/e2e/run.sh",
+    "db:dev": "scripts/dev/setup.sh",
+    "dev:local": "scripts/dev/run.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.134.0",

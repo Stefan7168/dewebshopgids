@@ -76,3 +76,9 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 ## 2026-10-28: Gids editorial calendar and issue 2
 - The plan has no editorial calendar, so one was written: /mnt/project-files/launch/gids-editorial-calendar.md (issues 1 to 9, week 45 to 2027 week 1, seasonal themes). A theme only steers which shops the Guide Editor picks; facts still come only from that week's inputs, and the theme is dropped when too few shops fit.
 - Issue 2 (2026-week-46, "Licht en warmte voor de donkere maanden") is a reference draft in `lib/guide/fixtures/issue-2.ts`, tested against `checkDraft()`. Week 52 (Christmas Eve) sends no email; the fallback page publishes.
+
+## 2026-10-28: Home & Living list 2 (sub-niches)
+- Coordinator call: deepen Home & Living to 250+ verified candidates before widening further. New sub-niches: vintage and second-hand design, ceramics, lighting makers, kids rooms, wallpaper and wall decor.
+- `scripts/pipeline/sources/home-candidates-2.csv`, source `scout:home-list-2`, same columns and parser as the launch list plus `source_url`. Kids room shops go under `woontextiel` or `meubels`, wallpaper under `woonaccessoires`: no new sub-category, because that needs a migration.
+- `domain_check = search` means the shop blocks automated reading and its product pages were confirmed through a search limited to its own domain. Those rows are `medium` at most.
+- Vintage dealers count as curated (no score points for curation, per the 13:35 decision), but they are unique by nature, so they enter the queue.

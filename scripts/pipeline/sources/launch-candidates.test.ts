@@ -69,3 +69,28 @@ describe("garden list", () => {
     for (const c of garden) for (const d of [c.domain, ...c.aliases]) expect(known.has(d)).toBe(false);
   });
 });
+
+describe("home list 2", () => {
+  const read = (f: string, slugs: string[]) => launchCandidates(readFileSync(join(__dirname, f), "utf8"), slugs);
+  const home = read("home-candidates-2.csv", SLUGS);
+  const known = new Set(
+    [...read("launch-candidates.csv", SLUGS), ...read("garden-candidates.csv", [...SLUGS, ...GARDEN])].flatMap((c) => [
+      c.domain,
+      ...c.aliases,
+    ]),
+  );
+
+  it("queues strong and medium Home & Living shops only, none in the garden", () => {
+    expect(home.length).toBeGreaterThanOrEqual(30);
+    for (const c of home) {
+      expect(SLUGS.filter((s) => s !== "tuin-buiten")).toContain(c.category);
+      expect(c.reason).toMatch(/^(strong|medium) fit; /);
+    }
+  });
+
+  it("does not repeat a shop from the launch or garden list, or within itself", () => {
+    const own = home.flatMap((c) => [c.domain, ...c.aliases]);
+    expect(new Set(own).size).toBe(own.length);
+    for (const d of own) expect(known.has(d)).toBe(false);
+  });
+});

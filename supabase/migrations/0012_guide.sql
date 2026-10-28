@@ -90,3 +90,20 @@ create policy guide_issues_factcheck_verdict on public.guide_issues for update t
 grant select, insert, update on public.guide_issues to pipeline;
 grant select on public.guide_inputs to pipeline;
 create policy guide_issues_pipeline_all on public.guide_issues for all to pipeline using (true) with check (true);
+
+-- "Nieuw in de gids": when a shop was first published, set by the database.
+alter table public.shops add column first_published_at timestamptz;
+create or replace function public.shops_first_published_at()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if new.status = 'published' and old.status is distinct from 'published' and new.first_published_at is null then
+    new.first_published_at = now();
+  end if;
+  return new;
+end;
+$$;
+create trigger shops_first_published_at before update on public.shops
+  for each row execute function public.shops_first_published_at();

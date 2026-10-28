@@ -61,4 +61,14 @@ begin
   assert pg_temp.affected('anon', 'select * from public.guides_public') = 1, 'anon must see a published guide';
 end $$;
 
+-- first_published_at is set once, on the first publication.
+insert into public.shops (id, slug, name, domain, status) values ('00000000-0000-0000-0000-0000000000b9', 'fp', 'FP', 'fp.example', 'prenotified');
+set local role pipeline;
+update public.shops set status = 'published' where id = '00000000-0000-0000-0000-0000000000b9';
+reset role;
+do $$
+begin
+  assert (select first_published_at is not null from public.shops where id = '00000000-0000-0000-0000-0000000000b9'), 'first_published_at must be set';
+end $$;
+
 rollback;

@@ -92,4 +92,7 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 
 ## 2026-10-28: Tuin & buiten list 2
 - `garden-candidates.csv` grows to 39 queued shops (19 strong and 10 medium added, mostly growers). The SQL for setup is `garden-candidates-2-insert.sql`, folded into the one-paste setup file. The category stays hidden until 30 published shops (#89).
-- About 13 Home & Living candidates (Ofyr, Weltevree, Exotan and others) also fit the garden. They stay in Home & Living: `shops` has a single `category_id`, so a shop cannot count for both. Backlog: a secondary-category link table (migration plus filter and list changes), so such shops show in both categories.
+- Correction (17:15): those dual-fit shops (Ofyr, Weltevree, 4 Seasons Outdoor, Esschert Design, Garden Impressions and others) were already in sub-category `tuin-buiten`, which 0016 made the garden's top level. So they count for Tuin & buiten, not for Home & Living. Production holds 53 garden and 278 Home & Living candidates, so both roots reach their targets without a second category. No secondary-category migration for now; revisit only if a shop is missing from a category where visitors expect it.
+
+## 2026-10-28: Gids issues 5 and 6
+- Reference drafts for 2026-week-49 (vintage and second-hand design, from Home & Living list 2) and 2026-week-50 (last Christmas gifts) in `lib/guide/fixtures/`. Delivery times are not inputs, so issue 6 promises no date and tells readers to check each shop's delivery time.

@@ -1,0 +1,10 @@
+{
+  "https://makerij.test/robots.txt": { "status": 404, "file": null },
+  "https://makerij.test/": { "status": 200, "file": "index.html" },
+  "https://makerij.test/over-ons": { "status": 200, "file": "over-ons.html" },
+  "https://makerij.test/contact": { "status": 200, "file": "contact.html" },
+  "https://makerij.test/products/eiken-tafel": { "status": 200, "file": "product-tafel.html" },
+  "https://makerij.test/products/eiken-bank": { "status": 200, "file": "product-bank.html" },
+  "https://makerij.test/products/kruk": { "status": 500, "file": null },
+  "https://makerij.test/sitemap.xml": { "status": 200, "file": "sitemap.xml", "contentType": "application/xml" }
+}

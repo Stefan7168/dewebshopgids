@@ -1,0 +1,32 @@
+# Hard kill switch for every agent Postgres role (plan section 7).
+# Manual: Actions > Kill switch > Run workflow. The /admin kill switch sets
+# agent_settings.agents_enabled = false and dispatches this workflow.
+# No cron: a 15-minute schedule would use most of the free Actions minutes.
+name: Kill switch
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kill-switch
+  cancel-in-progress: false
+
+jobs:
+  kill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Disable agent roles
+        env:
+          DATABASE_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: npx tsx scripts/agents/kill-switch.ts

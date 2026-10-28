@@ -26,7 +26,7 @@ async function Results({ searchParams }: Props) {
           defaultValue={q}
           maxLength={MAX_QUERY_LENGTH}
           placeholder="Bijvoorbeeld: keramiek of lampen"
-          className="h-11 min-w-0 flex-1 rounded-md border px-3"
+          className="h-11 min-w-0 flex-1 rounded-md border bg-background px-3 text-foreground"
         />
         <button type="submit" className="h-11 rounded-md bg-primary px-4 font-medium text-primary-foreground hover:bg-primary/90">
           Zoek

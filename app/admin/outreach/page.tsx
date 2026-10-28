@@ -80,7 +80,7 @@ export default function OutreachAdminPage() {
         <h2 className="text-lg font-semibold">Shop wil geen mails meer</h2>
         <p className="text-muted-foreground">Antwoordde een shop met &quot;stop&quot;? Vul het domein in. Er gaat dan nooit meer een badge-aanbod naartoe.</p>
         <form action={optOutShop} className="flex gap-2">
-          <input name="domain" required placeholder="voorbeeld.nl" className="h-10 min-w-0 flex-1 rounded-md border px-3" />
+          <input name="domain" required placeholder="voorbeeld.nl" className="h-10 min-w-0 flex-1 rounded-md border bg-background px-3 text-foreground" />
           <Button type="submit" variant="outline">Afmelden</Button>
         </form>
       </section>

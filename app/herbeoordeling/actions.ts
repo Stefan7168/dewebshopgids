@@ -6,7 +6,6 @@ import {
   ANSWER_DAYS,
   CONFIRM_VALID_DAYS,
   MAX_MESSAGE,
-  MemoryLimiter,
   PER_SENDER_PER_HOUR,
   PER_SHOP_PER_DAY,
   REMOVAL_DEADLINE_HOURS,
@@ -21,6 +20,7 @@ import {
 } from "@/lib/disputes/core";
 import { hashToken, isTokenShape, newToken, normaliseEmail, olderThan } from "@/lib/newsletter/core";
 import { sendEmail } from "@/lib/newsletter/resend";
+import { MemoryLimiter, senderKey } from "@/lib/rate-limit";
 import { createServiceClient } from "@/lib/supabase/service";
 
 export type FormState = { ok: boolean; message: string } | null;
@@ -44,8 +44,7 @@ export async function submitDispute(_prev: FormState, formData: FormData): Promi
   if (type === "correction" && message.length < 10) return { ok: false, message: "Schrijf kort wat er niet klopt." };
   if (!/^[a-z0-9-]{1,100}$/.test(slug)) return { ok: false, message: "We vinden deze webshop niet." };
 
-  const sender = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (!perSender.allow(sender)) return { ok: false, message: "Je hebt al een paar verzoeken gestuurd. Probeer het over een uur nog eens." };
+  if (!perSender.allow(senderKey(await headers()))) return { ok: false, message: "Je hebt al een paar verzoeken gestuurd. Probeer het over een uur nog eens." };
 
   try {
     const db = createServiceClient();

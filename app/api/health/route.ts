@@ -33,5 +33,6 @@ export async function GET() {
     if (!at || now - new Date(at).getTime() > STALE_AFTER_MS) stale.push(table);
   }
   const ok = stale.length === 0;
-  return NextResponse.json({ ok, time: new Date(now).toISOString(), stale, newest }, { status: ok ? 200 : 503 });
+  // A minute of CDN cache: the monitor still sees fresh data, and repeated hits cost no database reads.
+  return NextResponse.json({ ok, time: new Date(now).toISOString(), stale, newest }, { status: ok ? 200 : 503, headers: { "Cache-Control": "public, s-maxage=60" } });
 }

@@ -4,7 +4,8 @@ import { requireAdmin } from "@/lib/auth/require-admin";
 import { FACT_LABELS } from "@/lib/disputes/replies";
 import { createServiceClient } from "@/lib/supabase/service";
 import { Button } from "@/components/ui/button";
-import { decideDispute } from "./actions";
+import { OVERRIDE_FACTS } from "@/lib/overrides/facts";
+import { CORRECTION_ROWS, correctDispute, decideDispute } from "./actions";
 
 type Row = {
   id: string;
@@ -64,6 +65,32 @@ async function DisputeList() {
               <Button type="submit" name="decision" value="hide" variant="outline">Webshop verbergen</Button>
             </div>
           </form>
+          <form action={correctDispute} className="flex flex-col gap-3 border-t pt-3">
+            <input type="hidden" name="id" value={d.id} />
+            <p className="font-medium">De afzender heeft gelijk: correctie toepassen</p>
+            {Array.from({ length: CORRECTION_ROWS }, (_, i) => (
+              <div key={i} className="flex flex-col sm:flex-row gap-2">
+                <select name={`fact_${i + 1}`} defaultValue="" className="h-11 rounded-md border px-2" aria-label={`Gegeven ${i + 1}`}>
+                  <option value="">Gegeven kiezen</option>
+                  {OVERRIDE_FACTS.map((f) => <option key={f} value={f}>{FACT_LABELS[f]}</option>)}
+                </select>
+                <input name={`value_${i + 1}`} className="h-11 rounded-md border px-2 flex-1 min-w-0" aria-label={`Nieuwe waarde ${i + 1}`}
+                  placeholder="2015 · 40 · thuiswinkel · luxe · Utrecht of nee · NL · tekst" />
+              </div>
+            ))}
+            <label className="flex flex-col gap-1">
+              Nieuwe echtheidsscore (leeg laten als die niet verandert)
+              <input name="score" inputMode="numeric" className="h-11 rounded-md border px-2 w-32"
+                defaultValue={(overrides ?? []).find((o) => o.shop_id === d.shops?.id)?.new_total ?? ""} />
+            </label>
+            <label className="flex flex-col gap-1">
+              Wat heb je nagekeken? (intern, verplicht)
+              <textarea name="reason" required maxLength={2000} rows={2} className="rounded-md border p-2" />
+            </label>
+            <div>
+              <Button type="submit">Correctie toepassen en antwoord sturen</Button>
+            </div>
+          </form>
         </li>
       ))}
     </ul>
@@ -75,7 +102,7 @@ export default function DisputesPage() {
     <div className="flex flex-col gap-4">
       <h1 className="font-bold text-2xl">Herbeoordelingen (G4)</h1>
       <p className="text-sm text-muted-foreground">
-        Zolang je niet beslist, toont de pagina &quot;In beoordeling&quot; zonder score. Een gegeven aanpassen kan hier nog niet; laat het dan staan en vraag het aan in de build-thread.
+        Zolang je niet beslist, toont de pagina &quot;In beoordeling&quot; zonder score. Een correctie geldt meteen voor de gegevens; een nieuwe score staat er na de nachtelijke run. Correcties blijven staan, ook als de webshop opnieuw wordt bekeken.
       </p>
       <Suspense fallback={<p className="text-sm">Laden...</p>}>
         <DisputeList />

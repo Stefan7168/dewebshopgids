@@ -11,6 +11,9 @@ export function isOverrideFact(v: unknown): v is OverrideFact {
   return typeof v === "string" && (OVERRIDE_FACTS as readonly string[]).includes(v);
 }
 
+/** Rows of the /admin correction form: fact_1/value_1 up to fact_3/value_3, empty rows skipped. */
+export const CORRECTION_ROWS = 3;
+
 export type FactValue = Record<string, unknown>;
 export type ParsedFact = { ok: true; value: FactValue; publicValue: string } | { ok: false; error: string };
 

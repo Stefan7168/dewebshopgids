@@ -1,0 +1,21 @@
+{
+  "name": "fact-checker",
+  "runs_on": "routine",
+  "role": "agent_factcheck",
+  "model": "claude-opus-5-5",
+  "schedule": {
+    "cron": "0 8 * * 1",
+    "timezone": "Europe/Amsterdam"
+  },
+  "extra_schedules": [
+    {
+      "cron": "0 5 * * 2,3",
+      "timezone": "Europe/Amsterdam",
+      "note": "redraft or recheck after a rejection; exits with code 4 when there is nothing to do"
+    }
+  ],
+  "max_gap_minutes": 10260,
+  "max_turns": 20,
+  "max_tokens": 80000,
+  "routine_prompt": "Run agents/fact-checker as described in its instructions.md."
+}

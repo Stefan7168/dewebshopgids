@@ -1,0 +1,21 @@
+{
+  "name": "guide-editor",
+  "runs_on": "routine",
+  "role": "agent_guide",
+  "model": "claude-sonnet-5-5",
+  "schedule": {
+    "cron": "30 6 * * 1",
+    "timezone": "Europe/Amsterdam"
+  },
+  "extra_schedules": [
+    {
+      "cron": "0 3 * * 2,3",
+      "timezone": "Europe/Amsterdam",
+      "note": "redraft or recheck after a rejection; exits with code 4 when there is nothing to do"
+    }
+  ],
+  "max_gap_minutes": 10260,
+  "max_turns": 30,
+  "max_tokens": 120000,
+  "routine_prompt": "Run agents/guide-editor as described in its instructions.md."
+}

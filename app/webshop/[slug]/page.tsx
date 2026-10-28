@@ -3,9 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { JsonLd } from "@/components/json-ld";
+import { NewsletterForm } from "@/components/newsletter-form";
 import { ScoreBadge } from "@/components/score-badge";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { signupHeadline } from "@/lib/newsletter/core";
 import { getCategories, getShop } from "@/lib/shops/data";
 import { getEarnedSubScores } from "@/lib/shops/evidence";
 import { keurmerkText, onlineSince, priceLevelText, productCountText, scoreDisplay, SUB_SCORE_NAMES, type PublicShop } from "@/lib/shops/present";
@@ -123,6 +125,7 @@ async function ShopDetails({ params }: Props) {
       <Suspense fallback={null}>
         <EarnedSubScores shop={shop} />
       </Suspense>
+      <NewsletterForm headline={signupHeadline()} source={`/webshop/${shop.slug}`} />
       <JsonLd
         data={{
           "@context": "https://schema.org",

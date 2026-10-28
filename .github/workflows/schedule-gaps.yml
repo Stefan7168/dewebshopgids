@@ -31,3 +31,11 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.PIPELINE_DATABASE_URL }}
         run: npx tsx scripts/ops/health.ts gaps
+      - name: Send due emails
+        if: ${{ !cancelled() }} # owner alerts still go out when the step above failed
+        env:
+          DATABASE_URL: ${{ secrets.PIPELINE_DATABASE_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          OWNER_EMAIL: ${{ secrets.OWNER_EMAIL }}
+        run: npx tsx scripts/email/send-queue.ts

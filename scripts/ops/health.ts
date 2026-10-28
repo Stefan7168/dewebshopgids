@@ -17,9 +17,10 @@ export const CODE_SCHEDULES: ScheduleRow[] = [
   { agent: "score-collect", cron: "0 1 * * *", timezone: "Europe/Amsterdam", max_gap_minutes: 1620 },
   { agent: "health", cron: "15 */6 * * *", timezone: "UTC", max_gap_minutes: 420 },
   { agent: "escalations", cron: "45 */3 * * *", timezone: "UTC", max_gap_minutes: 240 },
-  // Runs as the last step of escalations.yml and schedule-gaps.yml (every 90 minutes).
-  { agent: "email-sender", cron: "30,45 */3 * * *", timezone: "UTC", max_gap_minutes: 240 },
+  // Runs as the last step of escalations.yml, schedule-gaps.yml and dispute-removals.yml (hourly).
+  { agent: "email-sender", cron: "5 * * * *", timezone: "UTC", max_gap_minutes: 120 },
   { agent: "dispute-removals", cron: "5 * * * *", timezone: "UTC", max_gap_minutes: 120 },
+  { agent: "dispute-replies", cron: "5 * * * *", timezone: "UTC", max_gap_minutes: 120 },
   { agent: "digest", cron: "0 18 * * 0", timezone: "Europe/Amsterdam", max_gap_minutes: 10140 },
 ];
 

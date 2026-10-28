@@ -147,6 +147,13 @@ async function ShopDetails({ params }: Props) {
         </Link>
         {" of laat deze webshop verwijderen."}
       </p>
+      <p className="text-sm text-muted-foreground">
+        Is dit jouw webshop?{" "}
+        <Link href={`/beheer?shop=${shop.slug}`} rel="nofollow" className="underline">
+          Pas je beschrijving aan
+        </Link>
+        .
+      </p>
       <NewsletterForm headline={signupHeadline()} source={`/webshop/${shop.slug}`} />
       <JsonLd
         data={{

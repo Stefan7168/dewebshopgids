@@ -62,3 +62,18 @@ describe("sendQueue", () => {
     expect(r.summary).toContain("sent 0 of 1");
   });
 });
+
+describe("dispute replies", () => {
+  it("sends to the address on the dispute row and nowhere else", async () => {
+    const id = "3f2b1c4d-0000-4000-8000-000000000000";
+    const slots = { reply: { checked_facts: ["keurmerk"] }, shop_name: "Mooi Huis", shop_slug: "mooi-huis" };
+    const { sql } = fakeSql([
+      { id: "a", to: `dispute:${id}`, shop_id: null, template: "dispute_no_change", slots, dispute_email: "info@mooihuis.nl" },
+      { id: "b", to: "someone@evil.test", shop_id: null, template: "dispute_no_change", slots, dispute_email: null },
+    ]);
+    const sent: Parameters<SendEmail>[0][] = [];
+    const r = await sendQueue(sql, async (m) => void sent.push(m), "o@x.nl");
+    expect(sent.map((m) => m.to)).toEqual(["info@mooihuis.nl"]);
+    expect(r.summary).toContain("b (dispute_no_change)");
+  });
+});

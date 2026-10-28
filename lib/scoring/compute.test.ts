@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeScore, scalePoints } from "./compute";
+import { agePoints, computeScore, scalePoints, yearsOnline } from "./compute";
 import { MARKETPLACE_LABEL } from "./weights";
 
 describe("scalePoints", () => {
@@ -44,8 +44,8 @@ describe("computeScore", () => {
     });
     expect(r.subScores.maker).toBe(5);
     expect(r.capsApplied).toContain("pattern_maker_cap");
-    expect(r.total).toBe(25); // 5 + 0 + 13 = 18, lifted to the keurmerk floor
-    expect(r.capsApplied).toContain("keurmerk_floor");
+    expect(r.total).toBe(18); // 5 + 0 + 13; the keurmerk floor does not apply on a marketplace pattern
+    expect(r.capsApplied).not.toContain("keurmerk_floor");
     expect(r.band).toEqual({ display: "label", text: MARKETPLACE_LABEL });
   });
 
@@ -62,6 +62,17 @@ describe("computeScore", () => {
     expect(r.total).toBe(30);
     expect(r.capsApplied).toEqual(["pattern_maker_cap", "pattern_total_cap"]);
     expect(r.band).toEqual({ display: "audit_required" });
+  });
+
+  it("lifts a verified keurmerk to the floor when there is no pattern", () => {
+    const r = computeScore({ focus: "broad", keurmerk_verified: true });
+    expect(r.total).toBe(25);
+    expect(r.capsApplied).toContain("keurmerk_floor");
+  });
+
+  it("gives a maker with a broad range at least the few_related focus points", () => {
+    expect(computeScore({ own_production: true, focus: "broad" }).subScores.focus).toBe(12);
+    expect(computeScore({ brand_owner: true, focus: "broad" }).subScores.focus).toBe(4);
   });
 
   it("puts 30 to 40 in the audit band", () => {
@@ -87,5 +98,22 @@ describe("computeScore", () => {
 
   it("never returns 0", () => {
     expect(computeScore({}).total).toBe(1);
+  });
+
+  it("counts time online modestly inside identity, capped at 20, and not as a site signal", () => {
+    expect([null, 0, 4, 5, 9, 10, 30].map(agePoints)).toEqual([0, 0, 0, 2, 2, 4, 4]);
+    expect(computeScore({ has_address: true, years_online: 12 }).subScores.identity).toBe(11);
+    expect(computeScore({ has_named_owner: true, has_address: true, has_kvk: true, years_online: 12 }).subScores.identity).toBe(20);
+    const r = computeScore({ focus: "broad", years_online: 12 });
+    expect(r.validSignals).toBe(1);
+    expect(r.total).toBe(8);
+  });
+
+  it("measures whole years online from domain_first_seen", () => {
+    const now = new Date("2026-10-28T00:00:00Z");
+    expect(yearsOnline("2016-10-27", now)).toBe(10);
+    expect(yearsOnline("2021-11-01", now)).toBe(4);
+    expect(yearsOnline(null, now)).toBeNull();
+    expect(yearsOnline("not a date", now)).toBeNull();
   });
 });

@@ -17,7 +17,8 @@ describe("auditorTotal", () => {
   it("sums the sub-scores", () => expect(auditorTotal(sub, false, false)).toBe(91));
   it("applies the marketplace cap and the keurmerk floor like the pipeline", () => {
     expect(auditorTotal(sub, true, false)).toBe(30);
-    expect(auditorTotal({ maker: 0, focus: 0, identity: 6, scale: 0, origin: 0 }, true, true)).toBe(25);
+    expect(auditorTotal({ maker: 0, focus: 0, identity: 6, scale: 0, origin: 0 }, true, true)).toBe(6);
+    expect(auditorTotal({ maker: 0, focus: 0, identity: 6, scale: 0, origin: 0 }, false, true)).toBe(25);
     expect(auditorTotal({ maker: 0, focus: 0, identity: 0, scale: 0, origin: 0 }, false, false)).toBe(1);
   });
 });

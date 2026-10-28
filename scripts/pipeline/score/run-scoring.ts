@@ -3,6 +3,7 @@
 // one new batch for shops whose crawl is newer than their score.
 import Anthropic from "@anthropic-ai/sdk";
 import { connect, runAgentJob, type Sql } from "../../../agents/shared/audit";
+import { yearsOnline } from "../../../lib/scoring/compute";
 import { MARKETPLACE_LABEL } from "../../../lib/scoring/weights";
 import { collectBatch, scoreBatch, type BatchClient, type ScoreItem } from "./batch";
 import { PAGE_IDS, PROMPT_VERSION, SCORING_MODEL, type CrawlPage } from "./prompt";
@@ -10,7 +11,7 @@ import { PAGE_IDS, PROMPT_VERSION, SCORING_MODEL, type CrawlPage } from "./promp
 export const MAX_SHOPS_PER_BATCH = 100;
 const PAGE_ORDER = ["home", "about", "contact", "product", "collection"];
 
-type ShopRow = { id: string; name: string; domain: string; product_count_est: number | null; platform: string | null; keurmerk_status: string };
+type ShopRow = { id: string; name: string; domain: string; product_count_est: number | null; platform: string | null; keurmerk_status: string; domain_first_seen: string | Date | null };
 
 async function loadItem(sql: Sql, shop: ShopRow): Promise<ScoreItem & { keurmerkVerified: boolean }> {
   const rows = await sql<{ url: string; page_type: string; text_excerpt: string }[]>`
@@ -29,12 +30,17 @@ async function loadItem(sql: Sql, shop: ShopRow): Promise<ScoreItem & { keurmerk
     shopId: shop.id,
     shop: { name: shop.name, domain: shop.domain },
     pages,
-    facts: { productCountEst: shop.product_count_est, platform: shop.platform, hasKvk: kvk?.value_bool ?? null },
+    facts: {
+      productCountEst: shop.product_count_est,
+      platform: shop.platform,
+      hasKvk: kvk?.value_bool ?? null,
+      yearsOnline: yearsOnline(shop.domain_first_seen),
+    },
     keurmerkVerified: shop.keurmerk_status === "verified",
   };
 }
 
-const SHOP_COLS = "id, name, domain, product_count_est, platform, keurmerk_status";
+const SHOP_COLS = "id, name, domain, product_count_est, platform, keurmerk_status, domain_first_seen";
 
 /** Collect every open batch. `failed` is true when a batch was under the 80% quote match rate. */
 export async function collectBatches(sql: Sql, client: BatchClient): Promise<{ notes: string[]; failed: boolean }> {

@@ -94,6 +94,7 @@ export async function collectBatch(
         ...parsed.signals,
         has_kvk: ctx.facts.hasKvk,
         product_count_est: ctx.facts.productCountEst,
+        years_online: ctx.facts.yearsOnline,
         keurmerk_verified: ctx.keurmerkVerified,
       });
       outcomes.push({ shopId, kind: "scored", parsed, score });

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "score_version": "v1",
+  "score_version": "v2",
   "method": "Each site's home page (or the page named in observed.url) was read on 2026-10-28 with a fetch tool that summarises pages; quotes are as it returned them. expected_band is a blind judgement on the plan's scale (100 = custom furniture maker, 1 = bol.com): it was set on 2026-10-28 by an agent that saw only the domain list, read each site again, and had not seen the weights, the scoring code, the prompts or the earlier bands. It weighs product uniqueness, maker versus reseller, brand count, company age, keurmerk and contact transparency; paid badges and ads play no part. confidence is low where the band leans on public knowledge beyond the home page. signals are what a careful reader finds on the site; fields in `assumed` were not verified (mostly product counts, which the crawler measures from the sitemap). known_disagreement marks shops where the v1 weights miss the blind band, with the reason. Full comparison: the first blind relabel, 2026-10-28.",
   "not_scorable": [
     {
@@ -150,8 +150,7 @@
       },
       "assumed": [
         "product_count_est"
-      ],
-      "known_disagreement": "Own factory, but the 'broad' focus gives 4 of 20 focus points; the product count is assumed."
+      ]
     },
     {
       "domain": "vij5.nl",
@@ -218,7 +217,7 @@
         "product_count_est",
         "own_production (about page not checked)"
       ],
-      "known_disagreement": "A famous maker lands at 56: the broad range costs 16 focus points and the home page gives no address or own-production quote."
+      "known_disagreement": "v2 scores 64: the home page gives no address and no own-production quote, so the score depends on the crawler reading the about and contact pages."
     },
     {
       "domain": "woood.nl",
@@ -656,8 +655,7 @@
         "product_count_est": 1000000,
         "keurmerk_verified": true
       },
-      "assumed": [],
-      "known_disagreement": "The keurmerk floor lifts bol to 25 although the plan anchors it at 1; the floor should not apply when marketplace_pattern is true."
+      "assumed": []
     },
     {
       "domain": "villalaura.nl",
@@ -675,7 +673,10 @@
         "notes": [
           "\"Maatwerk meubels in landelijke en brocante stijl.\"",
           "\"Dit product is gemaakt van 100% massief hout.\"",
-          "Van Staverenstraat 39D, 2811 TL Reeuwijk"
+          "Van Staverenstraat 39D, 2811 TL Reeuwijk",
+          "\"Villa Laura ontwikkelt en fabriceert\" (re-read 2026-10-28)",
+          "\"met de hand gemaakt\" (re-read 2026-10-28)",
+          "KvK number shown in the footer (re-read 2026-10-28)"
         ]
       },
       "signals": {
@@ -683,12 +684,17 @@
         "focus": "broad",
         "has_address": true,
         "marketplace_pattern": false,
-        "product_count_est": 1000
+        "product_count_est": 1000,
+        "own_production": true,
+        "has_kvk": true,
+        "origin_claims": [
+          "handmade"
+        ]
       },
       "assumed": [
         "product_count_est"
       ],
-      "known_disagreement": "The signals miss what the site states: own production (\"ontwikkelt en fabriceert\", \"met de hand gemaakt\") and a KvK number. With those it scores 68, still under the band because of the broad focus."
+      "known_disagreement": "v2 scores 76 with the own production, handmade and KvK the site states; the band needs about 4 more points (the product count of 1,000 is assumed)."
     },
     {
       "domain": "texelana.nl",

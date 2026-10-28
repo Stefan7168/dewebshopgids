@@ -44,8 +44,8 @@ describe("computeScore", () => {
     });
     expect(r.subScores.maker).toBe(5);
     expect(r.capsApplied).toContain("pattern_maker_cap");
-    expect(r.total).toBe(25); // 5 + 0 + 13 = 18, lifted to the keurmerk floor
-    expect(r.capsApplied).toContain("keurmerk_floor");
+    expect(r.total).toBe(18); // 5 + 0 + 13; the keurmerk floor does not apply on a marketplace pattern
+    expect(r.capsApplied).not.toContain("keurmerk_floor");
     expect(r.band).toEqual({ display: "label", text: MARKETPLACE_LABEL });
   });
 
@@ -62,6 +62,17 @@ describe("computeScore", () => {
     expect(r.total).toBe(30);
     expect(r.capsApplied).toEqual(["pattern_maker_cap", "pattern_total_cap"]);
     expect(r.band).toEqual({ display: "audit_required" });
+  });
+
+  it("lifts a verified keurmerk to the floor when there is no pattern", () => {
+    const r = computeScore({ focus: "broad", keurmerk_verified: true });
+    expect(r.total).toBe(25);
+    expect(r.capsApplied).toContain("keurmerk_floor");
+  });
+
+  it("gives a maker with a broad range at least the few_related focus points", () => {
+    expect(computeScore({ own_production: true, focus: "broad" }).subScores.focus).toBe(12);
+    expect(computeScore({ brand_owner: true, focus: "broad" }).subScores.focus).toBe(4);
   });
 
   it("puts 30 to 40 in the audit band", () => {

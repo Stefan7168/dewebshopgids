@@ -42,7 +42,7 @@ export function verdictFor(delta: number, marketplaceDisagrees: boolean): "agree
 export function auditorTotal(sub: Record<SubKey, number>, marketplace: boolean, keurmerkVerified: boolean): number {
   let total = SUB_KEYS.reduce((s, k) => s + sub[k], 0);
   if (marketplace) total = Math.min(total, PATTERN_TOTAL_CAP);
-  if (keurmerkVerified) total = Math.max(total, KEURMERK_FLOOR);
+  else if (keurmerkVerified) total = Math.max(total, KEURMERK_FLOOR);
   return Math.max(1, Math.min(100, total));
 }
 

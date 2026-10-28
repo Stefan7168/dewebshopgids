@@ -1,7 +1,7 @@
 // Authenticity score weights (plan v3 section 2.1). The only place weights live.
 // Changing a number here is a new SCORE_VERSION; rescoring needs no LLM run.
 
-export const SCORE_VERSION = "v1";
+export const SCORE_VERSION = "v2";
 
 export const MAX_POINTS = {
   maker: 30,
@@ -17,6 +17,8 @@ export const MAKER_POINTS = { own_production: 30, brand_owner: 20 } as const;
 /** Focus: how narrow the assortment is, as judged by the model with a quote. */
 export const FOCUS_POINTS = { single_niche: 20, few_related: 12, broad: 4, everything: 0 } as const;
 export type Focus = keyof typeof FOCUS_POINTS;
+/** Own production gets at least this many focus points: a maker's broad range is still its own work (v2, blind calibration). */
+export const MAKER_FOCUS_FLOOR = FOCUS_POINTS.few_related;
 
 /** Identity: booleans only, never the name or address text itself. */
 export const IDENTITY_POINTS = { has_named_owner: 7, has_address: 7, has_kvk: 6 } as const;
@@ -29,7 +31,7 @@ export const SCALE_ZERO_AT = 5000;
 export const ORIGIN_POINTS = { handmade: 4, own_atelier: 3, made_in_nl: 3, made_in_eu: 2 } as const;
 export type OriginClaim = keyof typeof ORIGIN_POINTS;
 
-/** A verified keurmerk sets a floor under the total. */
+/** A verified keurmerk sets a floor under the total, except on a marketplace or dropship pattern (v2). */
 export const KEURMERK_FLOOR = 25;
 
 /** A confirmed marketplace or dropship pattern caps Maker and the total. */

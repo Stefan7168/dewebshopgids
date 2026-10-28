@@ -8,6 +8,7 @@ import {
   IDENTITY_POINTS,
   KEURMERK_FLOOR,
   LABEL_BELOW,
+  MAKER_FOCUS_FLOOR,
   MAKER_POINTS,
   MARKETPLACE_LABEL,
   MAX_POINTS,
@@ -86,7 +87,7 @@ export function computeScore(s: ScoringSignals): ScoreResult {
   }
   const sub: SubScores = {
     maker,
-    focus: s.focus ? FOCUS_POINTS[s.focus] : 0,
+    focus: s.focus ? (s.own_production ? Math.max(FOCUS_POINTS[s.focus], MAKER_FOCUS_FLOOR) : FOCUS_POINTS[s.focus]) : 0,
     identity:
       (s.has_named_owner ? IDENTITY_POINTS.has_named_owner : 0) +
       (s.has_address ? IDENTITY_POINTS.has_address : 0) +
@@ -100,8 +101,8 @@ export function computeScore(s: ScoringSignals): ScoreResult {
     total = PATTERN_TOTAL_CAP;
     caps.push("pattern_total_cap");
   }
-  // The floor never lifts a shop above the pattern cap.
-  if (s.keurmerk_verified && total < KEURMERK_FLOOR) {
+  // A keurmerk does not lift a marketplace or dropship pattern: bol stays near the plan's anchor of 1.
+  if (s.keurmerk_verified && !pattern && total < KEURMERK_FLOOR) {
     total = KEURMERK_FLOOR;
     caps.push("keurmerk_floor");
   }

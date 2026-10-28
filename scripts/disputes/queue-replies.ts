@@ -4,6 +4,9 @@
 import { connect, runAgentJob, type Sql } from "../../agents/shared/audit";
 import { validateReplySlots } from "../../lib/disputes/replies";
 
+/** Templates the Dispute Handler may pick. "corrected" and "hidden" describe a change only a person makes, so code never sends them on the agent's word. */
+export const AGENT_REPLY_TEMPLATES = ["dispute_no_change", "dispute_in_review"];
+
 type Row = { id: string; reply_template_id: string; reply_slots: unknown; shop_name: string; shop_slug: string };
 
 export async function queueReplies(sql: Sql): Promise<{ summary: string }> {
@@ -18,7 +21,9 @@ export async function queueReplies(sql: Sql): Promise<{ summary: string }> {
   let queued = 0;
   const rejected: string[] = [];
   for (const r of rows) {
-    const v = validateReplySlots(r.reply_template_id, r.reply_slots);
+    const v = AGENT_REPLY_TEMPLATES.includes(r.reply_template_id)
+      ? validateReplySlots(r.reply_template_id, r.reply_slots)
+      : ({ ok: false, errors: [`template ${r.reply_template_id} is not one the agent may send`] } as const);
     if (!v.ok) {
       rejected.push(r.id);
       // Clearing the template stops the next hourly run from rejecting it again.

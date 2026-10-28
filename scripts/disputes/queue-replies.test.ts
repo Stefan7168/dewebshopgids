@@ -26,8 +26,15 @@ describe("queueReplies", () => {
     expect(writes[0].values).toEqual(["dispute:d1", "dispute_no_change", { reply: { checked_facts: ["keurmerk"] }, shop_name: "Mooi Huis", shop_slug: "mooi-huis" }]);
   });
 
+  it("never sends a template that claims a change only a person makes", async () => {
+    const { sql, writes } = fakeSql([{ id: "d3", reply_template_id: "dispute_hidden", reply_slots: {}, shop_name: "X", shop_slug: "x" }]);
+    const r = await queueReplies(sql);
+    expect(r.summary).toContain("rejected and sent to a person: d3");
+    expect(writes.some((w) => w.query.includes("email_queue"))).toBe(false);
+  });
+
   it("sends an invalid reply to a person instead of the shop", async () => {
-    const { sql, writes } = fakeSql([{ id: "d2", reply_template_id: "dispute_corrected", reply_slots: { corrected_facts: [{ fact: "score", value: "zie concurrent.nl" }] }, shop_name: "X", shop_slug: "x" }]);
+    const { sql, writes } = fakeSql([{ id: "d2", reply_template_id: "dispute_no_change", reply_slots: { checked_facts: ["marketplace_pattern"] }, shop_name: "X", shop_slug: "x" }]);
     const r = await queueReplies(sql);
     expect(r.summary).toContain("rejected and sent to a person: d2");
     expect(writes.some((w) => w.query.includes("awaiting_human"))).toBe(true);

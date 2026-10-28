@@ -17,6 +17,7 @@ export async function GET() {
     "## Belangrijke pagina's",
     "",
     `- [Over ${SITE.name}](${SITE.url}/over): wie we zijn en hoe de score werkt`,
+    `- [Hoe wij beoordelen](${SITE.url}/hoe-wij-beoordelen): de berekening van de echtheidsscore en waar de gegevens vandaan komen`,
     ...listed.map((c) => `- [${c.name_nl}](${SITE.url}/categorie/${c.slug}): webshops gerangschikt op echtheidsscore`),
     "",
     "## Gegevens per webshop",

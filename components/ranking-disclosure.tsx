@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { rankingExplanation } from "@/lib/shops/present";
 
 // Directly above every ranked list (art. 6:193e lid 2 BW, CLAUDE.md section 7).
@@ -9,6 +10,9 @@ export function RankingDisclosure() {
         {rankingExplanation().map((line) => (
           <p key={line}>{line}</p>
         ))}
+        <Link href="/hoe-wij-beoordelen" className="underline">
+          Meer over hoe wij beoordelen
+        </Link>
       </div>
     </details>
   );

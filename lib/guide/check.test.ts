@@ -86,8 +86,22 @@ describe("gids issues 3 and 4 reference drafts", () => {
   });
 
   it("repeat no shop from an earlier issue", async () => {
-    const issues = await Promise.all([1, 2, 3, 4].map((n) => import(`./fixtures/issue-${n}`)));
+    const issues = await Promise.all([1, 2, 3, 4, 5, 6].map((n) => import(`./fixtures/issue-${n}`)));
     const slugs = issues.flatMap((m) => (Object.values(m).find((v) => (v as { shops?: unknown }).shops) as { shops: { slug: string }[] }).shops.map((s) => s.slug));
     expect(new Set(slugs).size).toBe(slugs.length);
+  });
+});
+
+describe("gids issues 5 and 6 reference drafts", () => {
+  it("pass the code checks", async () => {
+    const { issue5Draft, issue5Snapshot } = await import("./fixtures/issue-5");
+    const { issue6Draft, issue6Snapshot } = await import("./fixtures/issue-6");
+    expect(checkDraft(issue5Draft, issue5Snapshot)).toEqual([]);
+    expect(checkDraft(issue6Draft, issue6Snapshot)).toEqual([]);
+  });
+
+  it("promise no delivery date, because delivery times are not inputs", async () => {
+    const { issue6Draft } = await import("./fixtures/issue-6");
+    expect(issue6Draft.body_md).not.toMatch(/\d+ december|op tijd binnen|gegarandeerd/i);
   });
 });

@@ -10,6 +10,15 @@ export function SiteFooter() {
           <Link href="/over" className="underline">
             Over ons
           </Link>
+          <Link href="/hoe-wij-beoordelen" className="underline">
+            Hoe wij beoordelen
+          </Link>
+          <Link href="/informatie-voor-webshops" className="underline">
+            Voor webshops
+          </Link>
+          <Link href="/privacy" className="underline">
+            Privacy
+          </Link>
           <a href={`mailto:${SITE.email}`} className="underline">
             {SITE.email}
           </a>

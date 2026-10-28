@@ -46,4 +46,23 @@ describe("/beste/ lists", () => {
       expect(text).not.toMatch(/onbetrouwbaar|review|advertentie|\b20\d\d\b/i);
     }
   });
+
+  it("applies a topic's fact filter without changing the order", () => {
+    const t = topicBySlug("webshops-met-showroom")!;
+    const shops = Array.from({ length: 40 }, (_, i) => shop(i, { has_physical_store: i % 2 === 0 ? true : null }));
+    const list = besteList(t, shops, cats)!;
+    expect(list).toHaveLength(20);
+    expect(list.every((s) => s.has_physical_store === true)).toBe(true);
+    expect(list[0].score).toBe(88);
+    const few = shops.map((s, i) => ({ ...s, has_physical_store: i < MIN_SHOPS_PER_LIST - 1 }));
+    expect(besteList(t, few, cats)).toBeNull();
+  });
+
+  it("has a list for every launch sub-category and unique slugs", () => {
+    const slugs = TOPICS.map((t) => t.slug);
+    expect(new Set(slugs).size).toBe(slugs.length);
+    for (const c of ["meubels", "verlichting", "woontextiel", "woonaccessoires", "keuken-tafelen", "slapen", "tuin-buiten"]) {
+      expect(TOPICS.some((t) => t.categorySlug === c && !t.only)).toBe(true);
+    }
+  });
 });

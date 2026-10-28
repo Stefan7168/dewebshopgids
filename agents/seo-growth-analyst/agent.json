@@ -1,0 +1,10 @@
+{
+  "name": "seo-growth-analyst",
+  "runs_on": "routine",
+  "role": "agent_analyst",
+  "schedule": { "cron": "0 7 * * 1", "timezone": "Europe/Amsterdam" },
+  "max_gap_minutes": 10260,
+  "max_turns": 40,
+  "max_tokens": 150000,
+  "routine_prompt": "Run agents/seo-growth-analyst as described in its instructions.md."
+}

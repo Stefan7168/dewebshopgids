@@ -11,7 +11,7 @@ import { KEURMERK_PAGES } from "@/lib/keurmerk/pages";
 import { signupHeadline } from "@/lib/newsletter/core";
 import { getCategories, getShop } from "@/lib/shops/data";
 import { getEarnedSubScores } from "@/lib/shops/evidence";
-import { keurmerkText, onlineSince, priceLevelText, productCountText, scoreDisplay, SUB_SCORE_NAMES, type PublicShop } from "@/lib/shops/present";
+import { hasVerifiedBadge, keurmerkText, onlineSince, priceLevelText, productCountText, scoreDisplay, SUB_SCORE_NAMES, type PublicShop } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -95,6 +95,14 @@ async function ShopDetails({ params }: Props) {
           <h1 className="text-2xl font-bold break-words">{shop.name}</h1>
           <p className="text-muted-foreground break-words">{shop.domain}</p>
           <p className="text-sm text-muted-foreground">Echtheidsscore van 1 tot 100</p>
+          {hasVerifiedBadge(shop) && (
+            <p className="text-sm">
+              <span className="rounded-full border px-2 py-0.5 font-medium">Geverifieerd</span>{" "}
+              <span className="text-muted-foreground">
+                Deze shop betaalt voor de badge. Dat verandert niets aan de score of de volgorde.
+              </span>
+            </p>
+          )}
         </div>
       </div>
       {shop.description_nl && <p>{shop.description_nl}</p>}

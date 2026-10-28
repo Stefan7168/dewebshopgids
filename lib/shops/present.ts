@@ -143,3 +143,8 @@ export function priceLevelText(level: number | null): string | null {
   if (level == null || level < 1 || level > 4) return null;
   return ["Voordelig", "Middensegment", "Hoger segment", "Luxe"][level - 1];
 }
+
+/** The paid "Geverifieerd" badge is active through `verified_badge_until` (a date, inclusive). */
+export function hasVerifiedBadge(s: Pick<PublicShop, "verified_badge_until">, today = new Date().toISOString().slice(0, 10)): boolean {
+  return s.verified_badge_until != null && s.verified_badge_until >= today;
+}

@@ -8,9 +8,14 @@ export function SiteHeader() {
         <Link href="/" className="font-semibold">
           {SITE.name}
         </Link>
-        <Link href="/categorie/wonen" className="text-sm underline-offset-4 hover:underline">
-          Wonen &amp; interieur
-        </Link>
+        <nav className="flex items-center gap-4 text-sm">
+          <Link href="/categorie/wonen" className="underline-offset-4 hover:underline">
+            Wonen &amp; interieur
+          </Link>
+          <Link href="/zoeken" className="underline-offset-4 hover:underline">
+            Zoeken
+          </Link>
+        </nav>
       </div>
     </header>
   );

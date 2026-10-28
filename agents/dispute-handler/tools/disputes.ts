@@ -5,7 +5,7 @@
 // Commands:
 //   start                          guards and agent_runs row; prints {"run_id"}
 //                                  exit 3 = paused, exit 4 = no open disputes (nothing to do)
-//   queue [--limit 10]             open correction and prenotice disputes with the shop's facts and evidence
+//   queue [--limit 10]             open correction disputes with the shop's facts and evidence
 //   no-change --run ID --dispute ID --facts online,keurmerk --note "what you checked"
 //                                  evidence supports the published facts: reply dispute_no_change
 //   handover --run ID --dispute ID --reason "why a person must decide"
@@ -18,8 +18,8 @@ import { FACT_LABELS, validateReplySlots, type FactKey } from "../../../lib/disp
 
 const AGENT = "dispute-handler";
 export const PROMPT_VERSION = "d1";
-/** Dispute types this agent answers. Removal and objection are code only. */
-export const AGENT_TYPES = ["correction", "prenotice"] as const;
+/** Dispute types this agent answers. Removal and objection are code only; `prenotice` rows are logs of our own email. */
+export const AGENT_TYPES = ["correction"] as const;
 /** Score changes above this need the G4 tap (plan section 4). */
 export const G4_POINTS = 10;
 /** Negative inferences stay internal (CLAUDE.md section 4). */

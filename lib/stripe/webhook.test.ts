@@ -25,9 +25,20 @@ describe("verifyStripeSignature", () => {
 describe("badgeAction", () => {
   it("links a paid subscription checkout to the shop in client_reference_id", () => {
     const a = badgeAction({ type: "checkout.session.completed", data: { object: { mode: "subscription", payment_status: "paid", client_reference_id: shopId, subscription: "sub_1" } } }, now);
-    expect(a).toMatchObject({ kind: "link", shopId, subscriptionId: "sub_1" });
+    expect(a).toMatchObject({ kind: "link", product: "badge", shopId, subscriptionId: "sub_1" });
     expect(badgeAction({ type: "checkout.session.completed", data: { object: { mode: "subscription", payment_status: "paid", client_reference_id: "x'; drop", subscription: "sub_1" } } }).kind).toBe("ignore");
     expect(badgeAction({ type: "checkout.session.completed", data: { object: { mode: "subscription", payment_status: "unpaid", client_reference_id: shopId, subscription: "sub_1" } } }).kind).toBe("ignore");
+  });
+
+  it("tells the Uitgelicht Payment Link apart by its metadata", () => {
+    const paid = { mode: "subscription", payment_status: "paid", client_reference_id: shopId, subscription: "sub_9" };
+    expect(badgeAction({ type: "checkout.session.completed", data: { object: { ...paid, metadata: { product: "uitgelicht" } } } }, now)).toMatchObject({
+      kind: "link",
+      product: "uitgelicht",
+    });
+    expect(badgeAction({ type: "checkout.session.completed", data: { object: { ...paid, metadata: { product: "iets" } } } }, now)).toMatchObject({
+      product: "badge",
+    });
   });
 
   it("extends to the paid period end plus grace, for basil and older invoices", () => {

@@ -68,17 +68,11 @@ export function scalePoints(count: number | null | undefined): number {
 }
 
 /** Whole years between domain_first_seen and now; null when unknown. */
-export function yearsOnline(
-  firstSeen: string | Date | null | undefined,
-  now: Date = new Date(),
-): number | null {
+export function yearsOnline(firstSeen: string | Date | null | undefined, now: Date = new Date()): number | null {
   if (!firstSeen) return null;
   const t = new Date(firstSeen).getTime();
   if (!Number.isFinite(t)) return null;
-  return Math.max(
-    0,
-    Math.floor((now.getTime() - t) / (365.25 * 24 * 3600 * 1000)),
-  );
+  return Math.max(0, Math.floor((now.getTime() - t) / (365.25 * 24 * 3600 * 1000)));
 }
 
 export function agePoints(years: number | null | undefined): number {
@@ -99,22 +93,14 @@ function countValid(s: ScoringSignals): number {
   return Object.entries(s)
     .filter(([k]) => k !== "years_online")
     .map(([, v]) => v)
-    .filter(
-      (v) =>
-        v !== undefined && v !== null && !(Array.isArray(v) && v.length === 0),
-    ).length;
+    .filter((v) => v !== undefined && v !== null && !(Array.isArray(v) && v.length === 0)).length;
 }
 
 export function computeScore(s: ScoringSignals): ScoreResult {
   const caps: string[] = [];
-  const pattern =
-    s.marketplace_pattern === true || s.dropship_indicators === true;
+  const pattern = s.marketplace_pattern === true || s.dropship_indicators === true;
 
-  let maker = s.own_production
-    ? MAKER_POINTS.own_production
-    : s.brand_owner
-      ? MAKER_POINTS.brand_owner
-      : 0;
+  let maker = s.own_production ? MAKER_POINTS.own_production : s.brand_owner ? MAKER_POINTS.brand_owner : 0;
   if (pattern && maker > PATTERN_MAKER_CAP) {
     maker = PATTERN_MAKER_CAP;
     caps.push("pattern_maker_cap");

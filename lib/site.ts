@@ -9,3 +9,6 @@ export const SITE = {
   kvk: null as string | null, // 8 digits
   address: null as string | null, // visiting address, or the KvK-registered address
 };
+
+/** The crawler name in our User-Agent (scripts/pipeline/fetch-polite.ts), shown to shops so they can block it. */
+export const USER_AGENT_TOKEN = "DeWebshopgidsBot";

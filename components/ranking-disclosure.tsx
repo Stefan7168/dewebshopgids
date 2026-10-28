@@ -5,7 +5,7 @@ import { rankingExplanation } from "@/lib/shops/present";
 export function RankingDisclosure() {
   return (
     <details className="rounded-md border px-4 py-3 text-sm">
-      <summary className="cursor-pointer font-medium">Hoe is deze volgorde bepaald?</summary>
+      <summary className="cursor-pointer py-2 font-medium">Hoe is deze volgorde bepaald?</summary>
       <div className="mt-3 flex flex-col gap-2 text-muted-foreground">
         {rankingExplanation().map((line) => (
           <p key={line}>{line}</p>

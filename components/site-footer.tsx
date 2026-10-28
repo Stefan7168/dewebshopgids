@@ -6,20 +6,20 @@ export function SiteFooter() {
   return (
     <footer className="w-full border-t text-xs py-8">
       <div className="max-w-3xl mx-auto px-4 flex flex-col gap-2">
-        <div className="flex flex-wrap gap-4">
-          <Link href="/over" className="underline">
+        <div className="flex flex-wrap gap-x-4">
+          <Link href="/over" className="inline-flex min-h-8 items-center underline">
             Over ons
           </Link>
-          <Link href="/hoe-wij-beoordelen" className="underline">
+          <Link href="/hoe-wij-beoordelen" className="inline-flex min-h-8 items-center underline">
             Hoe wij beoordelen
           </Link>
-          <Link href="/informatie-voor-webshops" className="underline">
+          <Link href="/informatie-voor-webshops" className="inline-flex min-h-8 items-center underline">
             Voor webshops
           </Link>
-          <Link href="/privacy" className="underline">
+          <Link href="/privacy" className="inline-flex min-h-8 items-center underline">
             Privacy
           </Link>
-          <a href={`mailto:${SITE.email}`} className="underline">
+          <a href={`mailto:${SITE.email}`} className="inline-flex min-h-8 items-center underline">
             {SITE.email}
           </a>
         </div>

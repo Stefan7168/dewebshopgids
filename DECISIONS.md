@@ -72,3 +72,7 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 ## 2026-10-28: Tuin & buiten stays unpromoted until 30 shops
 - Coordinator call: 10 verified garden shops is too thin to present as a category. The category pages and /beste lists stay built (a /beste list already needs 15 shops to appear).
 - `promotedRoots()` in `lib/shops/present.ts` decides what the home page, the header and llms.txt show: Wonen always, any other main category from 30 published shops (`MIN_SHOPS_TO_PROMOTE`). No code change is needed when garden reaches 30; the next publish shows it.
+
+## 2026-10-28: Gids editorial calendar and issue 2
+- The plan has no editorial calendar, so one was written: /mnt/project-files/launch/gids-editorial-calendar.md (issues 1 to 9, week 45 to 2027 week 1, seasonal themes). A theme only steers which shops the Guide Editor picks; facts still come only from that week's inputs, and the theme is dropped when too few shops fit.
+- Issue 2 (2026-week-46, "Licht en warmte voor de donkere maanden") is a reference draft in `lib/guide/fixtures/issue-2.ts`, tested against `checkDraft()`. Week 52 (Christmas Eve) sends no email; the fallback page publishes.

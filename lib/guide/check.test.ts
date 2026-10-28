@@ -64,3 +64,15 @@ describe("gids issue 1 reference draft", () => {
     expect(checkDraft({ ...issue1Draft, body_md: body }, issue1Snapshot)).toEqual(["number 1610 is not in the inputs", "number 29 is not in the inputs"]);
   });
 });
+
+describe("gids issue 2 reference draft", () => {
+  it("passes the code checks", async () => {
+    const { issue2Draft, issue2Snapshot } = await import("./fixtures/issue-2");
+    expect(checkDraft(issue2Draft, issue2Snapshot)).toEqual([]);
+  });
+
+  it("links back to the gids overview, not to an outside page", async () => {
+    const { issue2Draft } = await import("./fixtures/issue-2");
+    expect(issue2Draft.body_md).toContain("](/gids)");
+  });
+});

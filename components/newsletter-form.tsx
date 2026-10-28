@@ -4,9 +4,15 @@ import { useActionState } from "react";
 import { subscribe, type FormState } from "@/app/nieuwsbrief/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { currentUtm } from "@/components/utm-capture";
 
 export function NewsletterForm({ headline, source }: { headline: string; source: string }) {
   const [state, action, pending] = useActionState<FormState, FormData>(subscribe, null);
+  // UTM tags are read at submit time, from the URL or the landing page of this tab.
+  const submit = (fd: FormData) => {
+    fd.set("utm", currentUtm());
+    action(fd);
+  };
   return (
     <section className="rounded-lg border p-4 flex flex-col gap-3" aria-labelledby="nieuwsbrief-kop">
       <h2 id="nieuwsbrief-kop" className="font-semibold">
@@ -15,7 +21,7 @@ export function NewsletterForm({ headline, source }: { headline: string; source:
       {state?.ok ? (
         <p className="text-sm">{state.message}</p>
       ) : (
-        <form action={action} className="flex flex-col gap-2 sm:flex-row">
+        <form action={submit} className="flex flex-col gap-2 sm:flex-row">
           <label htmlFor="nieuwsbrief-email" className="sr-only">
             E-mailadres
           </label>

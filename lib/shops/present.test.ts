@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { MARKETPLACE_LABEL, MAX_POINTS } from "@/lib/scoring/weights";
 import { earnedSubScores, subScoreFor, type SignalRow } from "./evidence-rules";
-import { keurmerkText, onlineSince, productCountText, rankingExplanation, rankShops, scoreDisplay, shopsInCategory, type Category } from "./present";
+import { countryName, keurmerkText, onlineSince, productCountText, promotedRoots, rankingExplanation, rankShops, scoreDisplay, shopsInCategory, type Category } from "./present";
 
 describe("scoreDisplay", () => {
   it("shows the number only when no label is set", () => {
@@ -39,6 +39,20 @@ describe("shopsInCategory", () => {
   });
 });
 
+describe("promotedRoots", () => {
+  const cats: Category[] = [
+    { id: "w", slug: "wonen", name_nl: "Wonen", parent_id: null, intro_nl: null, seo_title: null, sort_order: 0 },
+    { id: "t", slug: "tuin-buiten", name_nl: "Tuin & buiten", parent_id: null, intro_nl: null, seo_title: null, sort_order: 1 },
+    { id: "p", slug: "potten", name_nl: "Potten", parent_id: "t", intro_nl: null, seo_title: null, sort_order: 2 },
+  ];
+  it("always shows Wonen and adds another main category only from 30 shops", () => {
+    const some = Array.from({ length: 29 }, () => ({ category_id: "p" }));
+    expect(promotedRoots(cats, []).map((c) => c.slug)).toEqual(["wonen"]);
+    expect(promotedRoots(cats, some).map((c) => c.slug)).toEqual(["wonen"]);
+    expect(promotedRoots(cats, [...some, { category_id: "t" }]).map((c) => c.slug)).toEqual(["wonen", "tuin-buiten"]);
+  });
+});
+
 describe("facts", () => {
   it("formats keurmerk, year and product count", () => {
     expect(keurmerkText({ keurmerk: ["thuiswinkel"], keurmerk_status: "verified" })).toContain("gecontroleerd");
@@ -69,6 +83,11 @@ describe("earnedSubScores", () => {
     quote_verified: verified,
   });
 
+  it("drops evidence links that are not http(s)", () => {
+    const bad = { ...sig("own_production", "Wij maken alles zelf."), evidence_url: "javascript:alert(1)" };
+    expect(earnedSubScores({ maker: 30 }, MAX_POINTS, [bad])[0].evidence).toEqual([{ quote: "Wij maken alles zelf.", url: null }]);
+  });
+
   it("never maps the negative inferences", () => {
     expect(subScoreFor("marketplace_pattern")).toBeNull();
     expect(subScoreFor("dropship_indicators")).toBeNull();
@@ -94,5 +113,24 @@ describe("earnedSubScores", () => {
 
   it("drops a quote-based sub-score that has points but no verified quote", () => {
     expect(earnedSubScores({ maker: 20 }, MAX_POINTS, [sig("brand_owner", null)])).toEqual([]);
+  });
+});
+
+describe("verified badge", () => {
+  it("is active through its end date and off without one", async () => {
+    const { hasVerifiedBadge } = await import("./present");
+    expect(hasVerifiedBadge({ verified_badge_until: "2026-11-30" }, "2026-11-30")).toBe(true);
+    expect(hasVerifiedBadge({ verified_badge_until: "2026-11-29" }, "2026-11-30")).toBe(false);
+    expect(hasVerifiedBadge({ verified_badge_until: null }, "2026-11-30")).toBe(false);
+  });
+});
+
+describe("countryName", () => {
+  it("writes the Dutch country name and hides unknown codes", () => {
+    expect(countryName("NL")).toBe("Nederland");
+    expect(countryName("be")).toBe("België");
+    expect(countryName("XX")).toBeNull();
+    expect(countryName("Nederland")).toBeNull();
+    expect(countryName(null)).toBeNull();
   });
 });

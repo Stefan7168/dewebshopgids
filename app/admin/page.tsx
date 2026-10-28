@@ -6,11 +6,12 @@ import { createServiceClient } from "@/lib/supabase/service";
 // Plan v3 section 4. Each gate's queue arrives with its feature; until then the row says so.
 const GATES: { key: string; name: string; href?: string; note?: string }[] = [
   { key: "G1", name: "Code-merge en agent-ok label", note: "in GitHub" },
-  { key: "G2", name: "Gids versturen", note: "komt met de gids (fase 3)" },
-  { key: "G3", name: "Uitgaande mails en pins", note: "komt met outreach" },
-  { key: "G4", name: "Score-wijzigende bezwaren", note: "komt met /herbeoordeling" },
+  { key: "G2", name: "Gids versturen", href: "/admin/gids" },
+  { key: "G3", name: "Uitgaande mails (badge-aanbod)", href: "/admin/outreach" },
+  { key: "G4", name: "Herbeoordelingen die een mens nodig hebben", href: "/admin/herbeoordelingen" },
   { key: "G5", name: "Geld", note: "Stefan beslist buiten de site" },
   { key: "G6", name: "Nieuwe webshops goedkeuren", href: "/admin/kandidaten" },
+  { key: "G4b", name: "Beschrijvingen van webshops (claim)", href: "/admin/beschrijvingen" },
 ];
 
 async function AdminHome() {

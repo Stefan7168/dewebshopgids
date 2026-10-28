@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PublicShop } from "@/lib/shops/present";
-import { confirmEmail, hashToken, isTokenShape, newToken, normaliseEmail, olderThan, signupHeadline, welcomeEmail, welcomeShops } from "./core";
+import { confirmEmail, hashToken, isTokenShape, newToken, normaliseEmail, olderThan, leadMagnetShops, signupHeadline, welcomeEmail, welcomeShops } from "./core";
 
 const shop = (id: string, score: number | null, name = id): PublicShop =>
   ({ id, slug: id, name, score, score_label: null } as unknown as PublicShop);
@@ -32,6 +32,18 @@ describe("newsletter core", () => {
     expect(w.text).toContain("1. Atelier A: https://dewebshopgids.nl/webshop/a");
     expect(w.text).toContain("/nieuwsbrief/afmelden?t=tok");
     expect(w.text).not.toContain("/go/");
+  });
+
+  it("adds the top 25 lead magnet with its disclosure, only once 25 shops have a score", () => {
+    const many = Array.from({ length: 30 }, (_, i) => shop(`s${i}`, 40 + i, `Shop ${i}`));
+    expect(leadMagnetShops(many.slice(0, 24))).toEqual([]);
+    const top = leadMagnetShops([...many, { ...shop("x", 99), score_label: "audit_required" }]);
+    expect(top).toHaveLength(25);
+    expect(top[0].id).toBe("s29");
+    const w = welcomeEmail([many[0]], "tok", top);
+    expect(w.text).toContain("De 25 meest authentieke woonwebshops van Nederland");
+    expect(w.text.indexOf("Hoe is deze volgorde bepaald?")).toBeLessThan(w.text.indexOf("1. Shop 29"));
+    expect(welcomeEmail([many[0]], "tok").text).not.toContain("De 25");
   });
 
   it("picks the most clicked shops, then tops up by score", () => {

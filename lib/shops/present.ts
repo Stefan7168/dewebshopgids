@@ -72,6 +72,17 @@ export function scoreDisplay(s: Pick<PublicShop, "score" | "score_label"> & { st
 /** Plan v3 section 9: category pages with fewer shops stay out of the index and the sitemap. */
 export const MIN_SHOPS_TO_INDEX = 5;
 
+/** A main category other than the launch one (Wonen) shows on the home page, the header and llms.txt only from this many shops. */
+export const MIN_SHOPS_TO_PROMOTE = 30;
+export const LAUNCH_ROOT_SLUG = "wonen";
+
+/** Main categories to promote: Wonen always, others once they have MIN_SHOPS_TO_PROMOTE published shops. Their pages stay reachable either way. */
+export function promotedRoots<T extends Pick<PublicShop, "category_id">>(categories: Category[], shops: T[]): Category[] {
+  return categories.filter(
+    (c) => c.parent_id === null && (c.slug === LAUNCH_ROOT_SLUG || shopsInCategory(shops, c, categories).length >= MIN_SHOPS_TO_PROMOTE),
+  );
+}
+
 const RANK_ORDER: Record<ScoreDisplay["kind"], number> = { number: 0, pending: 1, label: 2, none: 3 };
 
 /** Numbered shops by score, high to low; then the rest. Ties and the rest by name. */
@@ -142,4 +153,16 @@ export function rankingExplanation(): string[] {
 export function priceLevelText(level: number | null): string | null {
   if (level == null || level < 1 || level > 4) return null;
   return ["Voordelig", "Middensegment", "Hoger segment", "Luxe"][level - 1];
+}
+
+/** "NL" becomes "Nederland". Unknown or malformed codes return null so the fact is hidden. */
+export function countryName(code: string | null): string | null {
+  if (!code || !/^[A-Za-z]{2}$/.test(code)) return null;
+  const name = new Intl.DisplayNames(["nl"], { type: "region" }).of(code.toUpperCase());
+  return name && name !== code.toUpperCase() ? name : null;
+}
+
+/** The paid "Geverifieerd" badge is active through `verified_badge_until` (a date, inclusive). */
+export function hasVerifiedBadge(s: Pick<PublicShop, "verified_badge_until">, today = new Date().toISOString().slice(0, 10)): boolean {
+  return s.verified_badge_until != null && s.verified_badge_until >= today;
 }

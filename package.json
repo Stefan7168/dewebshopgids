@@ -7,7 +7,10 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:db": "scripts/db/test.sh"
+    "test:db": "scripts/db/test.sh",
+    "test:e2e": "scripts/e2e/run.sh",
+    "db:dev": "scripts/dev/setup.sh",
+    "dev:local": "scripts/dev/run.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.134.0",
@@ -17,6 +20,7 @@
     "@radix-ui/react-slot": "^1.2.2",
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.118.0",
+    "@vercel/analytics": "2.0.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.511.0",

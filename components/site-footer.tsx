@@ -6,11 +6,20 @@ export function SiteFooter() {
   return (
     <footer className="w-full border-t text-xs py-8">
       <div className="max-w-3xl mx-auto px-4 flex flex-col gap-2">
-        <div className="flex flex-wrap gap-4">
-          <Link href="/over" className="underline">
+        <div className="flex flex-wrap gap-x-4">
+          <Link href="/over" className="inline-flex min-h-8 items-center underline">
             Over ons
           </Link>
-          <a href={`mailto:${SITE.email}`} className="underline">
+          <Link href="/hoe-wij-beoordelen" className="inline-flex min-h-8 items-center underline">
+            Hoe wij beoordelen
+          </Link>
+          <Link href="/informatie-voor-webshops" className="inline-flex min-h-8 items-center underline">
+            Voor webshops
+          </Link>
+          <Link href="/privacy" className="inline-flex min-h-8 items-center underline">
+            Privacy
+          </Link>
+          <a href={`mailto:${SITE.email}`} className="inline-flex min-h-8 items-center underline">
             {SITE.email}
           </a>
         </div>
@@ -20,7 +29,7 @@ export function SiteFooter() {
           {SITE.address ? ` · ${SITE.address}` : ""}
         </p>
         <p className="text-muted-foreground">
-          Wij ontvangen soms een vergoeding als je via onze links iets koopt. Dat heeft geen invloed op de score.
+          Wij ontvangen soms een vergoeding als je via onze links iets koopt. Dat heeft geen invloed op de score of de volgorde.
         </p>
       </div>
     </footer>

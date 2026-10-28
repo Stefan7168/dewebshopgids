@@ -1,20 +1,24 @@
 // Nightly pipeline (plan v3 section 8, step 10), started by .github/workflows/pipeline.yml.
 // Two UTC crons fire; the run exits unless it is 01:00 in Amsterdam (or FORCE_RUN=1).
 // Order: promote accepted candidates, collect ended score batches, crawl, domain age,
-// submit a new score batch. Every step is its own agent_runs row and is idempotent.
+// submit a new score batch, apply manual corrections, then publish due shops and send pre-notices. Every step is its own agent_runs row and is idempotent.
 // Ends with a health_checks row so /api/health and the uptime monitor see the result.
 import Anthropic from "@anthropic-ai/sdk";
 import { connect, runAgentJob, type RunStatus, type Sql } from "../../agents/shared/audit";
+import { applyOverrides } from "./apply-overrides";
 import { runCrawl } from "./crawl/run-crawl";
-import { runDomainAge } from "./domain-age-step";
+import { runDomainAge, type DomainAgeDeps } from "./domain-age-step";
 import { promoteCandidates } from "./promote-candidates";
+import { runRetention } from "./retention";
+import { importSearchConsole } from "./search-console/import";
+import { runPublish } from "./publish/publish";
 import { collectBatches, submitIfIdle } from "./score/run-scoring";
 
 export function amsterdamHour(now: Date): number {
   return Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Amsterdam", hour: "2-digit", hourCycle: "h23" }).format(now));
 }
 
-type Step = { agent: string; spendsTokens: boolean; work: () => Promise<{ summary?: string }> };
+export type Step = { agent: string; spendsTokens: boolean; work: () => Promise<{ summary?: string }> };
 
 export async function runSteps(sql: Sql, steps: Step[]): Promise<{ agent: string; status: RunStatus | "error" }[]> {
   const results: { agent: string; status: RunStatus | "error" }[] = [];
@@ -42,6 +46,29 @@ export async function collectStep(sql: Sql, client: Parameters<typeof collectBat
   return { summary };
 }
 
+export type NightlyDeps = {
+  client: Parameters<typeof collectBatches>[1];
+  /** Tests pass fixture-backed fakes; production uses the real network. */
+  fetchPolite?: Parameters<typeof runCrawl>[1];
+  domainAge?: DomainAgeDeps;
+  env?: Record<string, string | undefined>;
+};
+
+/** The nightly steps in order. Shared by main() and scripts/e2e, so the end-to-end run tests this exact wiring. */
+export function nightlySteps(sql: Sql, d: NightlyDeps): Step[] {
+  return [
+    { agent: "promote-candidates", spendsTokens: false, work: () => promoteCandidates(sql) },
+    { agent: "score-collect", spendsTokens: false, work: () => collectStep(sql, d.client) },
+    { agent: "crawl", spendsTokens: false, work: () => runCrawl(sql, d.fetchPolite) },
+    { agent: "domain-age", spendsTokens: false, work: () => runDomainAge(sql, d.domainAge) },
+    { agent: "retention", spendsTokens: false, work: () => runRetention(sql) },
+    { agent: "score-submit", spendsTokens: true, work: async () => ({ summary: await submitIfIdle(sql, d.client) }) },
+    { agent: "search-console", spendsTokens: false, work: () => importSearchConsole(sql, d.env) },
+    { agent: "apply-overrides", spendsTokens: false, work: () => applyOverrides(sql) },
+    { agent: "publish", spendsTokens: false, work: () => runPublish(sql) },
+  ];
+}
+
 async function main() {
   if (process.env.FORCE_RUN !== "1" && amsterdamHour(new Date()) !== 1) {
     console.log("not 01:00 in Amsterdam, exiting");
@@ -50,13 +77,7 @@ async function main() {
   const sql = connect();
   const client = new Anthropic();
   try {
-    const results = await runSteps(sql, [
-      { agent: "promote-candidates", spendsTokens: false, work: () => promoteCandidates(sql) },
-      { agent: "score-collect", spendsTokens: false, work: () => collectStep(sql, client) },
-      { agent: "crawl", spendsTokens: false, work: () => runCrawl(sql) },
-      { agent: "domain-age", spendsTokens: false, work: () => runDomainAge(sql) },
-      { agent: "score-submit", spendsTokens: true, work: async () => ({ summary: await submitIfIdle(sql, client) }) },
-    ]);
+    const results = await runSteps(sql, nightlySteps(sql, { client }));
     console.log(results.map((r) => `${r.agent}: ${r.status}`).join("\n"));
     if (results.some((r) => r.status === "error" || r.status === "failed")) process.exitCode = 1;
   } finally {

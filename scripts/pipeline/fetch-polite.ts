@@ -4,10 +4,11 @@
 // - 10 s timeout, 2 MB body cap, named User-Agent with a contact address
 // Everything is injectable so tests run on fixtures without network.
 import robotsParser from "robots-parser";
+import { USER_AGENT_TOKEN } from "../../lib/site";
 
 export const USER_AGENT =
   "DeWebshopgidsBot/0.1 (+https://dewebshopgids.nl/over; info@dewebshopgids.nl)";
-const UA_TOKEN = "DeWebshopgidsBot";
+const UA_TOKEN = USER_AGENT_TOKEN;
 
 export type FetchImpl = (url: string, init: { headers: Record<string, string>; signal: AbortSignal; redirect: "follow" }) => Promise<Response>;
 

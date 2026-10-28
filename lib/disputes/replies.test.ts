@@ -62,3 +62,11 @@ describe("renderReply", () => {
     expect(t.render({ reply: { checked_facts: ["keurmerk"] }, shop_name: "Mooi Huis", shop_slug: "../x" })).toBeNull();
   });
 });
+
+describe("dispute_hidden", () => {
+  it("takes no slots and says the page is offline", () => {
+    expect(validateReplySlots("dispute_hidden", {})).toEqual({ ok: true, slots: { template: "dispute_hidden" } });
+    expect(validateReplySlots("dispute_hidden", { x: 1 }).ok).toBe(false);
+    expect(renderReply({ template: "dispute_hidden" }, { name: "Mooi Huis", slug: "mooi-huis" }).text).toContain("De pagina is offline.");
+  });
+});

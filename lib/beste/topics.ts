@@ -13,6 +13,8 @@ export type BesteTopic = {
   categorySlug: string;
   title: string; // H1 and <title>; no year, no "updated" claims
   intro: string[]; // fixed, factual text about the list; never a claim about one shop
+  /** Optional fact filter on measured data; it only removes shops, the order stays the score. */
+  only?: (s: PublicShop) => boolean;
 };
 
 const COMMON =
@@ -69,6 +71,88 @@ export const TOPICS: BesteTopic[] = [
       "Handgemaakt keramiek en hout uit eigen werkplaats geven hier de meeste punten. Bij elke shop zie je waar dat op de site staat.",
     ],
   },
+  {
+    slug: "slapen",
+    categorySlug: "slapen",
+    title: "De meest unieke webshops voor slapen",
+    intro: [
+      "Een bed, matras, dekbed of beddengoed koop je voor jaren. Deze lijst toont Nederlandse webshops voor slapen, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Bij slapen draait veel om materiaal en afwerking. Shops die zelf vullen, naaien of in eigen werkplaats maken, scoren hier hoger dan doorverkopers van dezelfde merken.",
+    ],
+  },
+  {
+    slug: "tuin-en-buiten",
+    categorySlug: "tuin-buiten",
+    title: "De meest unieke webshops voor tuin en buiten",
+    intro: [
+      "Tuinmeubels, plantenbakken, vuurschalen en buitenverlichting: deze lijst toont Nederlandse webshops voor tuin en buiten, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Buitenspullen moeten tegen weer en wind. Een eigen werkplaats of een duidelijke herkomst van hout en staal zegt hier veel; bij elke shop zie je waar dat op de site staat.",
+    ],
+  },
+  {
+    slug: "tuinmeubels",
+    categorySlug: "tuinmeubels",
+    title: "De meest unieke webshops voor tuinmeubels",
+    intro: [
+      "Een tuintafel, bank of ligbed die jaren buiten kan staan: deze lijst toont Nederlandse webshops voor tuinmeubels, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Let bij tuinmeubels op hout, staal en afwerking. Shops die zelf ontwerpen of in eigen werkplaats maken, scoren hier hoger dan doorverkopers van dezelfde collecties.",
+    ],
+  },
+  {
+    slug: "potten-en-plantenbakken",
+    categorySlug: "potten-plantenbakken",
+    title: "De meest unieke webshops voor potten en plantenbakken",
+    intro: [
+      "Van cortenstaal tot handgedraaid aardewerk: deze lijst toont Nederlandse webshops voor potten en plantenbakken, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Veel plantenbakken komen uit dezelfde fabrieken. Een eigen werkplaats of maatwerk zegt meer; bij elke shop zie je waar dat op de site staat.",
+    ],
+  },
+  {
+    slug: "buitenverlichting",
+    categorySlug: "buitenverlichting",
+    title: "De meest unieke webshops voor buitenverlichting",
+    intro: [
+      "Lampen voor tuin, terras en gevel: deze lijst toont Nederlandse webshops voor buitenverlichting, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Shops die hun lampen zelf ontwerpen of in kleine series maken, scoren hier hoger dan shops met een groot assortiment van andere merken.",
+    ],
+  },
+  {
+    slug: "vuurschalen-en-bbq",
+    categorySlug: "vuur-bbq",
+    title: "De meest unieke webshops voor vuurschalen en bbq",
+    intro: [
+      "Vuurschalen, buitenkeukens en barbecues: deze lijst toont Nederlandse webshops voor vuur en bbq, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Shops die hun vuurschalen of barbecues zelf maken, of een duidelijke herkomst noemen, scoren hier hoger. Bij elke shop zie je de zin van zijn eigen site waar de punten op gebaseerd zijn.",
+    ],
+  },
+  {
+    slug: "met-showroom",
+    categorySlug: "wonen",
+    title: "Unieke woonwebshops met een winkel of showroom",
+    intro: [
+      "Wil je een bank, tafel of lamp eerst zien en voelen? Deze lijst toont Nederlandse woonwebshops die ook een fysieke winkel of showroom hebben, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Een shop staat hier alleen als zijn eigen site een winkel of showroom noemt. Noemt de site ook de plaats, dan zie je die op de pagina van de shop.",
+    ],
+    only: (s) => s.has_physical_store === true,
+  },
+  {
+    slug: "met-keurmerk",
+    categorySlug: "wonen",
+    title: "Unieke woonwebshops met een gecontroleerd keurmerk",
+    intro: [
+      "Een keurmerk geeft extra zekerheid bij retouren en betalen. Deze lijst toont Nederlandse woonwebshops waarvan we het keurmerk zelf hebben gecontroleerd, gerangschikt op echtheidsscore.",
+      COMMON,
+      "We tellen een keurmerk alleen als de site van de keurmerkorganisatie de webshop zelf noemt. Een logo op de site alleen is niet genoeg.",
+    ],
+    only: (s) => s.keurmerk_status === "verified",
+  },
 ];
 
 export function topicBySlug(urlSlug: string): BesteTopic | undefined {
@@ -80,7 +164,9 @@ export function topicBySlug(urlSlug: string): BesteTopic | undefined {
 export function besteList(topic: BesteTopic, shops: PublicShop[], categories: Category[]): PublicShop[] | null {
   const category = categories.find((c) => c.slug === topic.categorySlug);
   if (!category) return null;
-  const scored = shopsInCategory(shops, category, categories).filter((s) => scoreDisplay(s).kind === "number");
+  const scored = shopsInCategory(shops, category, categories).filter(
+    (s) => scoreDisplay(s).kind === "number" && (topic.only?.(s) ?? true),
+  );
   if (scored.length < MIN_SHOPS_PER_LIST) return null;
   return rankShops(scored).slice(0, MAX_SHOPS_PER_LIST);
 }

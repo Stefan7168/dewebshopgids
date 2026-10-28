@@ -23,6 +23,11 @@ export const CODE_SCHEDULES: ScheduleRow[] = [
   { agent: "dispute-replies", cron: "5 * * * *", timezone: "UTC", max_gap_minutes: 120 },
   { agent: "dispute-restore", cron: "5 * * * *", timezone: "UTC", max_gap_minutes: 120 },
   { agent: "digest", cron: "0 18 * * 0", timezone: "Europe/Amsterdam", max_gap_minutes: 10140 },
+  { agent: "ai-citations", cron: "0 6 2 * *", timezone: "UTC", max_gap_minutes: 46080 }, // 32 days
+  { agent: "badge-report", cron: "0 7 1 * *", timezone: "UTC", max_gap_minutes: 46080 }, // 32 days
+  { agent: "guide-prepare", cron: "0 6 * * 1", timezone: "Europe/Amsterdam", max_gap_minutes: 10140 },
+  // Writes a run only at 10:00 on Wednesday and Thursday; the longest gap is Thursday to Wednesday.
+  { agent: "guide-publish", cron: "0 10 * * 3,4", timezone: "Europe/Amsterdam", max_gap_minutes: 10140 },
 ];
 
 export function readAgentSchedules(agentsDir = join(process.cwd(), "agents")): ScheduleRow[] {

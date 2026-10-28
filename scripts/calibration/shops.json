@@ -1,0 +1,955 @@
+{
+  "version": 1,
+  "score_version": "v1",
+  "method": "Each site's home page (or the page named in observed.url) was read on 2026-10-28 with a fetch tool that summarises pages; quotes are as it returned them. expected_band is a blind judgement on the plan's scale (100 = custom furniture maker, 1 = bol.com): it was set on 2026-10-28 by an agent that saw only the domain list, read each site again, and had not seen the weights, the scoring code, the prompts or the earlier bands. It weighs product uniqueness, maker versus reseller, brand count, company age, keurmerk and contact transparency; paid badges and ads play no part. confidence is low where the band leans on public knowledge beyond the home page. signals are what a careful reader finds on the site; fields in `assumed` were not verified (mostly product counts, which the crawler measures from the sitemap). known_disagreement marks shops where the v1 weights miss the blind band, with the reason. Full comparison: the first blind relabel, 2026-10-28.",
+  "not_scorable": [
+    {
+      "domain": "studiohenk.com",
+      "why": "robots.txt keeps fetchers out"
+    },
+    {
+      "domain": "rivieramaison.com",
+      "why": "robots.txt keeps fetchers out"
+    },
+    {
+      "domain": "bepurehome.nl",
+      "why": "robots.txt keeps fetchers out"
+    },
+    {
+      "domain": "light-and-living.com",
+      "why": "robots.txt keeps fetchers out"
+    },
+    {
+      "domain": "frezoli.nl",
+      "why": "robots.txt keeps fetchers out"
+    },
+    {
+      "domain": "zuiver.com",
+      "why": "site refused the request"
+    },
+    {
+      "domain": "lampenlicht.nl",
+      "why": "site refused the request"
+    },
+    {
+      "domain": "flinders.nl",
+      "why": "site refused the request"
+    },
+    {
+      "domain": "storewithoutahome.nl",
+      "why": "site refused the request"
+    },
+    {
+      "domain": "hollandslicht.com",
+      "why": "not a lighting shop: a blog about real estate and urban development. Reject in /admin/kandidaten."
+    },
+    {
+      "domain": "spectrumdesign.nl",
+      "why": "home page shows Pastoe design furniture, not the steel-wire brand the candidate note describes. Check before accepting."
+    }
+  ],
+  "shops": [
+    {
+      "domain": "brandvanegmond.com",
+      "name": "Brand van Egmond",
+      "category": "verlichting",
+      "expected_band": [
+        85,
+        97
+      ],
+      "confidence": "high",
+      "reason": "Own atelier in Naarden, objects forged by hand, one brand, full address shown.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://brandvanegmond.com/",
+        "notes": [
+          "\"forges each object by hand\"",
+          "\"our atelier in the historic town of Naarden, The Netherlands\"",
+          "Nikkelstraat 41, 1411 AH Naarden"
+        ]
+      },
+      "signals": {
+        "own_production": true,
+        "focus": "single_niche",
+        "has_address": true,
+        "origin_claims": [
+          "handmade",
+          "own_atelier",
+          "made_in_nl"
+        ],
+        "marketplace_pattern": false,
+        "product_count_est": 150
+      },
+      "assumed": [
+        "product_count_est"
+      ]
+    },
+    {
+      "domain": "tabledusud.nl",
+      "name": "Table du Sud",
+      "category": "meubels",
+      "expected_band": [
+        78,
+        92
+      ],
+      "confidence": "high",
+      "reason": "Own workshop since 2015, handmade furniture, five showrooms, CBW terms.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://tabledusud.nl/",
+        "notes": [
+          "\"With our own workshop and a team of skilled craftspeople, every piece is made with care.\"",
+          "\"every table is crafted by hand\"",
+          "Koolakkers 12, 5591 RD Heeze"
+        ]
+      },
+      "signals": {
+        "own_production": true,
+        "focus": "few_related",
+        "has_address": true,
+        "origin_claims": [
+          "handmade",
+          "own_atelier",
+          "made_in_nl"
+        ],
+        "marketplace_pattern": false,
+        "product_count_est": 200
+      },
+      "assumed": [
+        "product_count_est"
+      ]
+    },
+    {
+      "domain": "functionals.eu",
+      "name": "Functionals",
+      "category": "meubels",
+      "expected_band": [
+        72,
+        88
+      ],
+      "confidence": "high",
+      "reason": "Own factory in Goirle, one brand, full address and email.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://functionals.eu/",
+        "notes": [
+          "\"many of our products are manufactured in our own factory in goirle\"",
+          "edisonstraat 5, 5051 ds goirle"
+        ]
+      },
+      "signals": {
+        "own_production": true,
+        "focus": "broad",
+        "has_address": true,
+        "origin_claims": [
+          "own_atelier",
+          "made_in_nl"
+        ],
+        "marketplace_pattern": false,
+        "product_count_est": 400
+      },
+      "assumed": [
+        "product_count_est"
+      ],
+      "known_disagreement": "Own factory, but the 'broad' focus gives 4 of 20 focus points; the product count is assumed."
+    },
+    {
+      "domain": "vij5.nl",
+      "name": "Vij5",
+      "category": "woonaccessoires",
+      "expected_band": [
+        62,
+        80
+      ],
+      "confidence": "medium",
+      "reason": "Small design publisher with own studio; production by outside makers; full address.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://vij5.nl/",
+        "notes": [
+          "\"Onder ons merk Vij5 geven wij een collectie interieur accessoires, verlichting en meubels uit.\"",
+          "\"Handgemaakt in kleine series\" (carafe)",
+          "Afrikalaan 25, 5232 BD Den Bosch"
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "few_related",
+        "has_address": true,
+        "origin_claims": [
+          "handmade"
+        ],
+        "marketplace_pattern": false,
+        "product_count_est": 100
+      },
+      "assumed": [
+        "product_count_est"
+      ]
+    },
+    {
+      "domain": "pietheineek.nl",
+      "name": "Piet Hein Eek",
+      "category": "meubels",
+      "expected_band": [
+        85,
+        98
+      ],
+      "confidence": "low",
+      "reason": "Designer with own workshop and showroom; own collection and commissions; contact details not on homepage.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://pietheineek.nl/",
+        "notes": [
+          "Shop menu: \"Meubels\", \"Verlichting\", \"Accessoires\", \"Keukens\", \"Keramiek\", \"Kids\"",
+          "\"Eindhoven, september 2025\" (press item)"
+        ]
+      },
+      "signals": {
+        "own_production": true,
+        "focus": "broad",
+        "has_address": false,
+        "origin_claims": [
+          "own_atelier"
+        ],
+        "marketplace_pattern": false,
+        "product_count_est": 500
+      },
+      "assumed": [
+        "product_count_est",
+        "own_production (about page not checked)"
+      ],
+      "known_disagreement": "A famous maker lands at 56: the broad range costs 16 focus points and the home page gives no address or own-production quote."
+    },
+    {
+      "domain": "woood.nl",
+      "name": "WOOOD",
+      "category": "meubels",
+      "expected_band": [
+        40,
+        60
+      ],
+      "confidence": "medium",
+      "reason": "Large own brand with an \"own factory\" line but mass volume, about 40 series, sold widely; Thuiswinkel.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://woood.nl/",
+        "notes": [
+          "Menu: \"Uit eigen fabriek\"",
+          "\"Ontdek het complete WOOOD assortiment\"",
+          "\"Shop bij onze dealers\""
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "broad",
+        "marketplace_pattern": false,
+        "product_count_est": 2000
+      },
+      "assumed": [
+        "product_count_est"
+      ],
+      "known_disagreement": "Only brand_owner is found; the own-factory menu line and Thuiswinkel are not in the signals. Borderline (37 vs 40)."
+    },
+    {
+      "domain": "dutchbone.com",
+      "name": "Dutchbone",
+      "category": "meubels",
+      "expected_band": [
+        35,
+        55
+      ],
+      "confidence": "medium",
+      "reason": "Wholesale brand of Zuiver Interior Group since 2014, \"sometimes handmade\", no own workshop claimed; Thuiswinkel.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://dutchbone.com/",
+        "notes": [
+          "\"© 2026 Zuiver Interior Group\"",
+          "\"Soms handgemaakt met kleine imperfecties\""
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "broad",
+        "marketplace_pattern": false,
+        "product_count_est": 1500
+      },
+      "assumed": [
+        "product_count_est"
+      ]
+    },
+    {
+      "domain": "urbannatureculture.com",
+      "name": "Urban Nature Culture",
+      "category": "woonaccessoires",
+      "expected_band": [
+        40,
+        60
+      ],
+      "confidence": "medium",
+      "reason": "Own design label about 10 years old, no own production claimed, address shown.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://urbannatureculture.com/",
+        "notes": [
+          "Products list \"Urban Nature Culture\" as vendor",
+          "Pedro de Medinalaan 11, 1086 XK Amsterdam"
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "broad",
+        "has_address": true,
+        "marketplace_pattern": false,
+        "product_count_est": 1000
+      },
+      "assumed": [
+        "product_count_est"
+      ]
+    },
+    {
+      "domain": "hkliving.com",
+      "name": "HKliving",
+      "category": "meubels",
+      "expected_band": [
+        35,
+        55
+      ],
+      "confidence": "medium",
+      "reason": "Large own-brand wholesale label with dealer network, about 55 subcategories, no own production claimed, no address.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://hkliving.com/",
+        "notes": [
+          "Categories: Sofas, Furniture, Kitchen, Textile, Lighting, Accessories, Outdoor, Art",
+          "\"Become a dealer\""
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "broad",
+        "marketplace_pattern": false,
+        "product_count_est": 3000
+      },
+      "assumed": [
+        "product_count_est"
+      ],
+      "known_disagreement": "Borderline (33 vs 35): broad focus and no identity on the home page."
+    },
+    {
+      "domain": "moooi.com",
+      "name": "Moooi",
+      "category": "meubels",
+      "expected_band": [
+        55,
+        75
+      ],
+      "confidence": "low",
+      "reason": "Single design brand, 25 years, production via partners, no address on homepage.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://moooi.com/",
+        "notes": [
+          "\"Peaks Sofa by Yves Béhar\"",
+          "Categories: Bedding & Bath, Furniture, Lighting, Accessories, Wall & Floor"
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "broad",
+        "marketplace_pattern": false,
+        "product_count_est": 600
+      },
+      "assumed": [
+        "product_count_est"
+      ],
+      "known_disagreement": "No address on the home page and broad focus. The blind band credits 25 years as a design label; company age is not a scored signal."
+    },
+    {
+      "domain": "festamsterdam.com",
+      "name": "FEST Amsterdam",
+      "category": "meubels",
+      "expected_band": [
+        40,
+        60
+      ],
+      "confidence": "medium",
+      "reason": "Own brand with own stores and resellers, no production claimed, email and phone only.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://festamsterdam.com/",
+        "notes": [
+          "\"Discover all sofas, tables, chairs and home décor by FEST online!\"",
+          "\"OP MAAT GEMAAKT\""
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "broad",
+        "marketplace_pattern": false,
+        "product_count_est": 400
+      },
+      "assumed": [
+        "product_count_est"
+      ]
+    },
+    {
+      "domain": "lensvelt.nl",
+      "name": "Lensvelt",
+      "category": "meubels",
+      "expected_band": [
+        60,
+        80
+      ],
+      "confidence": "medium",
+      "reason": "Own furniture label since 1962 in Breda, one brand, full address and email.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://lensvelt.nl/",
+        "notes": [
+          "\"a dedicated furniture label based in Breda\"",
+          "Minervum 7003, 4817 ZL Breda"
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "few_related",
+        "has_address": true,
+        "marketplace_pattern": false,
+        "product_count_est": 150
+      },
+      "assumed": [
+        "product_count_est"
+      ],
+      "known_disagreement": "Borderline (59 vs 60). A label since 1962; company age is not a scored signal."
+    },
+    {
+      "domain": "graypants.com",
+      "name": "Graypants",
+      "category": "verlichting",
+      "expected_band": [
+        65,
+        85
+      ],
+      "confidence": "low",
+      "reason": "Design studio selling only its own collections (about 10), studios in Seattle and Amsterdam.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://graypants.com/",
+        "notes": [
+          "\"designing products, architecture and bold installations\"",
+          "Meeuwenlaan 126B, 1021 JN Amsterdam"
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "single_niche",
+        "has_address": true,
+        "marketplace_pattern": false,
+        "product_count_est": 80
+      },
+      "assumed": [
+        "product_count_est"
+      ]
+    },
+    {
+      "domain": "studioditte.nl",
+      "name": "Studio Ditte",
+      "category": "woontextiel",
+      "expected_band": [
+        60,
+        78
+      ],
+      "confidence": "medium",
+      "reason": "Own collection designed and made in the Netherlands, produced in Europe; no address on homepage.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://studioditte.nl/",
+        "notes": [
+          "\"Wij zijn een Nederlands merk met een eigen collectie.\"",
+          "\"Onze collecties worden ontworpen in Nederland en duurzaam geproduceerd in Europa.\""
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "few_related",
+        "origin_claims": [
+          "made_in_eu"
+        ],
+        "marketplace_pattern": false,
+        "product_count_est": 300
+      },
+      "assumed": [
+        "product_count_est"
+      ],
+      "known_disagreement": "No address, owner or KvK on the home page, so identity gives 0."
+    },
+    {
+      "domain": "beddinghouse.com",
+      "name": "Beddinghouse",
+      "category": "slapen",
+      "expected_band": [
+        30,
+        50
+      ],
+      "confidence": "medium",
+      "reason": "Textile company 45+ years with 7 own lines plus 8 third-party brands; KvK and address shown.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://beddinghouse.com/",
+        "notes": [
+          "\"ontwerpt al meer dan 45 jaar mooi en duurzaam textiel voor in huis\"",
+          "\"Daarnaast werken wij samen met internationale merken zoals Pip Studio, MOOOI, Oilily en Rivièra Maison.\"",
+          "Vennestraat 8, 2161 LE Lisse"
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "few_related",
+        "has_address": true,
+        "marketplace_pattern": false,
+        "product_count_est": 1500
+      },
+      "assumed": [
+        "product_count_est"
+      ],
+      "known_disagreement": "brand_owner gives 20 maker points although about 8 of 18 brands sold are third-party."
+    },
+    {
+      "domain": "lumz.nl",
+      "name": "Lumz",
+      "category": "meubels",
+      "expected_band": [
+        20,
+        38
+      ],
+      "confidence": "medium",
+      "reason": "Curated lighting reseller since 2011, many brands, CBW; address shown.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://lumz.nl/",
+        "notes": [
+          "\"Onze collectie is met zorg samengesteld\"",
+          "\"CBW erkend\"",
+          "Tinbergenlaan 11, 3401 MT IJsselstein"
+        ]
+      },
+      "signals": {
+        "focus": "broad",
+        "has_address": true,
+        "marketplace_pattern": false,
+        "product_count_est": 5000,
+        "keurmerk_verified": true
+      },
+      "assumed": [
+        "product_count_est",
+        "keurmerk_verified"
+      ]
+    },
+    {
+      "domain": "wonenmetlef.nl",
+      "name": "Wonen met LEF",
+      "category": "meubels",
+      "expected_band": [
+        15,
+        32
+      ],
+      "confidence": "medium",
+      "reason": "Online reseller of many brands since 2009, no address on homepage.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://wonenmetlef.nl/",
+        "notes": [
+          "\"Zorgvuldig door ons geselecteerd vanwege hun lef-sausje.\"",
+          "\"een ruim aanbod aan stijlvolle merken\""
+        ]
+      },
+      "signals": {
+        "focus": "broad",
+        "marketplace_pattern": true,
+        "product_count_est": 8000
+      },
+      "assumed": [
+        "product_count_est"
+      ],
+      "known_disagreement": "marketplace_pattern is set for a plain multi-brand reseller, and 8,000 products give 0 scale: a reseller ends at platform level (4)."
+    },
+    {
+      "domain": "loods5.nl",
+      "name": "Loods 5",
+      "category": "meubels",
+      "expected_band": [
+        10,
+        25
+      ],
+      "confidence": "high",
+      "reason": "Chain with 300+ brands since 1999.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://loods5.nl/",
+        "notes": [
+          "\"Keuze uit meer dan 300 interieurmerken\"",
+          "\"Eigen Collectie\"",
+          "\"Onze winkels zijn elke dag open\""
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "broad",
+        "has_address": true,
+        "marketplace_pattern": true,
+        "product_count_est": 20000
+      },
+      "assumed": [
+        "product_count_est"
+      ]
+    },
+    {
+      "domain": "fonq.nl",
+      "name": "fonQ",
+      "category": "wonen",
+      "expected_band": [
+        5,
+        15
+      ],
+      "confidence": "high",
+      "reason": "Very large multi-brand platform plus house label, no address on homepage.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://fonq.nl/",
+        "notes": [
+          "\"Ontdek ons ruime assortiment en shop alles wat je nodig hebt voor elke woonstijl en ruimte in huis.\"",
+          "\"Onze eigen collectie\""
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "everything",
+        "marketplace_pattern": true,
+        "product_count_est": 50000
+      },
+      "assumed": [
+        "product_count_est"
+      ]
+    },
+    {
+      "domain": "bol.com",
+      "name": "bol",
+      "category": "wonen",
+      "expected_band": [
+        1,
+        5
+      ],
+      "confidence": "high",
+      "reason": "Anchor: marketplace with millions of items from third-party sellers.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://bol.com/",
+        "notes": [
+          "\"Kies uit miljoenen artikelen.\"",
+          "\"Certificaat Thuiswinkel Waarborg\""
+        ]
+      },
+      "signals": {
+        "focus": "everything",
+        "marketplace_pattern": true,
+        "product_count_est": 1000000,
+        "keurmerk_verified": true
+      },
+      "assumed": [],
+      "known_disagreement": "The keurmerk floor lifts bol to 25 although the plan anchors it at 1; the floor should not apply when marketplace_pattern is true."
+    },
+    {
+      "domain": "villalaura.nl",
+      "name": "Villa Laura",
+      "category": "meubels",
+      "expected_band": [
+        80,
+        95
+      ],
+      "confidence": "high",
+      "reason": "Maker that develops and builds handmade furniture; full address, KvK and VAT.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://villalaura.nl/",
+        "notes": [
+          "\"Maatwerk meubels in landelijke en brocante stijl.\"",
+          "\"Dit product is gemaakt van 100% massief hout.\"",
+          "Van Staverenstraat 39D, 2811 TL Reeuwijk"
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "broad",
+        "has_address": true,
+        "marketplace_pattern": false,
+        "product_count_est": 1000
+      },
+      "assumed": [
+        "product_count_est"
+      ],
+      "known_disagreement": "The signals miss what the site states: own production (\"ontwikkelt en fabriceert\", \"met de hand gemaakt\") and a KvK number. With those it scores 68, still under the band because of the broad focus."
+    },
+    {
+      "domain": "texelana.nl",
+      "name": "Texelana",
+      "category": "woontextiel",
+      "expected_band": [
+        35,
+        55
+      ],
+      "confidence": "medium",
+      "reason": "Wool specialist since 1990, own label plus 8+ third-party brands; full KvK and address; Thuiswinkel.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://texelana.nl/",
+        "notes": [
+          "\"Much of our wool plaids and blankets are from the brand Klippan\""
+        ]
+      },
+      "signals": {
+        "focus": "single_niche",
+        "marketplace_pattern": false,
+        "product_count_est": 150
+      },
+      "assumed": [
+        "product_count_est"
+      ]
+    },
+    {
+      "domain": "droog.com",
+      "name": "Droog",
+      "category": "woonaccessoires",
+      "expected_band": [
+        55,
+        75
+      ],
+      "confidence": "low",
+      "reason": "Design label with own editions made by outside makers; address shown.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://droog.com/",
+        "notes": [
+          "\"droog design archive\"",
+          "Staalstraat 7B, Amsterdam"
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "has_address": true,
+        "marketplace_pattern": false,
+        "product_count_est": 200
+      },
+      "assumed": [
+        "product_count_est",
+        "brand_owner"
+      ],
+      "known_disagreement": "Focus is unknown, so 0 focus points."
+    },
+    {
+      "domain": "suite702.com",
+      "name": "SUITE702",
+      "category": "slapen",
+      "expected_band": [
+        50,
+        68
+      ],
+      "confidence": "medium",
+      "reason": "Own bedding brand made in Portugal, a few collab collections; GOTS.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://suite702.com/",
+        "notes": [
+          "\"Made in Portugal\"",
+          "\"Al ons katoenen bed- en badtextiel is 100% biologisch en GOTS-gecertificeerd.\""
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "few_related",
+        "origin_claims": [
+          "made_in_eu"
+        ],
+        "marketplace_pattern": false,
+        "product_count_est": 400
+      },
+      "assumed": [
+        "product_count_est"
+      ]
+    },
+    {
+      "domain": "sukha.nl",
+      "name": "Sukha Amsterdam",
+      "category": "woonaccessoires",
+      "expected_band": [
+        35,
+        52
+      ],
+      "confidence": "medium",
+      "reason": "Curated boutique with about 38 external brands plus a small own atelier line.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://sukha.nl/",
+        "notes": [
+          "\"we love curating and creating natural, unique handmade products\"",
+          "39 brand tags including Atelier Sukha"
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "broad",
+        "origin_claims": [
+          "handmade"
+        ],
+        "marketplace_pattern": false,
+        "product_count_est": 800
+      },
+      "assumed": [
+        "product_count_est"
+      ]
+    },
+    {
+      "domain": "frozenfountain.nl",
+      "name": "Frozen Fountain",
+      "category": "meubels",
+      "expected_band": [
+        45,
+        65
+      ],
+      "confidence": "low",
+      "reason": "Design gallery selling work of many independent designers; full address.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://frozenfountain.nl/",
+        "notes": [
+          "\"an institute for design\"",
+          "\"THE GREATNESS OF DUTCH DESIGN\"",
+          "Prinsengracht 645, 1016 HV Amsterdam"
+        ]
+      },
+      "signals": {
+        "focus": "broad",
+        "has_address": true,
+        "marketplace_pattern": false,
+        "product_count_est": 1500
+      },
+      "assumed": [
+        "product_count_est"
+      ],
+      "known_disagreement": "A curated Dutch design gallery lands at 26: curation earns no points, so it looks like mass retail."
+    },
+    {
+      "domain": "thingsilikethingsilove.com",
+      "name": "Things I Like Things I Love",
+      "category": "woonaccessoires",
+      "expected_band": [
+        22,
+        40
+      ],
+      "confidence": "medium",
+      "reason": "Chain with house label plus many wholesale brands (HKliving, Dutchbone); no address.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://thingsilikethingsilove.com/",
+        "notes": [
+          "\"Curated with love\"",
+          "\"Kleding, Interieur, Sieraden & meer...\""
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "broad",
+        "marketplace_pattern": false,
+        "product_count_est": 2000
+      },
+      "assumed": [
+        "product_count_est"
+      ]
+    },
+    {
+      "domain": "mrmaria.com",
+      "name": "Mr Maria",
+      "category": "verlichting",
+      "expected_band": [
+        35,
+        55
+      ],
+      "confidence": "low",
+      "reason": "Own-design lamp brand with licensed characters, sold via many retailers; no contact shown.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://mrmaria.com/",
+        "notes": [
+          "\"Designed to be little moments of shine.\""
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "single_niche",
+        "marketplace_pattern": false,
+        "product_count_est": 100
+      },
+      "assumed": [
+        "product_count_est",
+        "brand_owner"
+      ],
+      "known_disagreement": "Single niche and a small range give a licensed-character lamp brand maker-like points (60 vs 55)."
+    },
+    {
+      "domain": "leenbakker.nl",
+      "name": "Leen Bakker",
+      "category": "wonen",
+      "expected_band": [
+        8,
+        20
+      ],
+      "confidence": "high",
+      "reason": "National discount chain, 100+ years, broad range; Thuiswinkel and CBW.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://leenbakker.nl/",
+        "notes": [
+          "\"Leen Bakker not only runs over 100 stores\" (ChannelEngine marketplace listing)"
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "everything",
+        "marketplace_pattern": true,
+        "product_count_est": 10000
+      },
+      "assumed": [
+        "product_count_est"
+      ],
+      "known_disagreement": "Borderline (5 vs 8): a national chain scores like a platform."
+    },
+    {
+      "domain": "gispen.com",
+      "name": "Gispen",
+      "category": "meubels",
+      "expected_band": [
+        55,
+        75
+      ],
+      "confidence": "low",
+      "reason": "Own furniture lines (16) from a long-established Dutch maker, mainly B2B; no address on homepage.",
+      "observed": {
+        "date": "2026-10-28",
+        "url": "https://gispen.com/",
+        "notes": [
+          "\"Gispen offers a very extensive collection of furniture, for offices, care and welfare institutions and education.\""
+        ]
+      },
+      "signals": {
+        "brand_owner": true,
+        "focus": "broad",
+        "marketplace_pattern": false,
+        "product_count_est": 1000
+      },
+      "assumed": [
+        "product_count_est"
+      ],
+      "known_disagreement": "The signals have brand_owner only; Gispen's own factory is not found on the home page. Broad focus costs 16 points."
+    }
+  ]
+}

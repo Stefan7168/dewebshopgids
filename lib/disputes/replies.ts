@@ -18,9 +18,10 @@ export type FactKey = keyof typeof FACT_LABELS;
 export type ReplySlots =
   | { template: "dispute_corrected"; corrected_facts: { fact: FactKey; value: string }[] }
   | { template: "dispute_no_change"; checked_facts: FactKey[] }
-  | { template: "dispute_in_review"; deadline_date: string };
+  | { template: "dispute_in_review"; deadline_date: string }
+  | { template: "dispute_hidden" };
 export type ReplyTemplateId = ReplySlots["template"];
-export const REPLY_TEMPLATE_IDS: readonly ReplyTemplateId[] = ["dispute_corrected", "dispute_no_change", "dispute_in_review"];
+export const REPLY_TEMPLATE_IDS: readonly ReplyTemplateId[] = ["dispute_corrected", "dispute_no_change", "dispute_in_review", "dispute_hidden"];
 
 const MAX_FACTS = 8;
 const MAX_VALUE = 120;
@@ -61,6 +62,7 @@ export function validateReplySlots(templateId: unknown, raw: unknown, now = new 
     dispute_corrected: ["corrected_facts"],
     dispute_no_change: ["checked_facts"],
     dispute_in_review: ["deadline_date"],
+    dispute_hidden: [],
   };
   const id = templateId as ReplyTemplateId;
   for (const k of Object.keys(s)) if (!allowed[id].includes(k)) errors.push(`unexpected slot "${k}"`);
@@ -89,6 +91,8 @@ export function validateReplySlots(templateId: unknown, raw: unknown, now = new 
     if (errors.length) return { ok: false, errors };
     return { ok: true, slots: { template: id, checked_facts: [...new Set(list as FactKey[])] } };
   }
+
+  if (id === "dispute_hidden") return errors.length ? { ok: false, errors } : { ok: true, slots: { template: id } };
 
   const d = s.deadline_date;
   const days = typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d) ? (Date.parse(`${d}T23:59:59Z`) - now.getTime()) / 86_400_000 : NaN;
@@ -133,6 +137,17 @@ export function renderReply(slots: ReplySlots, shop: { name: string; slug: strin
         "We vonden op de site zelf nog geen bron voor een andere waarde, dus deze gegevens blijven voorlopig staan. Staat de juiste informatie op een pagina van de webshop, of heb je een bewijs (bijvoorbeeld een keurmerkcertificaat)? Stuur ons de link of het bestand, dan kijken we opnieuw.",
         "",
         `De pagina: ${page}`,
+        ...footer,
+      ].join("\n"),
+    };
+  }
+  if (slots.template === "dispute_hidden") {
+    return {
+      subject: `We hebben je melding over ${shop.name} afgehandeld`,
+      text: [
+        "Hoi,",
+        "",
+        `Bedankt voor je melding over ${shop.name}. We hebben besloten de webshop voorlopig niet meer in de gids te tonen. De pagina is offline.`,
         ...footer,
       ].join("\n"),
     };

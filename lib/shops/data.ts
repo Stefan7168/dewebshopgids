@@ -4,6 +4,7 @@
 // /api/revalidate expires the "shops" tag after the publish job; hourly as a fallback.
 import { createClient } from "@supabase/supabase-js";
 import { cacheLife, cacheTag } from "next/cache";
+import type { FeaturedPlacement } from "../featured/select";
 import type { Category, PublicShop } from "./present";
 
 const SHOP_COLS =
@@ -26,15 +27,22 @@ export async function getCategories(): Promise<Category[]> {
   return data as Category[];
 }
 
+/** Supabase returns at most 1000 rows per request (PostgREST max_rows), so larger reads page. */
+const PAGE = 1000;
+
 /** All published shops. At launch size (150) one read is cheaper than per-page queries. */
 export async function getPublishedShops(): Promise<PublicShop[]> {
   cacheTag("shops");
   cacheLife("hours");
   const db = anon();
   if (!db) return [];
-  const { data, error } = await db.from("shops_public").select(SHOP_COLS).limit(5000);
-  if (error) throw new Error(`shops_public: ${error.message}`);
-  return data as PublicShop[];
+  const all: PublicShop[] = [];
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await db.from("shops_public").select(SHOP_COLS).order("id").range(from, from + PAGE - 1);
+    if (error) throw new Error(`shops_public: ${error.message}`);
+    all.push(...(data as PublicShop[]));
+    if (data.length < PAGE) return all;
+  }
 }
 
 export async function getShop(slug: string): Promise<PublicShop | null> {
@@ -45,4 +53,21 @@ export async function getShop(slug: string): Promise<PublicShop | null> {
   const { data, error } = await db.from("shops_public").select(SHOP_COLS).eq("slug", slug).maybeSingle();
   if (error) throw new Error(`shops_public: ${error.message}`);
   return data as PublicShop | null;
+}
+
+/** Live "Uitgelicht" placements. Empty until migration 0014 runs, so pages never fail on it. */
+export async function getFeaturedPlacements(): Promise<FeaturedPlacement[]> {
+  cacheTag("shops");
+  cacheLife("hours");
+  const db = anon();
+  if (!db) return [];
+  const { data, error } = await db.from("featured_public").select("shop_id, active_until");
+  if (error) return [];
+  return data as FeaturedPlacement[];
+}
+
+/** Today's date (YYYY-MM-DD), cached so prerendered pages can compare dates; badge grace covers the lag. */
+export async function cachedToday(): Promise<string> {
+  cacheLife("hours");
+  return new Date().toISOString().slice(0, 10);
 }

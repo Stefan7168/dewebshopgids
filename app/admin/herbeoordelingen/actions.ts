@@ -3,7 +3,7 @@
 import { revalidatePath, updateTag } from "next/cache";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { validateReplySlots } from "@/lib/disputes/replies";
-import { factColumns, isOverrideFact, parseFactInput, type OverrideFact } from "@/lib/overrides/facts";
+import { CORRECTION_ROWS, factColumns, isOverrideFact, parseFactInput, type OverrideFact } from "@/lib/overrides/facts";
 import { createServiceClient } from "@/lib/supabase/service";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -55,9 +55,6 @@ export async function decideDispute(formData: FormData) {
   await db.from("score_overrides").update({ status: "rejected", approved_by: email }).eq("shop_id", d.shop_id).eq("status", "draft");
   revalidatePath("/admin/herbeoordelingen");
 }
-
-/** Rows of the correction form: fact_1/value_1 up to fact_3/value_3, empty rows skipped. */
-export const CORRECTION_ROWS = 3;
 
 // G4 "correction": Stefan agrees the sender is right. Fact corrections go in fact_overrides and
 // are written to the shop at once; the nightly apply-overrides step keeps them in place. A new

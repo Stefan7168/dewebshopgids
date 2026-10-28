@@ -4,8 +4,8 @@ import { requireAdmin } from "@/lib/auth/require-admin";
 import { FACT_LABELS } from "@/lib/disputes/replies";
 import { createServiceClient } from "@/lib/supabase/service";
 import { Button } from "@/components/ui/button";
-import { OVERRIDE_FACTS } from "@/lib/overrides/facts";
-import { CORRECTION_ROWS, correctDispute, decideDispute } from "./actions";
+import { CORRECTION_ROWS, OVERRIDE_FACTS } from "@/lib/overrides/facts";
+import { correctDispute, decideDispute } from "./actions";
 
 type Row = {
   id: string;

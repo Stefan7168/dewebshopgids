@@ -1,22 +1,20 @@
-import { redirect } from "next/navigation";
+import Link from "next/link";
 import { Suspense } from "react";
-
-import { createClient } from "@/lib/supabase/server";
-import { isAdminEmail } from "@/lib/auth/admin";
+import { requireAdmin } from "@/lib/auth/require-admin";
 
 async function AdminHome() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-
-  if (error || !isAdminEmail(data?.claims?.email as string | undefined)) {
-    redirect("/auth/login");
-  }
-
+  const email = await requireAdmin();
   return (
-    <p className="text-sm">
-      Ingelogd als {String(data?.claims?.email)}. Gates, kill switch en run log
-      komen hier (zie plan, sectie 15).
-    </p>
+    <div className="flex flex-col gap-4 text-sm">
+      <p>Ingelogd als {email}.</p>
+      <ul className="list-disc pl-5">
+        <li>
+          <Link href="/admin/kandidaten" className="underline">
+            G6: nieuwe webshops goedkeuren
+          </Link>
+        </li>
+      </ul>
+    </div>
   );
 }
 

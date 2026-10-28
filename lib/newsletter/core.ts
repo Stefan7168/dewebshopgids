@@ -10,6 +10,10 @@ export const GUIDE_START_MONTH: string | null = "februari";
 export const CONFIRM_VALID_DAYS = 7;
 /** One confirmation email per address per day, so the form cannot be used to flood an inbox. */
 export const RESEND_CONFIRM_AFTER_HOURS = 24;
+/** Sign-ups per visitor per hour, counted in memory only. */
+export const SUBSCRIBE_PER_SENDER_PER_HOUR = 5;
+/** New unconfirmed sign-ups site-wide per hour; above this the form pauses, so it cannot be used to mail-bomb. */
+export const SUBSCRIBE_SITE_WIDE_PER_HOUR = 100;
 
 export function signupHeadline(startMonth = GUIDE_START_MONTH): string {
   const base = "Elke week 5 unieke woonwinkels in je inbox";

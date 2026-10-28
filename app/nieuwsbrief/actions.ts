@@ -1,8 +1,11 @@
 "use server";
 
+import { headers } from "next/headers";
 import {
   CONFIRM_VALID_DAYS,
   RESEND_CONFIRM_AFTER_HOURS,
+  SUBSCRIBE_PER_SENDER_PER_HOUR,
+  SUBSCRIBE_SITE_WIDE_PER_HOUR,
   confirmEmail,
   hashToken,
   isTokenShape,
@@ -14,21 +17,31 @@ import {
   welcomeShops,
 } from "@/lib/newsletter/core";
 import { addToGuideSegment, ensureContact, sendToContact, setUnsubscribed } from "@/lib/newsletter/resend";
+import { MemoryLimiter, senderKey } from "@/lib/rate-limit";
 import { getPublishedShops } from "@/lib/shops/data";
 import { createServiceClient } from "@/lib/supabase/service";
 
 export type FormState = { ok: boolean; message: string } | null;
 
 const SAME_ANSWER = "Bijna klaar: check je inbox en bevestig je inschrijving.";
+const BUSY = "Er komen nu veel aanmeldingen binnen. Probeer het over een uur nog eens.";
+
+const perSender = new MemoryLimiter(SUBSCRIBE_PER_SENDER_PER_HOUR, 3_600_000);
 
 export async function subscribe(_prev: FormState, formData: FormData): Promise<FormState> {
   if (formData.get("website")) return { ok: true, message: SAME_ANSWER }; // honeypot: bots fill every field
   const email = normaliseEmail(formData.get("email"));
   if (!email) return { ok: false, message: "Dit e-mailadres klopt niet. Probeer het nog eens." };
   const sourcePath = String(formData.get("source") ?? "").slice(0, 200);
+  if (!perSender.allow(senderKey(await headers()))) return { ok: false, message: "Je hebt het formulier al een paar keer verstuurd. Probeer het over een uur nog eens." };
 
   try {
     const db = createServiceClient();
+    // Before any call to Resend: the database count holds across server instances.
+    const hourAgo = new Date(Date.now() - 3_600_000).toISOString();
+    const { count, error: countError } = await db.from("subscribers").select("id", { count: "exact", head: true }).is("confirmed_at", null).gte("created_at", hourAgo);
+    if (countError) throw new Error(countError.message);
+    if ((count ?? 0) >= SUBSCRIBE_SITE_WIDE_PER_HOUR) return { ok: false, message: BUSY };
     const contactId = await ensureContact(email);
     const { data: existing } = await db.from("subscribers").select("id, confirmed_at, created_at").eq("resend_contact_id", contactId).maybeSingle();
     // Same answer in every case, so the form does not reveal who is subscribed.

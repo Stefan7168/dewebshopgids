@@ -1,10 +1,10 @@
 -- Role tests for 0006: every forbidden write from plan section 7 must fail.
 begin;
 
-insert into public.categories (slug, name_nl) values ('wonen', 'Wonen');
+insert into public.categories (slug, name_nl) values ('test-cat', 'Test');
 insert into public.shops (slug, name, domain, category_id, status, contact_email, score)
-values ('a', 'A', 'a.nl', (select id from public.categories where slug = 'wonen'), 'draft', 'info@a.nl', 50),
-       ('h', 'H', 'h.nl', (select id from public.categories where slug = 'wonen'), 'hidden', null, 40);
+values ('a', 'A', 'a.nl', (select id from public.categories where slug = 'test-cat'), 'draft', 'info@a.nl', 50),
+       ('h', 'H', 'h.nl', (select id from public.categories where slug = 'test-cat'), 'hidden', null, 40);
 insert into public.disputes (shop_id, email, type) values ((select id from public.shops where slug = 'a'), 'info@a.nl', 'correction');
 
 -- Helper: run a statement as a role and require that it fails.

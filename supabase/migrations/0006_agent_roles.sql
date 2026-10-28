@@ -5,7 +5,7 @@
 -- Roles are created NOLOGIN with no password. scripts/agents/set-role-password.ts
 -- enables login and sets a password that lives only in that agent's routine or
 -- workflow secret. kill-switch.yml turns them back to NOLOGIN.
--- guide_issues and pin_drafts arrive in 0007, with their grants.
+-- guide_issues and pin_drafts arrive in a later migration (phase 3), with their grants.
 
 do $$
 declare r text;
@@ -196,7 +196,7 @@ create policy agent_settings_ops_pause_update on public.agent_settings for updat
 create policy email_queue_ops_insert on public.email_queue for insert to agent_ops
   with check ("to" = 'owner' and shop_id is null and template in ('ops_pause_alert', 'digest_summary'));
 
--- Guide Editor and Fact Checker: grants arrive with guide_issues in 0007.
+-- Guide Editor and Fact Checker: grants arrive with guide_issues (phase 3).
 
 -- Pipeline (deterministic code): read and write the pipeline tables -------------
 do $$

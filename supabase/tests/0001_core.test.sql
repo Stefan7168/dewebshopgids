@@ -1,13 +1,13 @@
 -- Tests for 0001_core. Runs in a transaction and rolls back.
 begin;
 
-insert into public.categories (slug, name_nl) values ('wonen', 'Wonen');
+insert into public.categories (slug, name_nl) values ('test-cat', 'Test');
 insert into public.shops (slug, name, domain, category_id, status, contact_email)
-values ('draft-shop', 'Draft', 'draft.nl', (select id from public.categories where slug = 'wonen'), 'draft', 'info@draft.nl');
+values ('draft-shop', 'Draft', 'draft.nl', (select id from public.categories where slug = 'test-cat'), 'draft', 'info@draft.nl');
 -- From 0006 only the pipeline role may publish.
 set local role pipeline;
 insert into public.shops (slug, name, domain, category_id, status, contact_email)
-values ('pub-shop', 'Pub', 'pub.nl', (select id from public.categories where slug = 'wonen'), 'published', 'info@pub.nl');
+values ('pub-shop', 'Pub', 'pub.nl', (select id from public.categories where slug = 'test-cat'), 'published', 'info@pub.nl');
 reset role;
 
 -- agents_enabled defaults to true
@@ -64,7 +64,7 @@ begin
 
   -- categories are public
   select count(*) into n from public.categories;
-  assert n = 1, 'anon must read categories';
+  assert n = 9, 'anon must read categories (8 seeded + 1 test)';
 end $$;
 
 reset role;

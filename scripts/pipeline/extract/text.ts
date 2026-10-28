@@ -49,11 +49,22 @@ export function sameSiteLinks(html: string, pageUrl: string): string[] {
   return out;
 }
 
-const ABOUT = /\/(over-?ons|over|about(-us)?|ons-verhaal|wie-zijn-wij|het-atelier|onze-werkplaats|our-story)\/?$/i;
-const CONTACT = /\/(contact|klantenservice|contact-?gegevens|customer-service)\/?$/i;
+const EXT = String.raw`(\.html?|\.php)?\/?$`;
+const ABOUT = new RegExp(
+  String.raw`\/(over-?ons|about(-us)?|ons-verhaal|het-verhaal|wie-zijn-wij|wie-we-zijn|het-atelier|ons-atelier|onze-werkplaats|de-werkplaats|our-story)` + EXT,
+  "i",
+);
+/** "over-mij", "over-studio-x": only used when no ABOUT link exists, as "over-verzending" also matches. */
+const ABOUT_LOOSE = new RegExp(String.raw`\/(over|about)-[a-z0-9-]+` + EXT, "i");
+const CONTACT = new RegExp(String.raw`\/(contact(-?[a-z0-9-]+)?|klantenservice|customer-service)` + EXT, "i");
+
+/** Tried in order when the home page links no about or contact page (menus built by JavaScript). */
+export const ABOUT_FALLBACK_PATHS = ["/over-ons", "/pages/over-ons", "/about-us"] as const;
+export const CONTACT_FALLBACK_PATHS = ["/contact", "/pages/contact"] as const;
 
 export function pickAboutLink(links: string[]): string | null {
-  return links.find((l) => ABOUT.test(new URL(l).pathname)) ?? null;
+  const path = (l: string) => new URL(l).pathname;
+  return links.find((l) => ABOUT.test(path(l))) ?? links.find((l) => ABOUT_LOOSE.test(path(l)) && !/verzend|retour|bezorg|betaal|cookie|privacy/i.test(path(l))) ?? null;
 }
 
 export function pickContactLink(links: string[]): string | null {

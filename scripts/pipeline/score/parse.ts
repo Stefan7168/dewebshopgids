@@ -4,7 +4,7 @@
 import type { ScoringSignals } from "../../../lib/scoring/compute";
 import { redactPersonalData, verifyQuote, type QuoteCheck } from "../../../lib/scoring/quotes";
 import type { Focus, OriginClaim } from "../../../lib/scoring/weights";
-import { FOCUS_VALUES, MAX_PAGE_CHARS, ORIGIN_VALUES, PAGE_IDS, type CrawlPage, type PageId } from "./prompt";
+import { FOCUS_VALUES, ORIGIN_VALUES, pageExcerpt, PAGE_IDS, type CrawlPage, type PageId } from "./prompt";
 
 export type SignalRow = {
   signalKey: string;
@@ -69,7 +69,7 @@ export function parseAnswer(raw: string, pages: CrawlPage[]): ParsedAnswer {
   function check(quote: unknown, page: unknown): { ok: boolean; quote: string | null; url: string | null; ratio: number | null } {
     const p = typeof page === "string" ? pageById.get(page as PageId) : undefined;
     if (typeof quote !== "string" || !p) return { ok: false, quote: null, url: null, ratio: null };
-    const c = verifyQuote(quote, p.text.slice(0, MAX_PAGE_CHARS));
+    const c = verifyQuote(quote, pageExcerpt(p.text));
     checks.push(c);
     return { ok: c.verified, quote: c.verified ? redactPersonalData(quote).text : null, url: p.url, ratio: c.ratio };
   }

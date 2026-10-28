@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createPoliteFetcher } from "../fetch-polite";
 import { createFixtureFetch, createVirtualClock } from "../test-utils/fixture-fetch";
-import { htmlToText, pickAboutLink, sameSiteLinks } from "../extract/text";
+import { htmlToText, pickAboutLink, pickContactLink, sameSiteLinks } from "../extract/text";
 import { crawlShop } from "./crawl-shop";
 
 function fetcher() {
@@ -50,6 +50,30 @@ describe("crawlShop", () => {
     expect(r.fetchErrors).toBe(1);
     expect(r.pages[1].text).toContain("Sinds 2014 maken wij alles met de hand");
     expect(r.pages[5].text).toBeNull();
+  });
+
+  it("tries common about and contact paths when the home page links neither", async () => {
+    const { fetchPolite, requests } = fetcher();
+    const r = await crawlShop(fetchPolite, "werkplaats.test");
+    if (!r.ok) throw new Error(r.error);
+    // /over-ons serves the home page again (soft 404) and is skipped; /about-us is never tried.
+    expect(r.pages.map((p) => [p.pageType, p.url])).toEqual([
+      ["home", "https://werkplaats.test/"],
+      ["about", "https://werkplaats.test/pages/over-ons"],
+      ["contact", "https://werkplaats.test/contact"],
+    ]);
+    expect(requests).not.toContain("https://werkplaats.test/about-us");
+    expect(r.pages[1].text).toContain("bouwen wij elke kast zelf");
+    expect(r.hasKvk).toBe(true);
+    expect(r.contactEmail).toBe("info@werkplaats.test");
+    expect(r.fetchErrors).toBe(0);
+  });
+
+  it("matches about and contact links with file endings and loose Dutch slugs", () => {
+    const links = ["https://s.test/over-verzending", "https://s.test/nl/over-mij.html", "https://s.test/contact-us"];
+    expect(pickAboutLink(links)).toBe("https://s.test/nl/over-mij.html");
+    expect(pickContactLink(links)).toBe("https://s.test/contact-us");
+    expect(pickAboutLink(["https://s.test/over-mij", "https://s.test/over-ons"])).toBe("https://s.test/over-ons");
   });
 
   it("fails when the home page is not reachable", async () => {

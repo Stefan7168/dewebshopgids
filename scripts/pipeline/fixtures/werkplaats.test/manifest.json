@@ -1,0 +1,8 @@
+{
+  "https://werkplaats.test/robots.txt": { "status": 200, "file": "robots.txt" },
+  "https://werkplaats.test/": { "status": 200, "file": "index.html" },
+  "https://werkplaats.test/over-ons": { "status": 200, "file": "index.html" },
+  "https://werkplaats.test/pages/over-ons": { "status": 200, "file": "over-ons.html" },
+  "https://werkplaats.test/contact": { "status": 200, "file": "contact.html" },
+  "https://werkplaats.test/pages/contact": { "status": 200, "file": "contact.html" }
+}

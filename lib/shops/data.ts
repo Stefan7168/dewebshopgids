@@ -7,7 +7,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import type { Category, PublicShop } from "./present";
 
 const SHOP_COLS =
-  "id, slug, name, domain, category_id, platform, product_count_est, domain_first_seen, keurmerk, keurmerk_status, affiliate_available, price_level, has_physical_store, store_city, ships_from_country, score, score_version, score_label, description_nl, verified_badge_until, updated_at";
+  "id, slug, name, domain, category_id, platform, product_count_est, domain_first_seen, keurmerk, keurmerk_status, affiliate_available, price_level, has_physical_store, store_city, ships_from_country, score, score_version, score_label, description_nl, verified_badge_until, updated_at, status";
 
 function anon() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

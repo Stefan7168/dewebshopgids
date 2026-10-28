@@ -125,6 +125,13 @@ async function ShopDetails({ params }: Props) {
       <Suspense fallback={null}>
         <EarnedSubScores shop={shop} />
       </Suspense>
+      <p className="text-sm text-muted-foreground">
+        {shop.status === "disputed" ? "Deze score wordt opnieuw beoordeeld na een vraag over de gegevens." : "Klopt er iets niet?"}{" "}
+        <Link href={`/herbeoordeling?shop=${shop.slug}`} rel="nofollow" className="underline">
+          Vraag een herbeoordeling aan
+        </Link>
+        {" of laat deze webshop verwijderen."}
+      </p>
       <NewsletterForm headline={signupHeadline()} source={`/webshop/${shop.slug}`} />
       <JsonLd
         data={{

@@ -37,6 +37,8 @@ export type PublicShop = {
   description_nl: string | null;
   verified_badge_until: string | null;
   updated_at: string;
+  /** `disputed` shows "In beoordeling" instead of the score (migration 0008). */
+  status: "published" | "disputed";
 };
 
 export type Category = {
@@ -60,8 +62,8 @@ export type ScoreDisplay =
  * LABEL_BELOW..AUDIT_BAND_MAX stores `audit_required` and shows no number until the
  * auditor agrees (the publish job clears the label then).
  */
-export function scoreDisplay(s: Pick<PublicShop, "score" | "score_label">): ScoreDisplay {
-  if (s.score_label === "audit_required") return { kind: "pending" };
+export function scoreDisplay(s: Pick<PublicShop, "score" | "score_label"> & { status?: PublicShop["status"] }): ScoreDisplay {
+  if (s.status === "disputed" || s.score_label === "audit_required") return { kind: "pending" };
   if (s.score_label) return { kind: "label", text: s.score_label };
   if (s.score == null) return { kind: "none" };
   return { kind: "number", value: s.score };
@@ -73,7 +75,7 @@ export const MIN_SHOPS_TO_INDEX = 5;
 const RANK_ORDER: Record<ScoreDisplay["kind"], number> = { number: 0, pending: 1, label: 2, none: 3 };
 
 /** Numbered shops by score, high to low; then the rest. Ties and the rest by name. */
-export function rankShops<T extends Pick<PublicShop, "score" | "score_label" | "name">>(shops: T[]): T[] {
+export function rankShops<T extends Pick<PublicShop, "score" | "score_label" | "name"> & { status?: PublicShop["status"] }>(shops: T[]): T[] {
   return [...shops].sort((a, b) => {
     const da = scoreDisplay(a);
     const db = scoreDisplay(b);

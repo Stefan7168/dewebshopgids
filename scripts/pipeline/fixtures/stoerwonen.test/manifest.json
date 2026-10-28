@@ -1,0 +1,4 @@
+{
+  "https://stoerwonen.test/robots.txt": { "status": 503, "file": null },
+  "https://stoerwonen.test/": { "status": 200, "file": "index.html" }
+}

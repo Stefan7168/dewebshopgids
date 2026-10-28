@@ -1,16 +1,21 @@
 import { getCategories, getPublishedShops } from "@/lib/shops/data";
-import { MIN_SHOPS_TO_INDEX, shopsInCategory } from "@/lib/shops/present";
+import { MIN_SHOPS_TO_INDEX, promotedRoots, shopsInCategory } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 
 // llms.txt (https://llmstxt.org): a plain summary for AI crawlers. Low expected value
 // (most llms.txt files are never fetched), but it costs nothing and states our method.
 export async function GET() {
   const [categories, shops] = await Promise.all([getCategories(), getPublishedShops()]);
-  const listed = categories.filter((c) => shopsInCategory(shops, c, categories).length >= MIN_SHOPS_TO_INDEX);
+  const roots = promotedRoots(categories, shops);
+  const rootIds = new Set(roots.map((c) => c.id));
+  const listed = categories.filter(
+    (c) => rootIds.has(c.parent_id ?? c.id) && shopsInCategory(shops, c, categories).length >= MIN_SHOPS_TO_INDEX,
+  );
+  const scope = roots.some((c) => c.slug === "tuin-buiten") ? "wonen, interieur en tuin" : "wonen en interieur";
   const body = [
     `# ${SITE.name}`,
     "",
-    "> Onafhankelijke gids van unieke en betrouwbare Nederlandse webshops voor wonen, interieur en tuin. Elke webshop krijgt een echtheidsscore van 1 tot 100, berekend met een vaste methode uit wat letterlijk op de eigen site staat, plus het aantal producten, de leeftijd van het domein en een gecontroleerd keurmerk.",
+    `> Onafhankelijke gids van unieke en betrouwbare Nederlandse webshops voor ${scope}. Elke webshop krijgt een echtheidsscore van 1 tot 100, berekend met een vaste methode uit wat letterlijk op de eigen site staat, plus het aantal producten, de leeftijd van het domein en een gecontroleerd keurmerk.`,
     "",
     "Betaling heeft geen invloed op de score of de volgorde. Webshops kunnen een herbeoordeling of verwijdering aanvragen.",
     "",

@@ -6,14 +6,15 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getCategories, getPublishedShops } from "@/lib/shops/data";
 import { signupHeadline } from "@/lib/newsletter/core";
-import { rankShops, shopsInCategory } from "@/lib/shops/present";
+import { promotedRoots, rankShops, shopsInCategory } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 
 const TOP_N = 10;
 
 export default async function Home() {
   const [categories, shops] = await Promise.all([getCategories(), getPublishedShops()]);
-  const roots = categories.filter((c) => c.parent_id === null);
+  const roots = promotedRoots(categories, shops);
+  const withGarden = roots.some((c) => c.slug === "tuin-buiten");
   const top = rankShops(shops).slice(0, TOP_N);
 
   return (
@@ -21,9 +22,9 @@ export default async function Home() {
       <SiteHeader />
       <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 flex flex-col gap-8">
         <section className="flex flex-col gap-3">
-          <h1 className="text-3xl font-bold">Unieke en betrouwbare webshops voor huis en tuin</h1>
+          <h1 className="text-3xl font-bold">{withGarden ? "Unieke en betrouwbare webshops voor huis en tuin" : "Unieke en betrouwbare woonwinkels"}</h1>
           <p className="text-lg">
-            Nederlandse webshops voor wonen, interieur en tuin, gecontroleerd op feiten: hoe lang ze online zijn, hoeveel producten ze
+            Nederlandse webshops voor {withGarden ? "wonen, interieur en tuin" : "wonen en interieur"}, gecontroleerd op feiten: hoe lang ze online zijn, hoeveel producten ze
             hebben, welk keurmerk ze echt hebben, en een echtheidsscore van 1 tot 100.
           </p>
           <p className="text-sm text-muted-foreground">

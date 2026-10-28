@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { MARKETPLACE_LABEL, MAX_POINTS } from "@/lib/scoring/weights";
 import { earnedSubScores, subScoreFor, type SignalRow } from "./evidence-rules";
-import { countryName, keurmerkText, onlineSince, productCountText, rankingExplanation, rankShops, scoreDisplay, shopsInCategory, type Category } from "./present";
+import { countryName, keurmerkText, onlineSince, productCountText, promotedRoots, rankingExplanation, rankShops, scoreDisplay, shopsInCategory, type Category } from "./present";
 
 describe("scoreDisplay", () => {
   it("shows the number only when no label is set", () => {
@@ -36,6 +36,20 @@ describe("shopsInCategory", () => {
   it("includes direct sub-categories for a parent", () => {
     expect(shopsInCategory(shops, cats[0], cats)).toHaveLength(2);
     expect(shopsInCategory(shops, cats[1], cats)).toEqual([{ category_id: "m" }]);
+  });
+});
+
+describe("promotedRoots", () => {
+  const cats: Category[] = [
+    { id: "w", slug: "wonen", name_nl: "Wonen", parent_id: null, intro_nl: null, seo_title: null, sort_order: 0 },
+    { id: "t", slug: "tuin-buiten", name_nl: "Tuin & buiten", parent_id: null, intro_nl: null, seo_title: null, sort_order: 1 },
+    { id: "p", slug: "potten", name_nl: "Potten", parent_id: "t", intro_nl: null, seo_title: null, sort_order: 2 },
+  ];
+  it("always shows Wonen and adds another main category only from 30 shops", () => {
+    const some = Array.from({ length: 29 }, () => ({ category_id: "p" }));
+    expect(promotedRoots(cats, []).map((c) => c.slug)).toEqual(["wonen"]);
+    expect(promotedRoots(cats, some).map((c) => c.slug)).toEqual(["wonen"]);
+    expect(promotedRoots(cats, [...some, { category_id: "t" }]).map((c) => c.slug)).toEqual(["wonen", "tuin-buiten"]);
   });
 });
 

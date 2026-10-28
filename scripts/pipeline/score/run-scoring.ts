@@ -36,8 +36,10 @@ async function loadItem(sql: Sql, shop: ShopRow): Promise<ScoreItem & { keurmerk
 
 const SHOP_COLS = "id, name, domain, product_count_est, platform, keurmerk_status";
 
-export async function collectBatches(sql: Sql, client: BatchClient): Promise<string[]> {
+/** Collect every open batch. `failed` is true when a batch was under the 80% quote match rate. */
+export async function collectBatches(sql: Sql, client: BatchClient): Promise<{ notes: string[]; failed: boolean }> {
   const notes: string[] = [];
+  let failed = false;
   const open = await sql<{ id: string; batch_id: string }[]>`
     select id, batch_id from public.score_runs where batch_status in ('submitted', 'in_progress') order by started_at`;
   for (const run of open) {
@@ -86,14 +88,15 @@ export async function collectBatches(sql: Sql, client: BatchClient): Promise<str
         update public.agent_settings set value = to_jsonb(round((value #>> '{}')::numeric + ${res.costUsd}, 4))
         where key = 'month_spend_usd'`;
     });
-    const failed = res.outcomes.filter((o) => o.kind === "failed").length;
+    if (!res.passed) failed = true;
+    const shopFailures = res.outcomes.filter((o) => o.kind === "failed").length;
     notes.push(
-      `batch ${run.batch_id}: scored ${scored}, failed ${failed}, match rate ${res.matchRate}, cost USD ${res.costUsd}` +
+      `batch ${run.batch_id}: scored ${scored}, failed ${shopFailures}, match rate ${res.matchRate}, cost USD ${res.costUsd}` +
         (res.passed ? "" : " (FAILED: match rate under 0.8, no scores written)") +
         (res.injectionShopIds.length ? `; instructions found in shop data: ${res.injectionShopIds.join(", ")}` : ""),
     );
   }
-  return notes;
+  return { notes, failed };
 }
 
 export async function submitIfIdle(sql: Sql, client: BatchClient): Promise<string> {
@@ -125,10 +128,11 @@ async function main() {
   const client = new Anthropic();
   try {
     await runAgentJob(sql, { agent: "scoring", runsOn: "code", trigger: "pipeline" }, async () => {
-      const notes = await collectBatches(sql, client);
+      const { notes, failed } = await collectBatches(sql, client);
       notes.push(await submitIfIdle(sql, client));
       const summary = notes.join(" | ");
       console.log(summary);
+      if (failed) throw new Error(summary);
       return { summary };
     });
   } finally {

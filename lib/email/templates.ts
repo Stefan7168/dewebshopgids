@@ -1,6 +1,7 @@
 // email_queue templates (plan v3 section 7). Plain-text Dutch emails built from typed slots.
 // The sender sends only templates listed here; agents can queue rows but never choose the text.
 import { REPLY_TEMPLATE_IDS, renderReply, validateReplySlots } from "../disputes/replies";
+import { renderPrenotice } from "./prenotice";
 
 export type Rendered = { subject: string; text: string };
 type Slots = Record<string, unknown>;
@@ -61,6 +62,8 @@ export const TEMPLATES: Record<string, Template> = {
   },
   // Consumed by scripts/ops/digest.ts, never sent on its own.
   digest_summary: { recipient: "internal" },
+  // Pre-notice to the shop: `to` is the `prenotice` disputes row, whose email is the shop's contact_email.
+  prenotice: { recipient: "dispute", render: renderPrenotice },
   // Dispute replies: slots are { reply: <agent slots>, shop_name, shop_slug }, the last two filled by code.
   ...Object.fromEntries(
     REPLY_TEMPLATE_IDS.map((id): [string, Template] => [

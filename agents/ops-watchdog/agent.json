@@ -1,0 +1,10 @@
+{
+  "name": "ops-watchdog",
+  "runs_on": "routine",
+  "role": "agent_ops",
+  "schedule": { "cron": "30 5,11,17,23 * * *", "timezone": "Europe/Amsterdam" },
+  "max_gap_minutes": 420,
+  "max_turns": 30,
+  "max_tokens": 100000,
+  "routine_prompt": "Run agents/ops-watchdog as described in its instructions.md."
+}

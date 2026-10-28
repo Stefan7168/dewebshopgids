@@ -92,6 +92,46 @@ export const TOPICS: BesteTopic[] = [
     ],
   },
   {
+    slug: "tuinmeubels",
+    categorySlug: "tuinmeubels",
+    title: "De meest unieke webshops voor tuinmeubels",
+    intro: [
+      "Een tuintafel, bank of ligbed die jaren buiten kan staan: deze lijst toont Nederlandse webshops voor tuinmeubels, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Let bij tuinmeubels op hout, staal en afwerking. Shops die zelf ontwerpen of in eigen werkplaats maken, scoren hier hoger dan doorverkopers van dezelfde collecties.",
+    ],
+  },
+  {
+    slug: "potten-en-plantenbakken",
+    categorySlug: "potten-plantenbakken",
+    title: "De meest unieke webshops voor potten en plantenbakken",
+    intro: [
+      "Van cortenstaal tot handgedraaid aardewerk: deze lijst toont Nederlandse webshops voor potten en plantenbakken, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Veel plantenbakken komen uit dezelfde fabrieken. Een eigen werkplaats of maatwerk zegt meer; bij elke shop zie je waar dat op de site staat.",
+    ],
+  },
+  {
+    slug: "buitenverlichting",
+    categorySlug: "buitenverlichting",
+    title: "De meest unieke webshops voor buitenverlichting",
+    intro: [
+      "Lampen voor tuin, terras en gevel: deze lijst toont Nederlandse webshops voor buitenverlichting, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Shops die hun lampen zelf ontwerpen of in kleine series maken, scoren hier hoger dan shops met een groot assortiment van andere merken.",
+    ],
+  },
+  {
+    slug: "vuurschalen-en-bbq",
+    categorySlug: "vuur-bbq",
+    title: "De meest unieke webshops voor vuurschalen en bbq",
+    intro: [
+      "Vuurschalen, buitenkeukens en barbecues: deze lijst toont Nederlandse webshops voor vuur en bbq, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Shops die hun vuurschalen of barbecues zelf maken, of een duidelijke herkomst noemen, scoren hier hoger. Bij elke shop zie je de zin van zijn eigen site waar de punten op gebaseerd zijn.",
+    ],
+  },
+  {
     slug: "met-showroom",
     categorySlug: "wonen",
     title: "Unieke woonwebshops met een winkel of showroom",

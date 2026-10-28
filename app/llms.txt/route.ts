@@ -10,7 +10,7 @@ export async function GET() {
   const body = [
     `# ${SITE.name}`,
     "",
-    "> Onafhankelijke gids van unieke en betrouwbare Nederlandse webshops voor wonen en interieur. Elke webshop krijgt een echtheidsscore van 1 tot 100, berekend met een vaste methode uit wat letterlijk op de eigen site staat, plus het aantal producten, de leeftijd van het domein en een gecontroleerd keurmerk.",
+    "> Onafhankelijke gids van unieke en betrouwbare Nederlandse webshops voor wonen, interieur en tuin. Elke webshop krijgt een echtheidsscore van 1 tot 100, berekend met een vaste methode uit wat letterlijk op de eigen site staat, plus het aantal producten, de leeftijd van het domein en een gecontroleerd keurmerk.",
     "",
     "Betaling heeft geen invloed op de score of de volgorde. Webshops kunnen een herbeoordeling of verwijdering aanvragen.",
     "",

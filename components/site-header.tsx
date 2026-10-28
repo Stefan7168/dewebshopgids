@@ -10,7 +10,10 @@ export function SiteHeader() {
         </Link>
         <nav className="flex items-center gap-4 text-sm">
           <Link href="/categorie/wonen" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">
-            Wonen &amp; interieur
+            Wonen
+          </Link>
+          <Link href="/categorie/tuin-buiten" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">
+            Tuin
           </Link>
           <Link href="/zoeken" className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">
             Zoeken

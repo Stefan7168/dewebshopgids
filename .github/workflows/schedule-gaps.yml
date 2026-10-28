@@ -1,0 +1,33 @@
+# Schedule gap check every 3 hours: a run that never starts writes no agent_runs
+# row, so code compares each agent's last run with agent_schedule.max_gap_minutes
+# and queues an owner alert email (once per agent per day).
+name: Schedule gaps
+
+on:
+  schedule:
+    - cron: "30 */3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: schedule-gaps
+  cancel-in-progress: false
+
+jobs:
+  gaps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Check schedule gaps
+        env:
+          DATABASE_URL: ${{ secrets.PIPELINE_DATABASE_URL }}
+        run: npx tsx scripts/ops/health.ts gaps

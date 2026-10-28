@@ -1,0 +1,10 @@
+{
+  "name": "dispute-handler",
+  "runs_on": "routine",
+  "role": "agent_dispute",
+  "schedule": { "cron": "15 1,7,13,19 * * *", "timezone": "Europe/Amsterdam" },
+  "max_gap_minutes": 420,
+  "max_turns": 60,
+  "max_tokens": 200000,
+  "routine_prompt": "Run agents/dispute-handler as described in its instructions.md."
+}

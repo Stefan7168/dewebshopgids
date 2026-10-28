@@ -17,6 +17,7 @@ export const CODE_SCHEDULES: ScheduleRow[] = [
   { agent: "score-collect", cron: "0 1 * * *", timezone: "Europe/Amsterdam", max_gap_minutes: 1620 },
   { agent: "health", cron: "15 */6 * * *", timezone: "UTC", max_gap_minutes: 420 },
   { agent: "escalations", cron: "45 */3 * * *", timezone: "UTC", max_gap_minutes: 240 },
+  { agent: "digest", cron: "0 18 * * 0", timezone: "Europe/Amsterdam", max_gap_minutes: 10140 },
 ];
 
 export function readAgentSchedules(agentsDir = join(process.cwd(), "agents")): ScheduleRow[] {
@@ -100,10 +101,31 @@ async function writeChecks(sql: Sql, checks: Check[]) {
   }
 }
 
+/**
+ * A Watchdog pause sets enabled.<agent> = false and paused_until.<agent>. Once paused_until
+ * has passed and this run has no failed check, code lifts it (the Watchdog never unpauses).
+ * A disable without paused_until is a human decision and stays.
+ */
+export async function liftExpiredPauses(sql: Sql): Promise<string[]> {
+  const rows = await sql<{ agent: string }[]>`
+    select substr(p.key, length('paused_until.') + 1) as agent
+    from public.agent_settings p
+    join public.agent_settings e on e.key = 'enabled.' || substr(p.key, length('paused_until.') + 1)
+    where p.key like 'paused_until.%' and jsonb_typeof(p.value) = 'string'
+      and (p.value #>> '{}')::timestamptz <= now() and e.value = 'false'::jsonb`;
+  for (const { agent } of rows) {
+    await sql`update public.agent_settings set value = 'true'::jsonb where key = ${`enabled.${agent}`}`;
+    await sql`update public.agent_settings set value = 'null'::jsonb where key = ${`paused_until.${agent}`}`;
+  }
+  return rows.map((r) => r.agent);
+}
+
 export async function runHealth(sql: Sql, get?: Fetcher): Promise<{ summary: string }> {
   const checks = await runChecks(sql, get);
   await writeChecks(sql, checks);
-  return { summary: checks.map((c) => `${c.check}: ${c.status}`).join(", ") };
+  const lifted = checks.some((c) => c.status === "fail") ? [] : await liftExpiredPauses(sql);
+  const summary = checks.map((c) => `${c.check}: ${c.status}`).join(", ");
+  return { summary: lifted.length ? `${summary}; pause lifted for ${lifted.join(", ")}` : summary };
 }
 
 /** Syncs agent_schedule from each agent.json, then alerts once a day per late agent. */

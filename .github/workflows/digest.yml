@@ -1,0 +1,38 @@
+# Weekly digest, Sunday 18:00 Europe/Amsterdam (plan v3 section 8, step 16).
+# Two UTC crons cover summer and winter time; scripts/ops/digest.ts exits unless
+# it is 18:00 in Amsterdam. Manual runs pass FORCE_RUN=1.
+name: Weekly digest
+
+on:
+  schedule:
+    - cron: "0 16 * * 0" # 18:00 CEST
+    - cron: "0 17 * * 0" # 18:00 CET
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: digest
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Queue the digest
+        env:
+          DATABASE_URL: ${{ secrets.PIPELINE_DATABASE_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          FORCE_RUN: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
+        run: npx tsx scripts/ops/digest.ts

@@ -32,7 +32,8 @@ export default function Page() {
       <h2>Meldingen over een webshop</h2>
       <p>
         Via <Link href="/herbeoordeling">herbeoordeling</Link> bewaren we je e-mailadres en je bericht, om je melding af te handelen en je
-        antwoord te sturen. Je bericht wordt gelezen door ons en door een AI-assistent die ons helpt; die stuurt nooit zelf e-mail.
+        antwoord te sturen. Je bericht wordt gelezen door ons en door een AI-assistent die ons helpt; die stuurt nooit zelf e-mail. Twaalf
+        maanden na afhandeling verwijderen we je e-mailadres en je bericht.
       </p>
 
       <h2>Webshops</h2>

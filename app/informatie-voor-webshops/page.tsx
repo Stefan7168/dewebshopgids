@@ -35,7 +35,8 @@ export default function Page() {
       </ul>
       <p>
         We tonen geen namen of adressen van personen: in citaten vervangen we die door [naam] of [adres]. De tekst van je openbare pagina&apos;s
-        bewaren we intern, zodat we de score later kunnen controleren. We gebruiken deze gegevens op
+        bewaren we intern, zodat we de score later kunnen controleren; tekst die we 90 dagen niet opnieuw hebben gelezen, verwijderen we.
+        We gebruiken deze gegevens op
         grond van ons gerechtvaardigd belang: kopers helpen unieke en betrouwbare webshops te vinden. Meer in de <Link href="/privacy">privacyverklaring</Link>.
       </p>
 

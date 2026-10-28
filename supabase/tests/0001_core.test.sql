@@ -3,9 +3,12 @@ begin;
 
 insert into public.categories (slug, name_nl) values ('wonen', 'Wonen');
 insert into public.shops (slug, name, domain, category_id, status, contact_email)
-values
-  ('draft-shop', 'Draft', 'draft.nl', (select id from public.categories where slug = 'wonen'), 'draft', 'info@draft.nl'),
-  ('pub-shop', 'Pub', 'pub.nl', (select id from public.categories where slug = 'wonen'), 'published', 'info@pub.nl');
+values ('draft-shop', 'Draft', 'draft.nl', (select id from public.categories where slug = 'wonen'), 'draft', 'info@draft.nl');
+-- From 0006 only the pipeline role may publish.
+set local role pipeline;
+insert into public.shops (slug, name, domain, category_id, status, contact_email)
+values ('pub-shop', 'Pub', 'pub.nl', (select id from public.categories where slug = 'wonen'), 'published', 'info@pub.nl');
+reset role;
 
 -- agents_enabled defaults to true
 do $$ begin

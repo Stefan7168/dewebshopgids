@@ -21,6 +21,7 @@ export const CODE_SCHEDULES: ScheduleRow[] = [
   { agent: "email-sender", cron: "5 * * * *", timezone: "UTC", max_gap_minutes: 120 },
   { agent: "dispute-removals", cron: "5 * * * *", timezone: "UTC", max_gap_minutes: 120 },
   { agent: "dispute-replies", cron: "5 * * * *", timezone: "UTC", max_gap_minutes: 120 },
+  { agent: "dispute-restore", cron: "5 * * * *", timezone: "UTC", max_gap_minutes: 120 },
   { agent: "digest", cron: "0 18 * * 0", timezone: "Europe/Amsterdam", max_gap_minutes: 10140 },
 ];
 

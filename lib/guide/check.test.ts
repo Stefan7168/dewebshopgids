@@ -76,3 +76,18 @@ describe("gids issue 2 reference draft", () => {
     expect(issue2Draft.body_md).toContain("](/gids)");
   });
 });
+
+describe("gids issues 3 and 4 reference drafts", () => {
+  it("pass the code checks", async () => {
+    const { issue3Draft, issue3Snapshot } = await import("./fixtures/issue-3");
+    const { issue4Draft, issue4Snapshot } = await import("./fixtures/issue-4");
+    expect(checkDraft(issue3Draft, issue3Snapshot)).toEqual([]);
+    expect(checkDraft(issue4Draft, issue4Snapshot)).toEqual([]);
+  });
+
+  it("repeat no shop from an earlier issue", async () => {
+    const issues = await Promise.all([1, 2, 3, 4].map((n) => import(`./fixtures/issue-${n}`)));
+    const slugs = issues.flatMap((m) => (Object.values(m).find((v) => (v as { shops?: unknown }).shops) as { shops: { slug: string }[] }).shops.map((s) => s.slug));
+    expect(new Set(slugs).size).toBe(slugs.length);
+  });
+});

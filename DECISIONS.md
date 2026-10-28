@@ -82,3 +82,6 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 - `scripts/pipeline/sources/home-candidates-2.csv`, source `scout:home-list-2`, same columns and parser as the launch list plus `source_url`. Kids room shops go under `woontextiel` or `meubels`, wallpaper under `woonaccessoires`: no new sub-category, because that needs a migration.
 - `domain_check = search` means the shop blocks automated reading and its product pages were confirmed through a search limited to its own domain. Those rows are `medium` at most.
 - Vintage dealers count as curated (no score points for curation, per the 13:35 decision), but they are unique by nature, so they enter the queue.
+
+## 2026-10-28: Gids issues 3 and 4
+- Reference drafts for 2026-week-47 (gifts before Sinterklaas) and 2026-week-48 (the laid table) in `lib/guide/fixtures/`, from the editorial calendar. Only launch-list shops, only facts the snapshot holds; a test checks that no shop repeats across issues 1 to 4.

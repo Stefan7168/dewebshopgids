@@ -1,0 +1,52 @@
+# Developer agent: turns an issue that a human labelled `agent-ok` into a PR.
+# Instructions: agents/developer/instructions.md. Plan section 3 and 9.
+name: Claude Developer
+
+on:
+  issues:
+    types: [labeled]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write # Claude GitHub App token exchange
+
+concurrency:
+  group: claude-developer-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  develop:
+    # Start on the agent-ok label, or on an @claude comment from a human.
+    if: >-
+      vars.AGENTS_PAUSED != 'true' &&
+      (
+        (github.event_name == 'issues' && github.event.label.name == 'agent-ok' && github.event.sender.type == 'User') ||
+        (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude') && github.event.comment.user.type == 'User')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: anthropics/claude-code-action@8c3fd987fa6a6b2654f69275e323d08207fcd36c # v1.0.264
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          label_trigger: agent-ok
+          branch_prefix: claude/
+          prompt: |
+            You are the Developer agent. Read agents/developer/instructions.md and follow it exactly.
+            Work on issue #${{ github.event.issue.number }} only.
+          claude_args: >-
+            --max-turns 40
+            --allowedTools "Edit,Write,Read,Glob,Grep,Bash(npm run lint),Bash(npm run typecheck),Bash(npm test),Bash(npm run build),Bash(git:*),Bash(gh pr create:*),Bash(gh issue view:*),Bash(gh issue comment:*)"

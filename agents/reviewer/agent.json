@@ -1,0 +1,9 @@
+{
+  "name": "reviewer",
+  "runs_on": "action",
+  "workflow": ".github/workflows/claude-reviewer.yml",
+  "trigger": "PR opened (not draft), ready_for_review, or label `review` added",
+  "github_app": "REVIEWER_APP_ID",
+  "max_turns": 40,
+  "timeout_minutes": 30
+}

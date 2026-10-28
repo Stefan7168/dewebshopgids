@@ -17,6 +17,6 @@ for f in supabase/migrations/*.sql; do
 done
 for f in supabase/tests/*.test.sql; do
   echo "test:    $f"
-  run "$f"
+  psql -v ON_ERROR_STOP=1 -q -o /dev/null -d "$DB" -f "$f"
 done
 echo "db tests passed"

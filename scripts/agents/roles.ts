@@ -1,4 +1,5 @@
-// Every per-agent Postgres login role (plan section 7). Migration 0006 creates them.
+// Every per-agent Postgres login role (plan section 7). Migration 0006 creates them
+// NOLOGIN; set-role-password.ts enables one, kill-switch.ts disables all.
 export const AGENT_ROLES = [
   "agent_scout",
   "agent_auditor",

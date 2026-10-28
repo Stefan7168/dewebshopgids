@@ -1,0 +1,36 @@
+# Files agent_escalations rows as GitHub issues every 3 hours (plan v3 section 9).
+# Routines have no GitHub access; this job is their only path to an issue.
+name: File escalations
+
+on:
+  schedule:
+    - cron: "45 */3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: escalations
+  cancel-in-progress: false
+
+jobs:
+  file:
+    if: vars.AGENTS_PAUSED != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: File new escalations
+        env:
+          DATABASE_URL: ${{ secrets.PIPELINE_DATABASE_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: npx tsx scripts/ops/file-escalations.ts

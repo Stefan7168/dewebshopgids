@@ -11,7 +11,7 @@ export function isPublicPath(pathname: string): boolean {
 }
 
 // Constant-time string compare, safe in the Edge runtime (no node:crypto).
-function safeEqual(a: string, b: string): boolean {
+export function safeEqual(a: string, b: string): boolean {
   let diff = a.length ^ b.length;
   const len = Math.max(a.length, b.length);
   for (let i = 0; i < len; i++) {

@@ -1,0 +1,37 @@
+# Nightly pipeline at 01:00 Europe/Amsterdam (plan v3 section 8, step 10).
+# Two UTC crons cover summer and winter time; scripts/pipeline/nightly.ts exits
+# unless it is 01:00 in Amsterdam. Manual runs pass FORCE_RUN=1.
+name: Nightly pipeline
+
+on:
+  schedule:
+    - cron: "0 23 * * *" # 01:00 CEST
+    - cron: "0 0 * * *" # 01:00 CET
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+jobs:
+  nightly:
+    if: vars.AGENTS_PAUSED != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Run pipeline steps
+        env:
+          DATABASE_URL: ${{ secrets.PIPELINE_DATABASE_URL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FORCE_RUN: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
+        run: npx tsx scripts/pipeline/nightly.ts

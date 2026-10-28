@@ -9,7 +9,7 @@ Read this file fully before changing anything. The site is built and maintained 
 - Revenue: affiliate links (Daisycon first), later a "Geverifieerd" badge and paid "Uitgelicht" placement.
 - Voice: Dutch, informal "je". Never write "onbetrouwbaar" or "review" about a shop.
 
-Plan of record: `docs/plan.md` (product development plan v3). Build tasks are its section 15, done in order. Anything that deviates from the plan goes in `DECISIONS.md`.
+Plan of record: `docs/plan-v3.md` (product development plan v3). Operating the live site: `docs/runbook.md`. Build tasks are its section 15, done in order. Anything that deviates from the plan goes in `DECISIONS.md`.
 
 ## 2. Stack, folders, commands
 - Next.js 16 App Router (`cacheComponents` on; `proxy.ts` replaces `middleware.ts`), React 19, Tailwind 3, shadcn/ui in `components/ui`. Server components by default.
@@ -29,7 +29,7 @@ Plan of record: `docs/plan.md` (product development plan v3). Build tasks are it
 | `.claude/skills/` | thin pointers to `agents/<name>/instructions.md` |
 | `proxy.ts` | Basic Auth gate, then Supabase session refresh |
 
-Commands: `npm run dev`, `npm run lint`, `npm run typecheck`, `npm test` (vitest), `npm run build`, `npm run test:db` (applies all migrations to a fresh local Postgres and runs `supabase/tests/*.test.sql`; needs PGHOST, PGPORT, PGUSER). CI runs all of them on every PR.
+Commands: `npm run dev`, `npm run db:dev` then `npm run dev:local` (local site with demo data, no Supabase needed), `npm run lint`, `npm run typecheck`, `npm test` (vitest), `npm run build`, `npm run test:db` (applies all migrations to a fresh local Postgres and runs `supabase/tests/*.test.sql`; needs PGHOST, PGPORT, PGUSER). CI runs all of them on every PR.
 
 ## 3. Data
 - No writes from the browser. Writes happen in server actions, route handlers, pipeline jobs or agent tools.

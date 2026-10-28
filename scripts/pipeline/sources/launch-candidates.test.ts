@@ -4,6 +4,15 @@ import { describe, expect, it } from "vitest";
 import { EXCLUDED, launchCandidates, parseCsv } from "./launch-candidates";
 
 const SLUGS = ["meubels", "verlichting", "woonaccessoires", "woontextiel", "slapen", "tuin-buiten", "keuken-tafelen"];
+// Migration 0016: Tuin & buiten is top-level with these sub-categories.
+const GARDEN = [
+  "tuin-buiten",
+  "tuinmeubels",
+  "potten-plantenbakken",
+  "buitenverlichting",
+  "vuur-bbq",
+  "tuinaccessoires",
+];
 
 describe("parseCsv", () => {
   it("handles quotes, doubled quotes and commas inside fields", () => {
@@ -35,5 +44,28 @@ describe("launchCandidates", () => {
 
   it("skips rows whose category is unknown", () => {
     expect(launchCandidates(csv, ["meubels"]).every((c) => c.category === "meubels")).toBe(true);
+  });
+});
+
+describe("garden list", () => {
+  const garden = launchCandidates(readFileSync(join(__dirname, "garden-candidates.csv"), "utf8"), [
+    ...SLUGS,
+    ...GARDEN,
+  ]);
+  const launch = launchCandidates(readFileSync(join(__dirname, "launch-candidates.csv"), "utf8"), SLUGS);
+
+  it("queues the strong and medium garden shops only, in garden categories", () => {
+    expect(garden).toHaveLength(10);
+    for (const c of garden) {
+      expect(GARDEN).toContain(c.category);
+      expect(c.reason).toMatch(/^(strong|medium) fit; /);
+    }
+    expect(garden.map((c) => c.domain)).not.toContain("daankromhout.nl");
+    expect(garden.find((c) => c.domain === "fluwel.nl")!.aliases).toEqual(["fluwel.com"]);
+  });
+
+  it("does not repeat a shop from the launch list", () => {
+    const known = new Set(launch.flatMap((c) => [c.domain, ...c.aliases]));
+    for (const c of garden) for (const d of [c.domain, ...c.aliases]) expect(known.has(d)).toBe(false);
   });
 });

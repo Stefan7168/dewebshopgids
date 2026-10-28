@@ -69,6 +69,11 @@ describe("earnedSubScores", () => {
     quote_verified: verified,
   });
 
+  it("drops evidence links that are not http(s)", () => {
+    const bad = { ...sig("own_production", "Wij maken alles zelf."), evidence_url: "javascript:alert(1)" };
+    expect(earnedSubScores({ maker: 30 }, MAX_POINTS, [bad])[0].evidence).toEqual([{ quote: "Wij maken alles zelf.", url: null }]);
+  });
+
   it("never maps the negative inferences", () => {
     expect(subScoreFor("marketplace_pattern")).toBeNull();
     expect(subScoreFor("dropship_indicators")).toBeNull();

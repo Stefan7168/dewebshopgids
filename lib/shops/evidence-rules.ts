@@ -16,6 +16,11 @@ export function subScoreFor(signalKey: string): SubScoreKey | null {
   return null;
 }
 
+/** Only http(s) links are rendered: the url came from a crawl, so it is untrusted. */
+function webUrl(url: string | null): string | null {
+  return url && /^https?:\/\//i.test(url) ? url : null;
+}
+
 const ORDER: SubScoreKey[] = ["maker", "focus", "identity", "scale", "origin"];
 
 /**
@@ -32,7 +37,7 @@ export function earnedSubScores(subScores: Record<string, unknown>, max: Record<
     const quote = s.evidence_quote.trim();
     if (!quote || seen.has(quote)) continue;
     seen.add(quote);
-    byKey.set(key, [...(byKey.get(key) ?? []), { quote, url: s.evidence_url }]);
+    byKey.set(key, [...(byKey.get(key) ?? []), { quote, url: webUrl(s.evidence_url) }]);
   }
   const out: EarnedSubScore[] = [];
   for (const key of ORDER) {

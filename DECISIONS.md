@@ -72,3 +72,9 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 ## 2026-10-28: Tuin & buiten stays unpromoted until 30 shops
 - Coordinator call: 10 verified garden shops is too thin to present as a category. The category pages and /beste lists stay built (a /beste list already needs 15 shops to appear).
 - `promotedRoots()` in `lib/shops/present.ts` decides what the home page, the header and llms.txt show: Wonen always, any other main category from 30 published shops (`MIN_SHOPS_TO_PROMOTE`). No code change is needed when garden reaches 30; the next publish shows it.
+
+## 2026-10-28: Home & Living list 2 (sub-niches)
+- Coordinator call: deepen Home & Living to 250+ verified candidates before widening further. New sub-niches: vintage and second-hand design, ceramics, lighting makers, kids rooms, wallpaper and wall decor.
+- `scripts/pipeline/sources/home-candidates-2.csv`, source `scout:home-list-2`, same columns and parser as the launch list plus `source_url`. Kids room shops go under `woontextiel` or `meubels`, wallpaper under `woonaccessoires`: no new sub-category, because that needs a migration.
+- `domain_check = search` means the shop blocks automated reading and its product pages were confirmed through a search limited to its own domain. Those rows are `medium` at most.
+- Vintage dealers count as curated (no score points for curation, per the 13:35 decision), but they are unique by nature, so they enter the queue.

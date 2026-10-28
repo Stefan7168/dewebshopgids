@@ -72,6 +72,17 @@ export function scoreDisplay(s: Pick<PublicShop, "score" | "score_label"> & { st
 /** Plan v3 section 9: category pages with fewer shops stay out of the index and the sitemap. */
 export const MIN_SHOPS_TO_INDEX = 5;
 
+/** A main category other than the launch one (Wonen) shows on the home page, the header and llms.txt only from this many shops. */
+export const MIN_SHOPS_TO_PROMOTE = 30;
+export const LAUNCH_ROOT_SLUG = "wonen";
+
+/** Main categories to promote: Wonen always, others once they have MIN_SHOPS_TO_PROMOTE published shops. Their pages stay reachable either way. */
+export function promotedRoots<T extends Pick<PublicShop, "category_id">>(categories: Category[], shops: T[]): Category[] {
+  return categories.filter(
+    (c) => c.parent_id === null && (c.slug === LAUNCH_ROOT_SLUG || shopsInCategory(shops, c, categories).length >= MIN_SHOPS_TO_PROMOTE),
+  );
+}
+
 const RANK_ORDER: Record<ScoreDisplay["kind"], number> = { number: 0, pending: 1, label: 2, none: 3 };
 
 /** Numbered shops by score, high to low; then the rest. Ties and the rest by name. */

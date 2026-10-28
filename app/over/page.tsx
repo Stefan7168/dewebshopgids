@@ -13,7 +13,7 @@ export default function OverPage() {
     <TextPage title="Over De Webshopgids">
       <p>
         De Webshopgids helpt je unieke en betrouwbare Nederlandse webshops te
-        vinden voor wonen, interieur en tuin. Per webshop tonen we feiten:
+        vinden, te beginnen met wonen en interieur. Per webshop tonen we feiten:
         hoe lang de shop online is, hoeveel producten er ongeveer zijn, welk
         keurmerk er is, en een echtheidsscore van 1 tot 100.
       </p>

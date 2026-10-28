@@ -1,0 +1,8 @@
+# Stefan reviews every change to code, schema, CI and agent instructions.
+/app/        @Stefan7168
+/components/ @Stefan7168
+/lib/        @Stefan7168
+/supabase/   @Stefan7168
+/.github/    @Stefan7168
+/.claude/    @Stefan7168
+/agents/     @Stefan7168

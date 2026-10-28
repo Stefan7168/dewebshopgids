@@ -80,12 +80,13 @@ export async function writeAgentRun(
 
 /**
  * Entry point for every job: guards, then the work, then the run row.
+ * Pass spendsTokens: false for plain code jobs so the LLM budget does not stop them.
  * Returns the run status. Throws nothing for guard stops; rethrows work errors
  * after recording them.
  */
 export async function runAgentJob(
   sql: Sql,
-  run: { agent: string; runsOn: RunsOn; trigger?: string; inputRef?: string },
+  run: { agent: string; runsOn: RunsOn; trigger?: string; inputRef?: string; spendsTokens?: boolean },
   work: (runId: string) => Promise<{ summary?: string; outputRefs?: unknown[] } | void>,
 ): Promise<RunStatus> {
   const kill = await checkKillSwitch(sql, run.agent);
@@ -93,7 +94,7 @@ export async function runAgentJob(
     await writeAgentRun(sql, { ...run, status: "paused", summary: kill.reason });
     return "paused";
   }
-  const budget = await budgetGuard(sql, run.agent);
+  const budget = run.spendsTokens === false ? ({ ok: true } as const) : await budgetGuard(sql, run.agent);
   if (!budget.ok) {
     await writeAgentRun(sql, { ...run, status: "over_budget", summary: budget.reason });
     return "over_budget";

@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { JsonLd } from "@/components/json-ld";
+import { NewsletterForm } from "@/components/newsletter-form";
 import { ShopList } from "@/components/shop-list";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getCategories, getPublishedShops } from "@/lib/shops/data";
+import { signupHeadline } from "@/lib/newsletter/core";
 import { rankShops, shopsInCategory } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 
@@ -49,6 +51,7 @@ export default async function Home() {
           <h2 className="text-xl font-semibold">Hoogste echtheidsscore</h2>
           <ShopList shops={top} listName="Woonwinkels met de hoogste echtheidsscore" />
         </section>
+        <NewsletterForm headline={signupHeadline()} source="/" />
       </main>
       <SiteFooter />
       <JsonLd

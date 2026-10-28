@@ -1,12 +1,16 @@
 // Scoring prompt and output schema (plan v3 section 7, scoring step 2).
-// Versioned: change PROMPT_VERSION on any edit to SYSTEM_PROMPT or OUTPUT_SCHEMA.
+// Versioned: change PROMPT_VERSION on any edit to SYSTEM_PROMPT, OUTPUT_SCHEMA or what page text the model sees.
+// p2: long pages keep their end (footer with address and KvK) instead of being cut at 6,000 characters.
 // The model returns signals with evidence quotes only; lib/scoring computes the score.
 import type Anthropic from "@anthropic-ai/sdk";
 import { wrapUntrusted } from "../../../agents/shared/untrusted";
 
-export const PROMPT_VERSION = "p1";
+export const PROMPT_VERSION = "p2";
 export const SCORING_MODEL = "claude-haiku-5-5";
 export const MAX_PAGE_CHARS = 6000;
+/** Characters kept from the end of a long page: footers hold the address, KvK number and contact details. */
+export const TAIL_CHARS = 1500;
+const GAP = "\n[...]\n";
 export const PAGE_IDS = ["P1", "P2", "P3", "P4", "P5"] as const;
 export type PageId = (typeof PAGE_IDS)[number];
 
@@ -103,6 +107,12 @@ For every boolean signal give value, a quote and the page id (P1 to P5) the quot
 - description_nl: 25 to 40 words in Dutch, informal "je", factual, about what the shop sells and
   makes. No praise, no person's name, no address, never the words "onbetrouwbaar" or "review".`;
 
+/** The page text the model sees and quotes are checked against: the start and the end of a long page. */
+export function pageExcerpt(text: string): string {
+  if (text.length <= MAX_PAGE_CHARS) return text;
+  return text.slice(0, MAX_PAGE_CHARS - TAIL_CHARS - GAP.length) + GAP + text.slice(-TAIL_CHARS);
+}
+
 export type CrawlPage = { url: string; pageType: string; text: string };
 export type RuleFacts = { productCountEst: number | null; platform: string | null; hasKvk: boolean | null };
 
@@ -116,7 +126,7 @@ export function buildUserMessage(shop: { name: string; domain: string }, pages: 
   ];
   pages.slice(0, PAGE_IDS.length).forEach((p, i) => {
     lines.push(`Page ${PAGE_IDS[i]} (${p.pageType}): ${p.url}`);
-    lines.push(wrapUntrusted(p.text.slice(0, MAX_PAGE_CHARS)));
+    lines.push(wrapUntrusted(pageExcerpt(p.text)));
     lines.push("");
   });
   return lines.join("\n");

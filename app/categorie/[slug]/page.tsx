@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category, shops } = data;
   return {
     title: category.seo_title ?? `${category.name_nl}: unieke en betrouwbare webshops`,
-    description: category.intro_nl ?? `De ${category.name_nl.toLowerCase()} webshops met de hoogste echtheidsscore, met keurmerk en feiten.`,
+    description: category.intro_nl ?? `Webshops in ${category.name_nl.toLowerCase()} met de hoogste echtheidsscore, met keurmerk en feiten per shop.`,
     alternates: { canonical: `${SITE.url}/categorie/${category.slug}` },
     robots: shops.length < MIN_SHOPS_TO_INDEX ? { index: false, follow: true } : undefined,
   };

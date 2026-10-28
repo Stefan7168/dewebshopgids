@@ -144,6 +144,13 @@ export function priceLevelText(level: number | null): string | null {
   return ["Voordelig", "Middensegment", "Hoger segment", "Luxe"][level - 1];
 }
 
+/** "NL" becomes "Nederland". Unknown or malformed codes return null so the fact is hidden. */
+export function countryName(code: string | null): string | null {
+  if (!code || !/^[A-Za-z]{2}$/.test(code)) return null;
+  const name = new Intl.DisplayNames(["nl"], { type: "region" }).of(code.toUpperCase());
+  return name && name !== code.toUpperCase() ? name : null;
+}
+
 /** The paid "Geverifieerd" badge is active through `verified_badge_until` (a date, inclusive). */
 export function hasVerifiedBadge(s: Pick<PublicShop, "verified_badge_until">, today = new Date().toISOString().slice(0, 10)): boolean {
   return s.verified_badge_until != null && s.verified_badge_until >= today;

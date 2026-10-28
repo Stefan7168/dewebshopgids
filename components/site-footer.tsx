@@ -29,7 +29,7 @@ export function SiteFooter() {
           {SITE.address ? ` · ${SITE.address}` : ""}
         </p>
         <p className="text-muted-foreground">
-          Wij ontvangen soms een vergoeding als je via onze links iets koopt. Dat heeft geen invloed op de score.
+          Wij ontvangen soms een vergoeding als je via onze links iets koopt. Dat heeft geen invloed op de score of de volgorde.
         </p>
       </div>
     </footer>

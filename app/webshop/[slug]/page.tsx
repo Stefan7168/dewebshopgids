@@ -11,7 +11,7 @@ import { KEURMERK_PAGES } from "@/lib/keurmerk/pages";
 import { signupHeadline } from "@/lib/newsletter/core";
 import { getCategories, getShop } from "@/lib/shops/data";
 import { getEarnedSubScores } from "@/lib/shops/evidence";
-import { hasVerifiedBadge, keurmerkText, onlineSince, priceLevelText, productCountText, scoreDisplay, SUB_SCORE_NAMES, type PublicShop } from "@/lib/shops/present";
+import { countryName, hasVerifiedBadge, keurmerkText, onlineSince, priceLevelText, productCountText, scoreDisplay, SUB_SCORE_NAMES, type PublicShop } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const shop = await getShop((await params).slug);
   if (!shop) return { title: "Webshop niet gevonden", robots: { index: false } };
   return {
-    title: `${shop.name}: authenticiteitsscore, keurmerk en feiten`,
+    title: `${shop.name}: echtheidsscore, keurmerk en feiten`,
     description: shop.description_nl ?? `Echtheidsscore, keurmerk en feiten over ${shop.domain}.`,
     alternates: { canonical: `${SITE.url}/webshop/${shop.slug}` },
   };
@@ -76,7 +76,7 @@ async function ShopDetails({ params }: Props) {
     ["Keurmerk", keurmerkText(shop)],
     ["Prijsniveau", priceLevelText(shop.price_level)],
     ["Winkel", shop.has_physical_store ? (shop.store_city ? `Fysieke winkel in ${shop.store_city}` : "Heeft een fysieke winkel") : null],
-    ["Verzendt vanuit", shop.ships_from_country],
+    ["Verzendt vanuit", countryName(shop.ships_from_country)],
   ];
 
   return (
@@ -115,7 +115,7 @@ async function ShopDetails({ params }: Props) {
           Naar de webshop
         </a>
         <p className="text-xs text-muted-foreground">
-          Wij ontvangen mogelijk een vergoeding als je via onze links koopt. Dit beïnvloedt de score of volgorde niet.
+          Wij ontvangen soms een vergoeding als je via onze links iets koopt. Dat heeft geen invloed op de score of de volgorde.
         </p>
       </div>
       <section className="flex flex-col gap-3">

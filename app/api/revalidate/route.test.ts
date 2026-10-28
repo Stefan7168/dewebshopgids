@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 
 const revalidated: string[] = [];
-vi.mock("next/cache", () => ({ revalidatePath: (p: string) => revalidated.push(p) }));
+vi.mock("next/cache", () => ({ revalidatePath: (p: string) => revalidated.push(p), revalidateTag: (t: string) => revalidated.push(`tag:${t}`) }));
 const { POST } = await import("./route");
 
 const call = (body: unknown, auth = "Bearer s3cret") =>
@@ -32,6 +32,6 @@ describe("POST /api/revalidate", () => {
   it("revalidates shop, category and guide pages", async () => {
     const res = await call({ paths: ["/", "/webshop/houtatelier", "/categorie/meubels", "/gids/2026-week-44"] });
     expect(res.status).toBe(200);
-    expect(revalidated).toEqual(["/", "/webshop/houtatelier", "/categorie/meubels", "/gids/2026-week-44"]);
+    expect(revalidated).toEqual(["tag:shops", "/", "/webshop/houtatelier", "/categorie/meubels", "/gids/2026-week-44"]);
   });
 });

@@ -1,0 +1,10 @@
+{
+  "name": "score-auditor",
+  "runs_on": "routine",
+  "role": "agent_auditor",
+  "schedule": { "cron": "0 7 * * *", "timezone": "Europe/Amsterdam", "retry": { "every_minutes": 60, "max": 3, "on_exit_code": 5 } },
+  "max_gap_minutes": 1620,
+  "max_turns": 120,
+  "max_tokens": 600000,
+  "routine_prompt": "Run agents/score-auditor as described in its instructions.md."
+}

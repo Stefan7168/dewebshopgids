@@ -10,7 +10,8 @@ export async function queueReplies(sql: Sql): Promise<{ summary: string }> {
   const rows = await sql<Row[]>`
     select d.id, d.reply_template_id, d.reply_slots, s.name as shop_name, s.slug as shop_slug
     from public.disputes d join public.shops s on s.id = d.shop_id
-    where d.status = 'agent_replied' and d.reply_template_id is not null
+    where d.reply_template_id is not null
+      and (d.status = 'agent_replied' or (d.status = 'awaiting_human' and d.reply_template_id = 'dispute_in_review'))
       and not exists (
         select 1 from public.email_queue q
         where q."to" = 'dispute:' || d.id::text and q.template = d.reply_template_id)`;
@@ -20,11 +21,12 @@ export async function queueReplies(sql: Sql): Promise<{ summary: string }> {
     const v = validateReplySlots(r.reply_template_id, r.reply_slots);
     if (!v.ok) {
       rejected.push(r.id);
-      await sql`update public.disputes set status = 'awaiting_human' where id = ${r.id}`;
+      // Clearing the template stops the next hourly run from rejecting it again.
+      await sql`update public.disputes set status = 'awaiting_human', reply_template_id = null where id = ${r.id}`;
       await sql`
         insert into public.agent_escalations (agent, kind, title, body_md, label)
         values ('dispute-replies', 'reply_rejected', ${`Antwoord op dispute voor ${r.shop_slug} afgekeurd door de validator`},
-          ${`Dispute \`${r.id}\`: the reply was not sent. Validator: ${v.errors.join("; ").slice(0, 1500)}`}, 'needs-human')`;
+          ${`Dispute \`${r.id}\`: the ${r.reply_template_id} reply was not sent. Validator: ${v.errors.join("; ").slice(0, 1500)}`}, 'needs-human')`;
       continue;
     }
     const { template, ...reply } = v.slots;

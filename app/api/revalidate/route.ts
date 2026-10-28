@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
 import { safeEqual } from "@/lib/auth/basic-auth";
 
@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
   if (!Array.isArray(paths) || paths.length === 0 || paths.length > MAX_PATHS || !paths.every((p) => typeof p === "string" && ALLOWED.test(p))) {
     return NextResponse.json({ ok: false, error: "paths must be 1 to 200 site paths" }, { status: 400 });
   }
+  revalidateTag("shops", "max"); // cached reads in lib/shops/data.ts and evidence.ts
   for (const p of paths as string[]) revalidatePath(p);
   return NextResponse.json({ ok: true, revalidated: paths.length });
 }

@@ -8,6 +8,7 @@ import { connect, runAgentJob, type RunStatus, type Sql } from "../../agents/sha
 import { runCrawl } from "./crawl/run-crawl";
 import { runDomainAge } from "./domain-age-step";
 import { promoteCandidates } from "./promote-candidates";
+import { importSearchConsole } from "./search-console/import";
 import { runPublish } from "./publish/publish";
 import { collectBatches, submitIfIdle } from "./score/run-scoring";
 
@@ -57,6 +58,7 @@ async function main() {
       { agent: "crawl", spendsTokens: false, work: () => runCrawl(sql) },
       { agent: "domain-age", spendsTokens: false, work: () => runDomainAge(sql) },
       { agent: "score-submit", spendsTokens: true, work: async () => ({ summary: await submitIfIdle(sql, client) }) },
+      { agent: "search-console", spendsTokens: false, work: () => importSearchConsole(sql) },
       { agent: "publish", spendsTokens: false, work: () => runPublish(sql) },
     ]);
     console.log(results.map((r) => `${r.agent}: ${r.status}`).join("\n"));

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SiteFooter } from "@/components/site-footer";
+import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Over De Webshopgids",
@@ -18,6 +19,15 @@ export default function OverPage() {
           feiten: hoe lang de shop online is, hoeveel producten er ongeveer
           zijn, welk keurmerk er is, en een echtheidsscore van 1 tot 100.
         </p>
+        <h2 className="text-xl font-semibold mt-4">Hoe wij werken</h2>
+        <p>
+          Wij verzamelen openbare gegevens van de webshop zelf en van keurmerkregisters. AI helpt ons de teksten
+          van de webshop te lezen; de score zelf berekenen we met een vast rekenmodel, en elke getoonde bewering
+          staat letterlijk op de site van de webshop. Een tweede, onafhankelijke controle kijkt steekproefsgewijs
+          mee. Klopt er iets niet over jouw webshop? Mail ons via{" "}
+          <a href={`mailto:${SITE.email}`} className="underline">{SITE.email}</a>.
+        </p>
+        <h2 className="text-xl font-semibold mt-4">Hoe wij geld verdienen</h2>
         <p>
           Opname is gratis. Wij verdienen geld via affiliatecommissies: als je
           via onze link iets koopt, kunnen wij een vergoeding ontvangen. Dat

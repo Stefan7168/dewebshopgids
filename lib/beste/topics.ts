@@ -172,6 +172,36 @@ export const TOPICS: BesteTopic[] = [
     ],
   },
   {
+    slug: "sieraden-en-accessoires",
+    categorySlug: "sieraden-accessoires",
+    title: "De meest unieke webshops voor sieraden en accessoires",
+    intro: [
+      "Sieraden, tassen, sjaals en mutsen van Nederlandse makers: deze lijst toont webshops voor sieraden en accessoires, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Een eigen atelier of werkplaats zegt hier veel: een goudsmid die zelf smeedt of een leerbewerker die zelf snijdt en naait, scoort hoger dan een winkel die vooral merken doorverkoopt.",
+    ],
+  },
+  {
+    slug: "handgemaakte-sieraden",
+    categorySlug: "sieraden",
+    title: "De meest unieke webshops voor handgemaakte sieraden",
+    intro: [
+      "Ringen, kettingen en oorbellen: deze lijst toont Nederlandse webshops voor sieraden, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Goud- en zilversmeden die hun sieraden zelf maken, of laten zien waar hun materiaal vandaan komt, scoren hier hoger. Bij elke shop zie je de zin van zijn eigen site waar de punten op gebaseerd zijn.",
+    ],
+  },
+  {
+    slug: "leren-tassen",
+    categorySlug: "tassen-leer",
+    title: "De meest unieke webshops voor leren tassen",
+    intro: [
+      "Tassen, portemonnees en riemen: deze lijst toont Nederlandse webshops voor tassen en leer, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Makers die hun tassen zelf snijden en naaien, of noemen waar hun leer vandaan komt, scoren hier hoger dan doorverkopers van bekende merken.",
+    ],
+  },
+  {
     slug: "met-showroom",
     categorySlug: "wonen",
     title: "Unieke woonwebshops met een winkel of showroom",

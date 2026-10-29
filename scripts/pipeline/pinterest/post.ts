@@ -1,7 +1,7 @@
 // Pinterest post step (plan v3 sections 3 and 11): posts pins Stefan approved in /admin/pins (gate G3).
 // Nightly pipeline step, pipeline role. Needs PINTEREST_ACCESS_TOKEN (from Stefan's Pinterest app, scope
 // pins:write) and PINTEREST_BOARDS, a JSON map from our board slugs to Pinterest board ids, e.g.
-// {"wonen":"123","tuin":"456","eten":"789","gids":"012"}. Without them the step does nothing.
+// {"wonen":"123","tuin":"456","eten":"789","sieraden":"345","gids":"012"}. Without them the step does nothing.
 // Every pin links to our own page with UTM tags, never to a shop or an affiliate link.
 // Docs: https://developers.pinterest.com/docs/api/v5/pins-create
 import type { Sql } from "../../../agents/shared/audit";

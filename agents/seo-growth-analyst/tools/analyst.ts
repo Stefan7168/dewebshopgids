@@ -17,7 +17,7 @@ const AGENT = "seo-growth-analyst";
 export const MAX_ESCALATIONS_PER_RUN = 5;
 export const KINDS = ["indexation", "thin_page", "ctr_change", "ai_citations", "forecast", "topic_proposal", "other"] as const;
 export const MAX_PINS_PER_RUN = 10;
-export const PIN_BOARDS = ["wonen", "tuin", "eten", "gids"] as const;
+export const PIN_BOARDS = ["wonen", "tuin", "eten", "sieraden", "gids"] as const;
 const PIN_PATH = /^\/(webshop|beste|gids|categorie)\/[a-z0-9-]{1,80}$/;
 // CLAUDE.md voice rules, plus "korting" and "advertentie" as in the gids checks.
 const PIN_BANNED = /onbetrouwbaar|review|korting|advertentie|https?:\/\/|www\./i;

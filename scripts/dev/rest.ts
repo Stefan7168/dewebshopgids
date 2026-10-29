@@ -1,5 +1,5 @@
 // Local stand-in for Supabase's REST API (PostgREST), read-only, for `npm run dev:local`.
-// It answers the anon reads the public site makes (categories, shops_public, guides_public, featured_public)
+// It answers the anon reads the public site makes (categories, shops_public, guides_public, featured_public, shop_popularity)
 // from the local dev database, as the real `anon` role, so RLS and grants apply exactly as in
 // production. Only the subset of PostgREST that lib/ uses: select, eq/neq/gt/gte/lt/lte/in/is,
 // order, limit, offset. Never point it at the real project.
@@ -7,7 +7,7 @@ import { createServer } from "node:http";
 import postgres from "postgres";
 
 const PORT = Number(process.env.REST_PORT ?? 54321);
-const TABLES = new Set(["categories", "shops_public", "guides_public", "featured_public"]);
+const TABLES = new Set(["categories", "shops_public", "guides_public", "featured_public", "shop_popularity"]);
 const IDENT = /^[a-z_][a-z0-9_]*$/;
 const OPS: Record<string, string> = { eq: "=", neq: "<>", gt: ">", gte: ">=", lt: "<", lte: "<=" };
 

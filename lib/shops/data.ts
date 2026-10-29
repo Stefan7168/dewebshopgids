@@ -66,6 +66,17 @@ export async function getFeaturedPlacements(): Promise<FeaturedPlacement[]> {
   return data as FeaturedPlacement[];
 }
 
+/** Nightly popularity ranks (migration 0019). Empty if the table is missing, so pages never fail on it. */
+export async function getPopularity(): Promise<{ shop_id: string; rank: number }[]> {
+  cacheTag("shops");
+  cacheLife("hours");
+  const db = anon();
+  if (!db) return [];
+  const { data, error } = await db.from("shop_popularity").select("shop_id, rank").order("rank");
+  if (error) return [];
+  return data as { shop_id: string; rank: number }[];
+}
+
 /** Today's date (YYYY-MM-DD), cached so prerendered pages can compare dates; badge grace covers the lag. */
 export async function cachedToday(): Promise<string> {
   cacheLife("hours");

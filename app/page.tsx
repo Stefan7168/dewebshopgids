@@ -5,18 +5,19 @@ import { NewsletterForm } from "@/components/newsletter-form";
 import { ShopList } from "@/components/shop-list";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { getCategories, getPublishedShops } from "@/lib/shops/data";
+import { getCategories, getPopularity, getPublishedShops } from "@/lib/shops/data";
 import { signupHeadline } from "@/lib/newsletter/core";
-import { promotedRoots, rankShops, shopsInCategory, siteScope } from "@/lib/shops/present";
+import { popularityExplanation, popularShops, promotedRoots, rankShops, shopsInCategory, siteScope } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 
 const TOP_N = 10;
 
 export default async function Home() {
-  const [categories, shops] = await Promise.all([getCategories(), getPublishedShops()]);
+  const [categories, shops, ranks] = await Promise.all([getCategories(), getPublishedShops(), getPopularity()]);
   const roots = promotedRoots(categories, shops);
   const { headline, scope } = siteScope(roots);
   const top = rankShops(shops).slice(0, TOP_N);
+  const popular = popularShops(shops, ranks, TOP_N);
   // Only lists inside a promoted root, so a hidden category (plan: under 30 shops) stays hidden.
   const rootIds = new Set(roots.map((c) => c.id));
   const lists = liveTopics(shops, categories).filter((t) => {
@@ -66,6 +67,12 @@ export default async function Home() {
           <h2 className="text-xl font-semibold">Hoogste echtheidsscore</h2>
           <ShopList shops={top} listName="Webshops met de hoogste echtheidsscore" />
         </section>
+        {popular.length > 0 && (
+          <section className="flex flex-col gap-3">
+            <h2 className="text-xl font-semibold">Meest bezocht deze maand</h2>
+            <ShopList shops={popular} listName="Meest bezochte webshops deze maand" disclosure={popularityExplanation()} />
+          </section>
+        )}
         {lists.length > 0 && (
           <section className="flex flex-col gap-3">
             <h2 className="text-xl font-semibold">Lijsten</h2>

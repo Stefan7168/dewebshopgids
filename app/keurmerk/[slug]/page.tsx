@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { JsonLd } from "@/components/json-ld";
 import { ShopList } from "@/components/shop-list";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -53,6 +54,16 @@ async function KeurmerkDetails({ params }: Props) {
       <p className="text-sm">
         <Link href="/hoe-wij-beoordelen" className="underline">Hoe we keurmerken controleren</Link>
       </p>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: `${SITE.url}/` },
+            { "@type": "ListItem", position: 2, name: `Webshops met ${page.name}`, item: `${SITE.url}/keurmerk/${page.slug}` },
+          ],
+        }}
+      />
     </div>
   );
 }

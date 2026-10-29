@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { formatTime, pausedAgents, scheduleGaps, type ScheduleRow } from "@/lib/admin/ops";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { createServiceClient } from "@/lib/supabase/service";
-import { enableAgents, unpauseAgent } from "./actions";
+import { enableAgents, setPrenotice, unpauseAgent } from "./actions";
 import { KillForm } from "./kill-form";
 
 type Run = { id: string; agent: string; runs_on: string; started_at: string; finished_at: string | null; status: string; summary: string | null; error: string | null; cost_usd_est: number | null };
@@ -25,6 +25,7 @@ async function AgentsPanel() {
 
   const settings = settingsRes.data as { key: string; value: unknown }[];
   const enabled = settings.find((s) => s.key === "agents_enabled")?.value === true;
+  const prenoticeOn = settings.find((s) => s.key === "prenotice_enabled")?.value === true;
   const paused = pausedAgents(settings);
   const schedule = scheduleRes.data as ScheduleRow[];
   const lastRuns = new Map<string, string>();
@@ -56,6 +57,39 @@ async function AgentsPanel() {
             </p>
             <Button type="submit" variant="outline" className="w-fit">
               Agents weer aanzetten
+            </Button>
+          </form>
+        )}
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Vooraankondigingen</h2>
+        <p>
+          Status:{" "}
+          <strong className={prenoticeOn ? "text-green-700" : "text-red-700"}>
+            {prenoticeOn ? "aan: elke nacht krijgen tot 30 webshops hun mail, 7 dagen later staan ze online" : "uit: er gaat geen webshop online"}
+          </strong>
+        </p>
+        {prenoticeOn ? (
+          <form action={setPrenotice}>
+            <input type="hidden" name="on" value="false" />
+            <Button type="submit" variant="outline" className="w-fit">
+              Vooraankondigingen uitzetten
+            </Button>
+          </form>
+        ) : (
+          <form action={setPrenotice} className="flex flex-col gap-2">
+            <p className="text-muted-foreground">
+              Zet dit pas aan als de site op dewebshopgids.nl openbaar bereikbaar is (de link in de mail gaat naar /herbeoordeling)
+              en Resend werkt (RESEND_API_KEY, EMAIL_FROM en OWNER_EMAIL in GitHub).
+            </p>
+            <input type="hidden" name="on" value="true" />
+            <label className="flex flex-col gap-1">
+              Typ AAN om te bevestigen
+              <input name="confirm" required className="h-10 w-40 rounded-md border px-2" autoComplete="off" />
+            </label>
+            <Button type="submit" className="w-fit">
+              Vooraankondigingen aanzetten
             </Button>
           </form>
         )}

@@ -40,3 +40,18 @@ export async function unpauseAgent(formData: FormData) {
   await setSetting(`paused_until.${agent}`, null, email);
   revalidatePath("/admin/agents");
 }
+
+/**
+ * Stefan's go-ahead for pre-notice emails (launch step 7). Upsert: the key is not seeded, so the
+ * nightly publish step reads "off" until this is pressed. Turning it on needs the word AAN.
+ */
+export async function setPrenotice(formData: FormData) {
+  const email = await requireAdmin();
+  const on = formData.get("on") === "true";
+  if (on && formData.get("confirm") !== "AAN") return;
+  const { error } = await createServiceClient()
+    .from("agent_settings")
+    .upsert({ key: "prenotice_enabled", value: on, updated_by: `admin:${email}` }, { onConflict: "key" });
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/agents");
+}

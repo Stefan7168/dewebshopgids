@@ -127,3 +127,7 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 ## 2026-10-29: "Meest bezocht deze maand"
 - Plan v3 section 10 names click-based "meest bezocht deze maand" as a first-party data point. Migration 0019 adds `shop_popularity`: the nightly pipeline stores a rank per published shop from non-bot outbound clicks of the last 30 days. Only ranks are public, never click counts or raw clicks.
 - Its list gets its own disclosure ("op volgorde van bezoeken via onze site"), because the order is not the score. Shown only once at least 5 shops have 3 or more clicks, so a handful of clicks cannot make a list.
+
+## 2026-10-29: Fourth category Sieraden & accessoires
+- Picked by the coordinator under Stefan's autonomy mandate, on the category research thread's recommendation ("handmade jewellery, good 4th"). Same buyer as Home & Living, many goldsmiths, silversmiths and leather workers sell from their own webshop, and "eigen atelier" is easy to verify on their sites. Stefan may reverse it.
+- Migration 0021 adds `sieraden-accessoires` with sieraden, tassen-leer and sjaals-mutsen. Hidden from home page, header and llms.txt until 30 published shops, the same gate as the other new categories. No candidate list yet; that needs a research pass like the food list.

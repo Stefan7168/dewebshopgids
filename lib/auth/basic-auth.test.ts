@@ -13,6 +13,7 @@ describe("isPublicPath", () => {
   it("lets shop owners open the pre-notice links", () => {
     expect(isPublicPath("/herbeoordeling")).toBe(true);
     expect(isPublicPath("/herbeoordeling/bevestig")).toBe(true);
+    expect(isPublicPath("/hoe-wij-beoordelen")).toBe(true);
   });
   it("does not exempt look-alikes or the home page", () => {
     expect(isPublicPath("/")).toBe(false);

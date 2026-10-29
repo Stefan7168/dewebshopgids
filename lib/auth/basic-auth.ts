@@ -2,9 +2,9 @@
 // Paths in PUBLIC_PATHS stay reachable without a password, e.g. for Daisycon review.
 
 // Daisycon reviews these before the site is public (plan section 5, phase 0).
-// /herbeoordeling: the pre-notice email links there, so shop owners must reach it before launch
-// (it stays disallowed in robots.txt).
-export const PUBLIC_PATHS = ["/over", "/go", "/privacy", "/informatie-voor-webshops", "/herbeoordeling", "/api/health", "/api/revalidate", "/api/stripe/webhook", "/badge"];
+// /herbeoordeling and /hoe-wij-beoordelen: the pre-notice email links there, so shop owners must reach
+// them before launch (/herbeoordeling stays disallowed in robots.txt).
+export const PUBLIC_PATHS = ["/over", "/go", "/privacy", "/informatie-voor-webshops", "/herbeoordeling", "/hoe-wij-beoordelen", "/api/health", "/api/revalidate", "/api/stripe/webhook", "/badge"];
 
 export function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some(

@@ -80,3 +80,13 @@ export function lastNight<T extends { started_at: string }>(runs: T[]): T[] {
   const newest = Math.max(...runs.map((r) => Date.parse(r.started_at)));
   return runs.filter((r) => newest - Date.parse(r.started_at) <= 6 * 3600 * 1000).sort((a, b) => a.started_at.localeCompare(b.started_at));
 }
+
+/** Newest run per agent from one query's rows (newest first). An agent with no row in the window shows as never run. */
+export function latestPerAgent<T extends { agent: string; status: string; started_at: string }>(
+  agents: string[],
+  runsNewestFirst: T[],
+): { agent: string; status: string | null; started_at: string | null }[] {
+  const latest = new Map<string, T>();
+  for (const r of runsNewestFirst) if (!latest.has(r.agent)) latest.set(r.agent, r);
+  return agents.map((a) => ({ agent: a, status: latest.get(a)?.status ?? null, started_at: latest.get(a)?.started_at ?? null }));
+}

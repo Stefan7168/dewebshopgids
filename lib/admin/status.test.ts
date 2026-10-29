@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { lastNight, launchBlockers } from "./status";
+import { lastNight, launchBlockers, latestPerAgent } from "./status";
 
 const ok = (bs: ReturnType<typeof launchBlockers>) => Object.fromEntries(bs.map((b) => [b.key, b.ok]));
 
@@ -49,5 +49,20 @@ describe("lastNight", () => {
     ];
     expect(lastNight(runs).map((r) => r.agent)).toEqual(["promote-candidates", "crawl"]);
     expect(lastNight([])).toEqual([]);
+  });
+});
+
+describe("latestPerAgent", () => {
+  it("takes the newest row per agent and marks agents without rows as never run", () => {
+    const rows = [
+      { agent: "ops-watchdog", status: "ok", started_at: "2026-10-29T06:00:00Z" },
+      { agent: "score-auditor", status: "error", started_at: "2026-10-29T05:00:00Z" },
+      { agent: "ops-watchdog", status: "error", started_at: "2026-10-28T06:00:00Z" },
+    ];
+    expect(latestPerAgent(["ops-watchdog", "score-auditor", "shop-scout"], rows)).toEqual([
+      { agent: "ops-watchdog", status: "ok", started_at: "2026-10-29T06:00:00Z" },
+      { agent: "score-auditor", status: "error", started_at: "2026-10-29T05:00:00Z" },
+      { agent: "shop-scout", status: null, started_at: null },
+    ]);
   });
 });

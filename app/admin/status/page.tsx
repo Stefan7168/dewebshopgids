@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { formatTime } from "@/lib/admin/ops";
-import { lastNight, launchBlockers } from "@/lib/admin/status";
+import { lastNight, launchBlockers, latestPerAgent } from "@/lib/admin/status";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { createServiceClient } from "@/lib/supabase/service";
 
@@ -53,12 +53,12 @@ async function Status() {
   const perRoot = new Map(roots.map((r, i) => [r.name_nl, publishedPerRoot[i]]));
 
   const agents = [...new Set((scheduleRes.data as { agent: string }[]).map((s) => s.agent))].sort();
-  const agentRuns = await Promise.all(
-    agents.map(async (a) => {
-      const { data } = await db.from("agent_runs").select("status, started_at").eq("agent", a).order("started_at", { ascending: false }).limit(1).maybeSingle();
-      return { agent: a, status: (data?.status as string | undefined) ?? null, started_at: (data?.started_at as string | undefined) ?? null };
-    }),
-  );
+  // One query for all agents instead of one per agent. 500 rows covers weeks of routine runs.
+  const recent = agents.length
+    ? await db.from("agent_runs").select("agent, status, started_at").in("agent", agents).order("started_at", { ascending: false }).limit(500)
+    : { data: [], error: null };
+  if (recent.error) return <p className="text-sm text-red-600">Fout: {recent.error.message}</p>;
+  const agentRuns = latestPerAgent(agents, recent.data as { agent: string; status: string; started_at: string }[]);
 
   return (
     <div className="flex flex-col gap-6 text-sm">

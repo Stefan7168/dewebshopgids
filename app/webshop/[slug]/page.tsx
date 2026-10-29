@@ -143,7 +143,10 @@ async function ShopDetails({ params }: Props) {
             <p className="text-sm">
               <span className="rounded-full border px-2 py-0.5 font-medium">Geverifieerd</span>{" "}
               <span className="text-muted-foreground">
-                Deze shop betaalt voor de badge. Dat verandert niets aan de score of de volgorde.
+                Deze shop betaalt voor de badge. Dat verandert niets aan de score of de volgorde.{" "}
+                <Link href="/geverifieerd/controle" className="underline">
+                  Wat we controleren
+                </Link>
               </span>
             </p>
           )}

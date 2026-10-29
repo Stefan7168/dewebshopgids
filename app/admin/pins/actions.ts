@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { createServiceClient } from "@/lib/supabase/service";
+import { draftCutoff } from "./expiry";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
@@ -19,7 +20,8 @@ async function decide(formData: FormData, status: "approved" | "rejected") {
     .from("pin_drafts")
     .update({ status, approved_by: email, decided_at: new Date().toISOString() })
     .in("id", ids(formData))
-    .eq("status", "draft");
+    .eq("status", "draft")
+    .gt("created_at", draftCutoff());
   if (error) throw new Error(error.message);
   revalidatePath("/admin/pins");
 }

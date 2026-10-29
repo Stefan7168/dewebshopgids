@@ -7,6 +7,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { connect, runAgentJob, type RunStatus, type Sql } from "../../agents/shared/audit";
 import { applyOverrides } from "./apply-overrides";
 import { runCrawl } from "./crawl/run-crawl";
+import { postPins } from "./pinterest/post";
 import { runDomainAge, type DomainAgeDeps } from "./domain-age-step";
 import { promoteCandidates } from "./promote-candidates";
 import { runRetention } from "./retention";
@@ -66,6 +67,7 @@ export function nightlySteps(sql: Sql, d: NightlyDeps): Step[] {
     { agent: "search-console", spendsTokens: false, work: () => importSearchConsole(sql, d.env) },
     { agent: "apply-overrides", spendsTokens: false, work: () => applyOverrides(sql) },
     { agent: "publish", spendsTokens: false, work: () => runPublish(sql) },
+    { agent: "pinterest", spendsTokens: false, work: () => postPins(sql, d.env) },
   ];
 }
 

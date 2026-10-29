@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { TextPage } from "@/components/text-page";
+import { badgePriceText, formatEur, UITGELICHT_EUR } from "@/lib/badge/pricing";
 import { SITE, USER_AGENT_TOKEN } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -62,9 +63,9 @@ export default function Page() {
       <h2>Geld</h2>
       <p>
         Wij verdienen aan affiliatecommissies: koopt iemand via onze link bij jou, dan kunnen wij een vergoeding krijgen. Daarnaast kun je
-        betalen voor de badge &ldquo;Geverifieerd&rdquo; op je pagina, of voor een plek in het blok &ldquo;Uitgelicht&rdquo; boven een
-        categorie. Dat blok heeft het label &ldquo;Advertentie&rdquo; en staat los van de lijst. Geen van deze betalingen verandert de score
-        of de volgorde. Vragen? Mail <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+        betalen voor de <Link href="/geverifieerd">badge &ldquo;Geverifieerd&rdquo;</Link> op je pagina ({badgePriceText()}), of voor een
+        plek in het blok &ldquo;Uitgelicht&rdquo; boven een categorie ({formatEur(UITGELICHT_EUR)} per maand). Dat blok heeft het label
+        &ldquo;Advertentie&rdquo; en staat los van de lijst. Geen van deze betalingen verandert de score of de volgorde. Vragen? Mail <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
       </p>
     </TextPage>
   );

@@ -51,6 +51,13 @@ async function Body({ searchParams }: { searchParams: Search }) {
         .
       </p>
       <ClaimRequestForm slug={shop.slug} domain={shop.domain} />
+      <p className="text-sm text-muted-foreground">
+        Met dezelfde link kun je ook de{" "}
+        <Link href="/geverifieerd" className="underline">
+          badge Geverifieerd
+        </Link>{" "}
+        nemen.
+      </p>
     </>
   );
 }

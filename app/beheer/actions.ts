@@ -1,6 +1,9 @@
 "use server";
 
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { badgeEligibility } from "@/lib/badge/eligibility";
+import { checkoutConfig } from "@/lib/badge/pricing";
 import { confirmationRecipient } from "@/lib/disputes/core";
 import {
   CLAIMABLE_STATUSES,
@@ -15,6 +18,8 @@ import {
 import { hashToken, isTokenShape, newToken, normaliseEmail } from "@/lib/newsletter/core";
 import { sendEmail } from "@/lib/newsletter/resend";
 import { MemoryLimiter, senderKey } from "@/lib/rate-limit";
+import { SITE } from "@/lib/site";
+import { createBadgeCheckout } from "@/lib/stripe/checkout";
 import { createServiceClient } from "@/lib/supabase/service";
 
 export type FormState = { ok: boolean; message: string } | null;
@@ -86,4 +91,24 @@ export async function submitDescription(_prev: FormState, formData: FormData): P
     console.error("claim edit failed", err);
     return { ok: false, message: "Er ging iets mis. Probeer het later nog eens." };
   }
+}
+
+/** Badge checkout from the claim link: the token proves the buyer reads mail on the shop's domain. */
+export async function startBadgeCheckout(formData: FormData) {
+  const token = formData.get("t");
+  const plan = formData.get("plan");
+  const config = checkoutConfig();
+  if (!isTokenShape(token) || (plan !== "month" && plan !== "year") || !config) redirect("/geverifieerd?fout=1");
+  let url: string | null = null;
+  try {
+    const db = createServiceClient();
+    const { data: claim } = await db.from("shop_claims").select("shop_id, expires_at").eq("token_hash", hashToken(token)).maybeSingle();
+    if (claim && new Date(claim.expires_at) >= new Date()) {
+      const { data: shop } = await db.from("shops").select("id, status, score, verified_badge_until").eq("id", claim.shop_id).single();
+      if (shop && badgeEligibility(shop).kind === "can_buy") url = await createBadgeCheckout(shop.id, plan, config, SITE.url);
+    }
+  } catch (err) {
+    console.error("badge checkout failed", err);
+  }
+  redirect(url ?? "/geverifieerd?fout=1");
 }

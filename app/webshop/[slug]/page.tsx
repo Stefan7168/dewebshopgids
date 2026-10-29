@@ -198,6 +198,10 @@ async function ShopDetails({ params }: Props) {
         Is dit jouw webshop?{" "}
         <Link href={`/beheer?shop=${shop.slug}`} rel="nofollow" className="underline">
           Pas je beschrijving aan
+        </Link>{" "}
+        of lees over de{" "}
+        <Link href="/geverifieerd" className="underline">
+          badge Geverifieerd
         </Link>
         .
       </p>

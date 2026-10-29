@@ -1,10 +1,13 @@
 // The small Markdown subset a gids body may use: "## " headings, paragraphs, **bold** and links
-// to our own /webshop/ and /gids/ pages. Anything else is plain text. Used for the page and the
+// to our own /webshop/ and /gids/ pages and the info pages in SITE_PAGES. Anything else is plain text. Used for the page and the
 // email, so the Editor can never inject HTML or an outside link.
 export type Inline = { kind: "text" | "bold"; text: string } | { kind: "link"; text: string; href: string };
 export type Block = { kind: "heading" | "paragraph"; inlines: Inline[] };
 
 export const OWN_LINK = /^\/(webshop|gids)\/[a-z0-9-]+$/;
+
+/** Own pages a gids may link to besides this week's shops and other gids issues. */
+export const SITE_PAGES = ["/hoe-wij-beoordelen", "/informatie-voor-webshops", "/gids"];
 
 export function parseInline(s: string): Inline[] {
   const out: Inline[] = [];
@@ -13,7 +16,7 @@ export function parseInline(s: string): Inline[] {
   for (const m of s.matchAll(re)) {
     if (m.index > last) out.push({ kind: "text", text: s.slice(last, m.index) });
     if (m[1] != null) out.push({ kind: "bold", text: m[1] });
-    else if (OWN_LINK.test(m[3])) out.push({ kind: "link", text: m[2], href: m[3] });
+    else if (OWN_LINK.test(m[3]) || SITE_PAGES.includes(m[3])) out.push({ kind: "link", text: m[2], href: m[3] });
     else out.push({ kind: "text", text: m[2] }); // outside link: keep the words, drop the link
     last = m.index + m[0].length;
   }

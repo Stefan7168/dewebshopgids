@@ -18,7 +18,10 @@ export function parseUtm(input: string | Record<string, unknown> | null | undefi
     const clean = v.trim().toLowerCase().replace(/\s+/g, "-");
     if (VALUE.test(clean)) out[k] = clean;
   }
-  return Object.keys(out).length ? out : null;
+  if (!Object.keys(out).length) return null;
+  // ChatGPT and others add only utm_source=<their domain> to links: that is an AI visit too.
+  const ai = !out.utm_medium && out.utm_source ? AI_REFERRERS.find(([re]) => re.test(out.utm_source!)) : undefined;
+  return ai ? { ...out, utm_source: ai[1], utm_medium: "ai-referral" } : out;
 }
 
 /** The page path with the UTM tags appended, capped at 200 characters like source_path. */

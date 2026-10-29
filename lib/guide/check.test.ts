@@ -50,6 +50,11 @@ describe("guide markdown", () => {
     const html = guideHtml(parseGuideMarkdown("## Kop\n\n**Vet** <b>x</b> [shop](/webshop/a-b) [weg](https://x.nl)"), "https://dewebshopgids.nl");
     expect(html).toBe('<h2>Kop</h2>\n<p><strong>Vet</strong> &lt;b&gt;x&lt;/b&gt; <a href="https://dewebshopgids.nl/webshop/a-b">shop</a> weg</p>');
   });
+
+  it("keeps links to the info pages the checks allow, and nothing else on the site", () => {
+    const html = guideHtml(parseGuideMarkdown("[a](/hoe-wij-beoordelen) [b](/gids) [c](/informatie-voor-webshops) [d](/admin)"), "https://x.nl");
+    expect(html).toBe('<p><a href="https://x.nl/hoe-wij-beoordelen">a</a> <a href="https://x.nl/gids">b</a> <a href="https://x.nl/informatie-voor-webshops">c</a> d</p>');
+  });
 });
 
 describe("gids issue 1 reference draft", () => {

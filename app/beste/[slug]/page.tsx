@@ -8,7 +8,8 @@ import { RankingDisclosure } from "@/components/ranking-disclosure";
 import { ScoreBadge } from "@/components/score-badge";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { besteList, topicBySlug } from "@/lib/beste/topics";
+import { FaqSection } from "@/components/faq-section";
+import { METHOD_NOTE, besteList, liveTopics, siblingTopics, topicBySlug } from "@/lib/beste/topics";
 import { signupHeadline } from "@/lib/newsletter/core";
 import { getCategories, getPublishedShops } from "@/lib/shops/data";
 import { getEarnedSubScores } from "@/lib/shops/evidence";
@@ -23,7 +24,9 @@ async function load(slug: string) {
   if (!topic) return null;
   const [categories, shops] = await Promise.all([getCategories(), getPublishedShops()]);
   const list = besteList(topic, shops, categories);
-  return list ? { topic, list, category: categories.find((c) => c.slug === topic.categorySlug)! } : null;
+  if (!list) return null;
+  const siblings = siblingTopics(topic, liveTopics(shops, categories), categories);
+  return { topic, list, siblings, category: categories.find((c) => c.slug === topic.categorySlug)! };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -53,13 +56,14 @@ async function List({ params }: Props) {
   const { slug } = await params;
   const data = await load(slug);
   if (!data) notFound();
-  const { topic, list, category } = data;
+  const { topic, list, siblings, category } = data;
   return (
     <article className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold">{topic.title}</h1>
       {topic.intro.map((p) => (
         <p key={p}>{p}</p>
       ))}
+      <p className="text-sm text-muted-foreground">{METHOD_NOTE}</p>
       <section className="flex flex-col gap-3" aria-label={topic.title}>
         <RankingDisclosure />
         <ol className="flex flex-col gap-3">
@@ -100,6 +104,18 @@ async function List({ params }: Props) {
           .
         </p>
       </section>
+      <FaqSection faqs={topic.faq} />
+      <nav aria-label="Meer lijsten" className="flex flex-col gap-1">
+        <h2 className="text-xl font-semibold">Meer lijsten</h2>
+        {siblings.map((t) => (
+          <Link key={t.slug} href={`/beste/webshops-${t.slug}`} className="inline-flex min-h-11 items-center underline">
+            {t.title}
+          </Link>
+        ))}
+        <Link href={`/categorie/${category.slug}`} className="inline-flex min-h-11 items-center underline">
+          Alle webshops in {category.name_nl}
+        </Link>
+      </nav>
       <NewsletterForm headline={signupHeadline()} source={`/beste/${slug}`} />
       <JsonLd
         data={{

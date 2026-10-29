@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Category, PublicShop } from "../shops/present";
-import { MAX_SHOPS_PER_LIST, MIN_SHOPS_PER_LIST, TOPICS, besteList, liveTopics, topicBySlug } from "./topics";
+import { wordCount } from "../seo/faq";
+import { MAX_SHOPS_PER_LIST, MIN_SHOPS_PER_LIST, TOPICS, besteList, liveTopics, siblingTopics, topicBySlug } from "./topics";
 
 const cats: Category[] = [
   { id: "w", slug: "wonen", name_nl: "Wonen", parent_id: null, intro_nl: null, seo_title: null, sort_order: 0 },
@@ -42,7 +43,7 @@ describe("/beste/ lists", () => {
 
   it("keeps the copy neutral", () => {
     for (const t of TOPICS) {
-      const text = [t.title, ...t.intro].join(" ");
+      const text = [t.title, ...t.intro, ...t.faq.flatMap((f) => [f.q, f.a])].join(" ");
       expect(text).not.toMatch(/onbetrouwbaar|review|advertentie|\b20\d\d\b/i);
     }
   });
@@ -64,5 +65,29 @@ describe("/beste/ lists", () => {
     for (const c of ["meubels", "verlichting", "woontextiel", "woonaccessoires", "keuken-tafelen", "slapen", "tuin-buiten", "tuinmeubels", "potten-plantenbakken", "buitenverlichting", "vuur-bbq", "eten-drinken", "koffie-thee", "chocolade-koek", "kaas-delicatessen"]) {
       expect(TOPICS.some((t) => t.categorySlug === c && !t.only)).toBe(true);
     }
+  });
+
+  it("gives every list its own 120 to 200 word intro and 3 to 5 questions", () => {
+    const seen = new Set<string>();
+    for (const t of TOPICS) {
+      expect(t.keyword, t.slug).toBeTruthy();
+      const words = wordCount(t.intro);
+      expect(words, `${t.slug}: ${words} words`).toBeGreaterThanOrEqual(120);
+      expect(words, `${t.slug}: ${words} words`).toBeLessThanOrEqual(200);
+      expect(t.faq.length, t.slug).toBeGreaterThanOrEqual(3);
+      expect(t.faq.length, t.slug).toBeLessThanOrEqual(5);
+      for (const p of t.intro) {
+        expect(seen.has(p), `${t.slug} repeats a paragraph`).toBe(false);
+        seen.add(p);
+      }
+    }
+  });
+
+  it("links only to other live lists under the same root category", () => {
+    const all: Category[] = [...cats, { id: "v", slug: "verlichting", name_nl: "Verlichting", parent_id: "w", intro_nl: null, seo_title: null, sort_order: 2 },
+      { id: "e", slug: "eten-drinken", name_nl: "Eten & drinken", parent_id: null, intro_nl: null, seo_title: null, sort_order: 3 }];
+    const live = ["webshops-meubels", "webshops-verlichting", "webshops-eten-en-drinken"].map((s) => topicBySlug(s)!);
+    const sib = siblingTopics(live[0], live, all).map((t) => t.slug);
+    expect(sib).toEqual(["verlichting"]);
   });
 });

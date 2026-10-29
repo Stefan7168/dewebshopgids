@@ -14,6 +14,7 @@ import { cachedToday, getCategories, getPublishedShops, getShop } from "@/lib/sh
 import { getEarnedSubScores } from "@/lib/shops/evidence";
 import { countryName, hasVerifiedBadge, keurmerkText, onlineSince, priceLevelText, productCountText, scoreDisplay, similarShops, SUB_SCORE_NAMES, type Category, type PublicShop } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
+import { PageLoading } from "@/components/page-loading";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -190,7 +191,7 @@ export default function ShopPage(props: Props) {
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
       <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8">
-        <Suspense fallback={<p className="text-muted-foreground">Laden...</p>}>
+        <Suspense fallback={<PageLoading />}>
           <ShopDetails {...props} />
         </Suspense>
       </main>

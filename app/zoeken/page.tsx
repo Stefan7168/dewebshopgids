@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { MAX_QUERY_LENGTH, searchShops } from "@/lib/search/shops";
 import { getCategories, getPublishedShops } from "@/lib/shops/data";
+import { PageLoading } from "@/components/page-loading";
 
 export const metadata: Metadata = { title: "Zoeken", robots: { index: false, follow: true } };
 
@@ -48,7 +49,7 @@ export default function SearchPage(props: Props) {
       <SiteHeader />
       <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 flex flex-col gap-6">
         <h1 className="text-2xl font-bold">Zoek een webshop</h1>
-        <Suspense fallback={<p className="text-muted-foreground">Laden...</p>}>
+        <Suspense fallback={<PageLoading />}>
           <Results {...props} />
         </Suspense>
       </main>

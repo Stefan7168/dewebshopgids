@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/site-header";
 import { getGuides } from "@/lib/guide/data";
 import { signupHeadline } from "@/lib/newsletter/core";
 import { SITE } from "@/lib/site";
+import { PageLoading } from "@/components/page-loading";
 
 export const metadata: Metadata = {
   title: "De wekelijkse webshopgids",
@@ -40,7 +41,7 @@ export default function GidsIndex() {
           Elke donderdag 5 webshops uit de gids: nieuw opgenomen, gestegen in echtheidsscore of veel bekeken. Alle cijfers komen uit
           onze eigen controle; niemand betaalt voor een plek.
         </p>
-        <Suspense fallback={<p className="text-muted-foreground">Laden...</p>}>
+        <Suspense fallback={<PageLoading />}>
           <GuideList />
         </Suspense>
         <NewsletterForm headline={signupHeadline()} source="/gids" />

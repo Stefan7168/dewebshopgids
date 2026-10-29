@@ -10,6 +10,7 @@ import { keurmerkPageBySlug, keurmerkShops } from "@/lib/keurmerk/pages";
 import { getPublishedShops } from "@/lib/shops/data";
 import { MIN_SHOPS_TO_INDEX } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
+import { PageLoading } from "@/components/page-loading";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -73,7 +74,7 @@ export default function KeurmerkPage(props: Props) {
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
       <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8">
-        <Suspense fallback={<p className="text-muted-foreground">Laden...</p>}>
+        <Suspense fallback={<PageLoading />}>
           <KeurmerkDetails {...props} />
         </Suspense>
       </main>

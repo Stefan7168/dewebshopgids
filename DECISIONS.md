@@ -107,3 +107,7 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 ## 2026-10-29: Affiliate links in /admin
 - `/admin/affiliate` sets or clears `shops.affiliate_url` per shop (and `affiliate_available` with it). Until now nothing wrote the column, so an approved Daisycon campaign had no way onto the site. The link must be https, without credentials and not on our own domain; `/go/[slug]` uses it unchanged (Daisycon terms art. 2.14). Order and score never read it.
 - The plan's weekly Daisycon Publisher API job (section 8 step 13) waits until after approval: the API needs OAuth with a publisher login, and its endpoint reference is not readable without one, so writing that client now would mean guessing endpoints.
+
+## 2026-10-29: Gids issues 7 to 9
+- Reference drafts for 2026-week-51 (winter sleep), 2026-week-53 and 2027-week-01 (kids room) in `lib/guide/fixtures/`. Week 52 sends no email.
+- Issue 8 changes theme: the calendar planned "the five highest scores of the year", but `guide_inputs` selects new, risen and most clicked shops of the week, not a yearly top. Issue 8 therefore shows the most clicked shops of its week by score, under the ranking disclosure. A real yearly top would need a separate input query; not worth it for one issue.

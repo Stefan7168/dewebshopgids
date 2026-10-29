@@ -86,7 +86,7 @@ describe("gids issues 3 and 4 reference drafts", () => {
   });
 
   it("repeat no shop from an earlier issue", async () => {
-    const issues = await Promise.all([1, 2, 3, 4, 5, 6].map((n) => import(`./fixtures/issue-${n}`)));
+    const issues = await Promise.all([1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => import(`./fixtures/issue-${n}`)));
     const slugs = issues.flatMap((m) => (Object.values(m).find((v) => (v as { shops?: unknown }).shops) as { shops: { slug: string }[] }).shops.map((s) => s.slug));
     expect(new Set(slugs).size).toBe(slugs.length);
   });
@@ -103,5 +103,22 @@ describe("gids issues 5 and 6 reference drafts", () => {
   it("promise no delivery date, because delivery times are not inputs", async () => {
     const { issue6Draft } = await import("./fixtures/issue-6");
     expect(issue6Draft.body_md).not.toMatch(/\d+ december|op tijd binnen|gegarandeerd/i);
+  });
+});
+
+describe("gids issues 7 to 9 reference drafts", () => {
+  it("pass the code checks", async () => {
+    for (const n of [7, 8, 9]) {
+      const m = await import(`./fixtures/issue-${n}`);
+      expect(checkDraft(m[`issue${n}Draft`], m[`issue${n}Snapshot`])).toEqual([]);
+    }
+  });
+
+  it("issue 8 lists its shops by score, high to low, under the ranking disclosure", async () => {
+    const { issue8Draft, issue8Snapshot } = await import("./fixtures/issue-8");
+    const body = issue8Draft.body_md!;
+    expect(body.indexOf("Hoe is deze volgorde bepaald?")).toBeLessThan(body.indexOf("score "));
+    const shown = [...body.matchAll(/score (\d+)/g)].map((m) => Number(m[1]));
+    expect(shown).toEqual([...issue8Snapshot.shops.map((s) => s.score!)].sort((a, b) => b - a));
   });
 });

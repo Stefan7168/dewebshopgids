@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
-import { parseUtm } from "@/lib/newsletter/utm";
+import { aiReferralUtm, parseUtm } from "@/lib/newsletter/utm";
 
 export const UTM_STORAGE_KEY = "dwg_utm";
 
-/** Remembers the UTM tags of the landing page for this browser tab, so a sign-up on a later page still carries them. */
+/** Remembers the UTM tags of the landing page for this browser tab, so a sign-up on a later page still carries them.
+ * A landing from an AI assistant without UTM tags gets utm_medium=ai-referral (the AI-referrer segment). */
 export function UtmCapture() {
   useEffect(() => {
-    const utm = parseUtm(window.location.search);
+    const utm = parseUtm(window.location.search) ?? aiReferralUtm(document.referrer);
     if (!utm) return;
     try {
       sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utm));

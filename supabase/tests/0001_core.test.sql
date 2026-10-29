@@ -64,7 +64,7 @@ begin
 
   -- categories are public
   select count(*) into n from public.categories;
-  assert n = 19, 'anon must read categories (8 seeded in 0007 + 5 in 0016 + 5 in 0017 + 1 test)';
+  assert n = 23, 'anon must read categories (8 seeded in 0007 + 5 in 0016 + 5 in 0017 + 4 in 0021 + 1 test)';
 end $$;
 
 reset role;

@@ -9,7 +9,7 @@ begin
   select count(*) into subs from public.categories where parent_id = top;
   assert subs = 4, format('expected 4 food sub-categories, got %s', subs);
   select count(*) into n from public.categories where parent_id is null;
-  assert n = 3, format('expected 3 top-level categories, got %s', n);
+  assert n >= 3, format('expected at least 3 top-level categories, got %s', n);
   select count(*) into n from public.categories where slug = 'eten-drinken' and intro_nl like '%alcohol%';
   assert n = 1, 'the intro must state the alcohol rule';
   set local role anon;

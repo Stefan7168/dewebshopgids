@@ -184,6 +184,28 @@ export function rankingExplanation(): string[] {
   ];
 }
 
+/** Shops needed before "Meest bezocht deze maand" shows (DECISIONS.md 2026-10-29). */
+export const POPULAR_MIN_SHOPS = 5;
+
+/** Published shops in popularity order; empty below POPULAR_MIN_SHOPS, so a few clicks never make a list. */
+export function popularShops(shops: PublicShop[], ranks: { shop_id: string; rank: number }[], n = 10): PublicShop[] {
+  const byId = new Map(shops.map((s) => [s.id, s]));
+  const list = [...ranks]
+    .sort((a, b) => a.rank - b.rank)
+    .map((r) => byId.get(r.shop_id))
+    .filter((s): s is PublicShop => s !== undefined);
+  return list.length < POPULAR_MIN_SHOPS ? [] : list.slice(0, n);
+}
+
+/** Disclosure for the popularity list: its order is visits, not the score. */
+export function popularityExplanation(): string[] {
+  return [
+    "De volgorde is het aantal bezoeken via onze site in de afgelopen 30 dagen, van veel naar minder. Dit is niet de echtheidsscore.",
+    "We tellen alleen klikken op \"Naar de webshop\" en laten bekende bots weg. Een webshop staat hier pas vanaf 3 bezoeken.",
+    "Betaling heeft geen invloed op de volgorde.",
+  ];
+}
+
 export function priceLevelText(level: number | null): string | null {
   if (level == null || level < 1 || level > 4) return null;
   return ["Voordelig", "Middensegment", "Hoger segment", "Luxe"][level - 1];

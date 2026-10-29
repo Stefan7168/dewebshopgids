@@ -9,6 +9,7 @@ import { applyOverrides } from "./apply-overrides";
 import { runCrawl } from "./crawl/run-crawl";
 import { postPins } from "./pinterest/post";
 import { runDomainAge, type DomainAgeDeps } from "./domain-age-step";
+import { runPopularity } from "./popularity";
 import { promoteCandidates } from "./promote-candidates";
 import { runRetention } from "./retention";
 import { importSearchConsole } from "./search-console/import";
@@ -68,6 +69,7 @@ export function nightlySteps(sql: Sql, d: NightlyDeps): Step[] {
     { agent: "apply-overrides", spendsTokens: false, work: () => applyOverrides(sql) },
     { agent: "publish", spendsTokens: false, work: () => runPublish(sql) },
     { agent: "pinterest", spendsTokens: false, work: () => postPins(sql, d.env) },
+    { agent: "popularity", spendsTokens: false, work: () => runPopularity(sql) },
   ];
 }
 

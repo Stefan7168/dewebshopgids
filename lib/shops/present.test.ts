@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { MARKETPLACE_LABEL, MAX_POINTS } from "@/lib/scoring/weights";
+import type { PublicShop } from "./present";
 import { earnedSubScores, subScoreFor, type SignalRow } from "./evidence-rules";
-import { countryName, keurmerkText, onlineSince, productCountText, promotedRoots, rankingExplanation, siteScope, rankShops, scoreDisplay, shopsInCategory, similarShops, type Category } from "./present";
+import { countryName, keurmerkText, onlineSince, productCountText, popularShops, POPULAR_MIN_SHOPS, promotedRoots, rankingExplanation, siteScope, rankShops, scoreDisplay, shopsInCategory, similarShops, type Category } from "./present";
 
 describe("scoreDisplay", () => {
   it("shows the number only when no label is set", () => {
@@ -164,5 +165,16 @@ describe("countryName", () => {
     expect(countryName("XX")).toBeNull();
     expect(countryName("Nederland")).toBeNull();
     expect(countryName(null)).toBeNull();
+  });
+});
+
+describe("popularShops", () => {
+  const shops = ["a", "b", "c", "d", "e", "f"].map((id) => ({ id }) as PublicShop);
+  const ranks = (ids: string[]) => ids.map((shop_id, i) => ({ shop_id, rank: i + 1 }));
+  it("follows the rank, skips shops that are not published and stays empty below the minimum", () => {
+    expect(popularShops(shops, ranks(["f", "gone", "a", "c", "b", "e"])).map((x) => x.id)).toEqual(["f", "a", "c", "b", "e"]);
+    expect(popularShops(shops, ranks(["a", "b", "c", "d", "gone"]))).toEqual([]);
+    expect(POPULAR_MIN_SHOPS).toBe(5);
+    expect(popularShops(shops, ranks(["a", "b", "c", "d", "e", "f"]), 5)).toHaveLength(5);
   });
 });

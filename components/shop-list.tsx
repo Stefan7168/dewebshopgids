@@ -6,13 +6,13 @@ import { keurmerkText, onlineSince, type PublicShop } from "@/lib/shops/present"
 import { SITE } from "@/lib/site";
 
 /** A ranked list: disclosure directly above, ItemList markup, no paid entries inside. */
-export function ShopList({ shops, listName }: { shops: PublicShop[]; listName: string }) {
+export function ShopList({ shops, listName, disclosure }: { shops: PublicShop[]; listName: string; disclosure?: string[] }) {
   if (shops.length === 0) {
     return <p className="text-muted-foreground">Hier staan nog geen webshops. We voegen elke week nieuwe toe.</p>;
   }
   return (
     <section className="flex flex-col gap-3" aria-label={listName}>
-      <RankingDisclosure />
+      <RankingDisclosure lines={disclosure} />
       <ol className="flex flex-col gap-3">
         {shops.map((s) => {
           const since = onlineSince(s.domain_first_seen);

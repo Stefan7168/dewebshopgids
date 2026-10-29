@@ -123,3 +123,7 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 
 ## 2026-10-29: AI-referrer segment for sign-ups
 - The AI strategy assessment asked for an AI-referrer segment. Page views already show the referrer in Vercel Web Analytics. For sign-ups, a landing from ChatGPT, Perplexity, Gemini, Copilot or Claude without its own UTM tags now stores `utm_source=<assistant>&utm_medium=ai-referral` in `subscribers.source_path`, the same place as other UTM tags. Only the assistant's name is kept, never the referrer URL.
+
+## 2026-10-29: "Meest bezocht deze maand"
+- Plan v3 section 10 names click-based "meest bezocht deze maand" as a first-party data point. Migration 0019 adds `shop_popularity`: the nightly pipeline stores a rank per published shop from non-bot outbound clicks of the last 30 days. Only ranks are public, never click counts or raw clicks.
+- Its list gets its own disclosure ("op volgorde van bezoeken via onze site"), because the order is not the score. Shown only once at least 5 shops have 3 or more clicks, so a handful of clicks cannot make a list.

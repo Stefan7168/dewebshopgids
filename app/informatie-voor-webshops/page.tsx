@@ -53,10 +53,18 @@ export default function Page() {
         <li>Vraag je om verwijdering of maak je bezwaar, dan sturen we een bevestigingslink naar een adres op je eigen domein. Zo kan niemand anders je pagina laten verwijderen. Na je klik halen we de pagina direct offline, en altijd binnen 48 uur.</li>
       </ul>
 
+      <h2>Je beschrijving zelf aanpassen</h2>
+      <p>
+        Onder je pagina staat &ldquo;Is dit jouw webshop?&rdquo;. Daar vraag je een link aan, die we naar een adres op je eigen domein sturen. Met
+        die link stuur je een nieuwe beschrijving in; na een korte controle staat hij online. Je score en je plaats veranderen daar niet door.
+      </p>
+
       <h2>Geld</h2>
       <p>
-        Wij verdienen aan affiliatecommissies: koopt iemand via onze link bij jou, dan kunnen wij een vergoeding krijgen. Dat verandert de score
-        en de volgorde niet. Vragen? Mail <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+        Wij verdienen aan affiliatecommissies: koopt iemand via onze link bij jou, dan kunnen wij een vergoeding krijgen. Daarnaast kun je
+        betalen voor de badge &ldquo;Geverifieerd&rdquo; op je pagina, of voor een plek in het blok &ldquo;Uitgelicht&rdquo; boven een
+        categorie. Dat blok heeft het label &ldquo;Advertentie&rdquo; en staat los van de lijst. Geen van deze betalingen verandert de score
+        of de volgorde. Vragen? Mail <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
       </p>
     </TextPage>
   );

@@ -4,8 +4,8 @@ import { createHash, randomBytes } from "node:crypto";
 import { rankShops, scoreDisplay, type PublicShop } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 
-/** Until the first guide (plan week 13) the form promises a start month. Set to null once guides go out. */
-export const GUIDE_START_MONTH: string | null = "februari";
+/** Before the first guide the form can promise a start month. Null now that /gids publishes every week. */
+export const GUIDE_START_MONTH: string | null = null;
 
 export const CONFIRM_VALID_DAYS = 7;
 /** One confirmation email per address per day, so the form cannot be used to flood an inbox. */

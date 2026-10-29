@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { JsonLd } from "@/components/json-ld";
+import { liveTopics } from "@/lib/beste/topics";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { ShopList } from "@/components/shop-list";
 import { SiteFooter } from "@/components/site-footer";
@@ -16,6 +17,12 @@ export default async function Home() {
   const roots = promotedRoots(categories, shops);
   const withGarden = roots.some((c) => c.slug === "tuin-buiten");
   const top = rankShops(shops).slice(0, TOP_N);
+  // Only lists inside a promoted root, so a hidden category (plan: under 30 shops) stays hidden.
+  const rootIds = new Set(roots.map((c) => c.id));
+  const lists = liveTopics(shops, categories).filter((t) => {
+    const c = categories.find((x) => x.slug === t.categorySlug);
+    return c !== undefined && rootIds.has(c.parent_id ?? c.id);
+  });
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -59,6 +66,23 @@ export default async function Home() {
           <h2 className="text-xl font-semibold">Hoogste echtheidsscore</h2>
           <ShopList shops={top} listName="Webshops met de hoogste echtheidsscore" />
         </section>
+        {lists.length > 0 && (
+          <section className="flex flex-col gap-3">
+            <h2 className="text-xl font-semibold">Lijsten</h2>
+            <ul className="flex flex-col gap-2">
+              {lists.map((t) => (
+                <li key={t.slug}>
+                  <Link href={`/beste/webshops-${t.slug}`} className="inline-flex min-h-11 items-center underline">
+                    {t.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+        <p>
+          Elke donderdag zetten we 5 webshops op een rij in <Link href="/gids" className="underline">de wekelijkse webshopgids</Link>.
+        </p>
         <NewsletterForm headline={signupHeadline()} source="/" />
       </main>
       <SiteFooter />

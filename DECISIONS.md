@@ -90,6 +90,13 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 ## 2026-10-28: Gids issues 3 and 4
 - Reference drafts for 2026-week-47 (gifts before Sinterklaas) and 2026-week-48 (the laid table) in `lib/guide/fixtures/`, from the editorial calendar. Only launch-list shops, only facts the snapshot holds; a test checks that no shop repeats across issues 1 to 4.
 
+## 2026-10-28: QA round 1 fixes
+- The sign-up form no longer says "Vanaf februari": `/gids` already publishes every week, so the promise contradicted the site. `GUIDE_START_MONTH` is null.
+- `/gids` and the live `/beste/` lists were orphan pages (only in the sitemap). Now linked: "Webshopgids" in the footer, a line on the home page, and a "Lijsten" block on the home page and on category pages (lists in hidden categories stay hidden). llms.txt also lists the live `/beste/` lists, the indexable keurmerk pages and `/gids`.
+- Category pages hide subcategory chips with 0 shops. The shops under a gids issue follow the editor's order (`shop_ids`).
+- `/herbeoordeling?shop=` and `/beheer?shop=` that cannot load the shop now point to the email address instead of back to the shop page.
+- "Informatie voor webshops" explains the description edit and names the paid options (badge, "Uitgelicht") and that neither changes score or order.
+
 ## 2026-10-28: Tuin & buiten list 2
 - `garden-candidates.csv` grows to 39 queued shops (19 strong and 10 medium added, mostly growers). The SQL for setup is `garden-candidates-2-insert.sql`, folded into the one-paste setup file. The category stays hidden until 30 published shops (#89).
 - Correction (17:15): those dual-fit shops (Ofyr, Weltevree, 4 Seasons Outdoor, Esschert Design, Garden Impressions and others) were already in sub-category `tuin-buiten`, which 0016 made the garden's top level. So they count for Tuin & buiten, not for Home & Living. Production holds 53 garden and 278 Home & Living candidates, so both roots reach their targets without a second category. No secondary-category migration for now; revisit only if a shop is missing from a category where visitors expect it.

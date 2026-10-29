@@ -43,6 +43,9 @@ async function AdminHome() {
           ))}
         </ul>
       </section>
+      <Link href="/admin/status" className="underline">
+        Status: wat publiceren tegenhoudt, aantallen, laatste nacht
+      </Link>
       <Link href="/admin/agents" className="underline">
         Agents: kill switch, pauzes, schema en runs
       </Link>

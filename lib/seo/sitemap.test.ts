@@ -1,8 +1,14 @@
-import { readFileSync, readdirSync } from "node:fs";
+import { readdirSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import sitemap from "@/app/sitemap";
+import { SITE } from "@/lib/site";
 import type { Category, PublicShop } from "../shops/present";
 import { NOT_IN_SITEMAP, newestUpdate, sitemapCategories } from "./sitemap";
+
+// The static-page check renders the real sitemap with an empty database instead of parsing its source.
+vi.mock("@/lib/shops/data", () => ({ getCategories: async () => [], getPublishedShops: async () => [] }));
+vi.mock("@/lib/guide/data", () => ({ getGuides: async () => [] }));
 
 const cat = (id: string, slug: string, parent_id: string | null): Category =>
   ({ id, slug, name_nl: slug, parent_id, intro_nl: null, seo_title: null, sort_order: 0 }) as Category;
@@ -27,7 +33,7 @@ describe("sitemap rules", () => {
     expect(newestUpdate([])).toBeUndefined();
   });
 
-  it("lists every static public page, or says why not", () => {
+  it("lists every static public page, or says why not", async () => {
     const pages: string[] = [];
     const walk = (dir: string) => {
       for (const e of readdirSync(dir, { withFileTypes: true })) {
@@ -37,8 +43,7 @@ describe("sitemap rules", () => {
     };
     walk("app");
     const statics = pages.filter((p) => p !== "" && !p.includes("[") && !/^(admin|auth)(\/|$)/.test(p));
-    const src = readFileSync("app/sitemap.ts", "utf8");
-    const inSitemap = JSON.parse(src.match(/\.\.\.(\[[^\]]*"over"[^\]]*\])\.map/)![1]) as string[];
+    const inSitemap = (await sitemap()).map((e) => e.url.replace(`${SITE.url}/`, "")).filter((p) => p !== "");
     const ownEntry = ["gids"]; // added once a guide is published
     for (const p of statics) expect(inSitemap.includes(p) || ownEntry.includes(p) || p in NOT_IN_SITEMAP, `/${p} is not in the sitemap`).toBe(true);
     for (const p of inSitemap) expect(pages, `/${p} has no page`).toContain(p);

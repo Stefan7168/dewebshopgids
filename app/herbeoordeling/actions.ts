@@ -62,7 +62,8 @@ export async function submitDispute(_prev: FormState, formData: FormData): Promi
 
     // The safe direction first, without proof: the score reads "In beoordeling".
     if (shop.status !== "disputed") {
-      const { error } = await db.from("shops").update({ status: "disputed" }).eq("id", shop.id).in("status", ["published", "prenotified"]);
+      // Remember the old status, so code restores exactly that once every dispute is answered.
+      const { error } = await db.from("shops").update({ status: "disputed", status_before_dispute: shop.status }).eq("id", shop.id).eq("status", shop.status);
       if (error) throw new Error(error.message);
       updateTag("shops");
     }

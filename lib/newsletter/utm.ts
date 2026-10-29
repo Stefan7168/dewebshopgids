@@ -27,3 +27,25 @@ export function sourceWithUtm(path: string, utm: Utm | null): string {
   const q = UTM_KEYS.filter((k) => utm[k]).map((k) => `${k}=${utm[k]}`).join("&");
   return `${path}?${q}`.slice(0, 200);
 }
+
+/** AI assistants that send visitors with a referrer. Only the coarse name is kept, never the referrer URL. */
+const AI_REFERRERS: [RegExp, string][] = [
+  [/(^|\.)(chatgpt\.com|chat\.openai\.com)$/, "chatgpt"],
+  [/(^|\.)perplexity\.ai$/, "perplexity"],
+  [/^gemini\.google\.com$/, "gemini"],
+  [/^copilot\.microsoft\.com$/, "copilot"],
+  [/^claude\.ai$/, "claude"],
+];
+
+/** UTM-style tags for a visit that came from an AI assistant without its own UTM tags (the AI-referrer segment). */
+export function aiReferralUtm(referrer: string | null | undefined): Utm | null {
+  if (!referrer) return null;
+  let host: string;
+  try {
+    host = new URL(referrer).hostname.toLowerCase();
+  } catch {
+    return null;
+  }
+  const hit = AI_REFERRERS.find(([re]) => re.test(host));
+  return hit ? { utm_source: hit[1], utm_medium: "ai-referral" } : null;
+}

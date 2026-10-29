@@ -116,3 +116,6 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 - Chosen by the coordinator's research thread under Stefan's autonomy mandate (sources and alternatives: `/mnt/project-files/launch/food-candidates-1-sources.md`). Same buyer as Home & Living, many makers sell from their own webshop, and "own roaster / own chocolate workshop" is easy to verify. Stefan may reverse it.
 - Scope: food and non-alcoholic drinks from makers and specialists. Shops whose main product is alcohol stay out (Alcoholwet age checks, Reclamecode voor Alcoholhoudende Dranken). The rule is in the category's `intro_nl`, so agents read it with the category.
 - Migration 0017 adds `eten-drinken` with koffie-thee, chocolade-koek, kaas-delicatessen and honing. Hidden from home page, header and llms.txt until 30 published shops, the same gate as Tuin & buiten.
+
+## 2026-10-29: AI-referrer segment for sign-ups
+- The AI strategy assessment asked for an AI-referrer segment. Page views already show the referrer in Vercel Web Analytics. For sign-ups, a landing from ChatGPT, Perplexity, Gemini, Copilot or Claude without its own UTM tags now stores `utm_source=<assistant>&utm_medium=ai-referral` in `subscribers.source_path`, the same place as other UTM tags. Only the assistant's name is kept, never the referrer URL.

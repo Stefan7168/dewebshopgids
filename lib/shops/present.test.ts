@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { MARKETPLACE_LABEL, MAX_POINTS } from "@/lib/scoring/weights";
 import { earnedSubScores, subScoreFor, type SignalRow } from "./evidence-rules";
-import { countryName, keurmerkText, onlineSince, productCountText, promotedRoots, rankingExplanation, rankShops, scoreDisplay, shopsInCategory, type Category } from "./present";
+import { countryName, keurmerkText, onlineSince, productCountText, promotedRoots, rankingExplanation, siteScope, rankShops, scoreDisplay, shopsInCategory, type Category } from "./present";
 
 describe("scoreDisplay", () => {
   it("shows the number only when no label is set", () => {
@@ -50,6 +50,22 @@ describe("promotedRoots", () => {
     expect(promotedRoots(cats, []).map((c) => c.slug)).toEqual(["wonen"]);
     expect(promotedRoots(cats, some).map((c) => c.slug)).toEqual(["wonen"]);
     expect(promotedRoots(cats, [...some, { category_id: "t" }]).map((c) => c.slug)).toEqual(["wonen", "tuin-buiten"]);
+  });
+});
+
+describe("siteScope", () => {
+  it("names the promoted main categories in the headline and scope", () => {
+    expect(siteScope([{ slug: "wonen" }])).toEqual({ headline: "Unieke en betrouwbare woonwinkels", scope: "wonen en interieur" });
+    expect(siteScope([{ slug: "wonen" }, { slug: "tuin-buiten" }])).toEqual({
+      headline: "Unieke en betrouwbare webshops voor huis en tuin",
+      scope: "wonen, interieur en tuin",
+    });
+    expect(siteScope([{ slug: "wonen" }, { slug: "eten-drinken" }]).scope).toBe("wonen, interieur, eten en drinken");
+    expect(siteScope([{ slug: "wonen" }, { slug: "tuin-buiten" }, { slug: "eten-drinken" }])).toEqual({
+      headline: "Unieke en betrouwbare Nederlandse webshops",
+      scope: "wonen, interieur, tuin, eten en drinken",
+    });
+    expect(siteScope([]).scope).toBe("wonen en interieur");
   });
 });
 

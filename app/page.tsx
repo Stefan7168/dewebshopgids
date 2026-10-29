@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getCategories, getPublishedShops } from "@/lib/shops/data";
 import { signupHeadline } from "@/lib/newsletter/core";
-import { promotedRoots, rankShops, shopsInCategory } from "@/lib/shops/present";
+import { promotedRoots, rankShops, shopsInCategory, siteScope } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 
 const TOP_N = 10;
@@ -15,7 +15,7 @@ const TOP_N = 10;
 export default async function Home() {
   const [categories, shops] = await Promise.all([getCategories(), getPublishedShops()]);
   const roots = promotedRoots(categories, shops);
-  const withGarden = roots.some((c) => c.slug === "tuin-buiten");
+  const { headline, scope } = siteScope(roots);
   const top = rankShops(shops).slice(0, TOP_N);
   // Only lists inside a promoted root, so a hidden category (plan: under 30 shops) stays hidden.
   const rootIds = new Set(roots.map((c) => c.id));
@@ -29,9 +29,9 @@ export default async function Home() {
       <SiteHeader />
       <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 flex flex-col gap-8">
         <section className="flex flex-col gap-3">
-          <h1 className="text-3xl font-bold">{withGarden ? "Unieke en betrouwbare webshops voor huis en tuin" : "Unieke en betrouwbare woonwinkels"}</h1>
+          <h1 className="text-3xl font-bold">{headline}</h1>
           <p className="text-lg">
-            Nederlandse webshops voor {withGarden ? "wonen, interieur en tuin" : "wonen en interieur"}, gecontroleerd op feiten: hoe lang ze online zijn, hoeveel producten ze
+            Nederlandse webshops voor {scope}, gecontroleerd op feiten: hoe lang ze online zijn, hoeveel producten ze
             hebben, welk keurmerk ze echt hebben, en een echtheidsscore van 1 tot 100.
           </p>
           <p className="text-sm text-muted-foreground">

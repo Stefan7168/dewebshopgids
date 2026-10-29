@@ -1,5 +1,5 @@
 // Nightly crawl step (plan v3 section 8, step 10). Runs as the `pipeline` role.
-// Picks never-crawled shops first, then 1/30 of the rest (oldest crawl first),
+// Picks shops without a successful crawl first, then 1/30 of the rest (oldest crawl first),
 // stores pages in crawl_pages and rule facts in shops and shop_signals.
 // The run fails when more than 10% of shops could not be crawled.
 import { createHash } from "node:crypto";
@@ -18,17 +18,24 @@ export async function selectShops(sql: Sql): Promise<Shop[]> {
   const [{ n }] = await sql<{ n: number }[]>`
     select count(*)::int as n from public.shops where status not in ('removed', 'disputed')`;
   const rotation = Math.ceil(n / 30);
+  // A shop counts as crawled only once a page came back 2xx. Shops without that (new, or every
+  // attempt failed, e.g. a night without network) are retried the next night, never-tried first,
+  // instead of waiting a full 30-night rotation.
   return sql<Shop[]>`
     with last as (
-      select s.id, s.domain, max(c.fetched_at) as last_crawl
+      select s.id, s.domain,
+        max(c.fetched_at) filter (where c.status_code between 200 and 299) as last_ok,
+        max(c.fetched_at) as last_try
       from public.shops s left join public.crawl_pages c on c.shop_id = s.id
       where s.status not in ('removed', 'disputed')
       group by s.id, s.domain
     )
-    (select id, domain from last where last_crawl is null order by id limit ${MAX_SHOPS_PER_NIGHT})
+    (select id, domain from last
+     where last_ok is null and (last_try is null or last_try < now() - interval '20 hours')
+     order by last_try nulls first, id limit ${MAX_SHOPS_PER_NIGHT})
     union all
-    (select id, domain from last where last_crawl < now() - interval '20 hours'
-     order by last_crawl limit ${rotation})
+    (select id, domain from last where last_ok < now() - interval '20 hours'
+     order by last_ok limit ${rotation})
     limit ${MAX_SHOPS_PER_NIGHT}`;
 }
 

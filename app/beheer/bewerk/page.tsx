@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { BadgeCheckout } from "@/components/badge-checkout";
 import { DescriptionForm } from "@/components/claim-forms";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -16,7 +17,7 @@ async function Body({ searchParams }: { searchParams: Search }) {
   const db = createServiceClient();
   const { data: claim } = await db.from("shop_claims").select("shop_id, expires_at").eq("token_hash", hashToken(t)).maybeSingle();
   if (!claim || new Date(claim.expires_at) < new Date()) return <p>Deze link is verlopen. Vraag een nieuwe aan via de pagina van je webshop.</p>;
-  const { data: shop } = await db.from("shops").select("name, description_nl").eq("id", claim.shop_id).single();
+  const { data: shop } = await db.from("shops").select("name, description_nl, status, score, verified_badge_until").eq("id", claim.shop_id).single();
   const { data: open } = await db.from("shop_edits").select("description_nl").eq("shop_id", claim.shop_id).eq("status", "pending").maybeSingle();
   return (
     <>
@@ -25,6 +26,7 @@ async function Body({ searchParams }: { searchParams: Search }) {
       </p>
       {open && <p className="text-sm text-muted-foreground">Er ligt al een tekst van je ter controle. Stuur je een nieuwe, dan vervangt die de vorige.</p>}
       <DescriptionForm token={t} current={open?.description_nl ?? shop?.description_nl ?? ""} />
+      {shop && <BadgeCheckout token={t} shop={shop} />}
     </>
   );
 }

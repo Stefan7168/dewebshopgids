@@ -10,6 +10,10 @@ describe("isPublicPath", () => {
     expect(isPublicPath("/api/health")).toBe(true);
     expect(isPublicPath("/go/houtatelier")).toBe(true);
   });
+  it("lets shop owners open the pre-notice links", () => {
+    expect(isPublicPath("/herbeoordeling")).toBe(true);
+    expect(isPublicPath("/herbeoordeling/bevestig")).toBe(true);
+  });
   it("does not exempt look-alikes or the home page", () => {
     expect(isPublicPath("/")).toBe(false);
     expect(isPublicPath("/overig")).toBe(false);

@@ -1,10 +1,11 @@
 // Code-side rules for Outreach drafts (plan v3 sections 3 and 10). The agent writes the text;
 // code decides who may get a mail and checks every draft before it is stored. The payment link and
 // the shop page link are placeholders that code fills in at send time, so the agent never handles
-// a URL, and code appends the fixed opt-out footer.
+// a URL, and code appends the fixed opt-out footer. Prices come from lib/badge/pricing.ts.
 
-export const BADGE_PRICE_EUR = 19;
-export const MIN_SCORE = 70;
+import { BADGE_MIN_SCORE, BADGE_PLANS } from "@/lib/badge/pricing";
+
+export const MIN_SCORE = BADGE_MIN_SCORE;
 export const COOLDOWN_DAYS = 90;
 export const MAX_DRAFTS_PER_RUN = 10;
 export const MAX_SUBJECT = 80;
@@ -37,7 +38,7 @@ export function checkOutreachDraft(d: OutreachDraft, c: OutreachCandidate): stri
   if (unknown.length) findings.push(`unknown placeholder(s): ${unknown.join(", ")}`);
   if (/https?:\/\/|www\.|\.nl\b|\.com\b|@/i.test(text)) findings.push("no links, domains or email addresses: use the placeholders");
   for (const re of BANNED) if (re.test(text)) findings.push(`banned wording: ${re.source}`);
-  const allowed = new Set([String(c.score), String(c.clicks_30d), String(BADGE_PRICE_EUR), String(MIN_SCORE), "100", "30"]);
+  const allowed = new Set([String(c.score), String(c.clicks_30d), ...BADGE_PLANS.map((p) => String(p.eur)), String(MIN_SCORE), "100", "30"]);
   for (const n of new Set(text.match(/\d+(?:[.,]\d+)?/g) ?? [])) if (!allowed.has(n)) findings.push(`number ${n} is not in the data`);
   const words = body.replace(/\[[a-z]+\]/g, "").split(/\s+/).filter(Boolean).length;
   if (words > MAX_WORDS) findings.push(`${words} words, max ${MAX_WORDS}`);

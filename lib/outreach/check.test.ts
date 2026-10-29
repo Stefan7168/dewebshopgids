@@ -4,7 +4,7 @@ import { checkOutreachDraft, renderOutreach, type OutreachCandidate } from "./ch
 const c: OutreachCandidate = { id: "s1", slug: "atelier-x", name: "Atelier X", score: 84, clicks_30d: 37 };
 const ok = {
   subject: "Je webshop in De Webshopgids",
-  body: "Hoi,\n\nAtelier X staat in De Webshopgids met een echtheidsscore van 84 van 100. De afgelopen 30 dagen klikten 37 lezers door naar je shop: [shoppagina]\n\nMet de badge Geverifieerd (19 euro per maand) laat je dat zien. Aanmelden: [betaallink]",
+  body: "Hoi,\n\nAtelier X staat in De Webshopgids met een echtheidsscore van 84 van 100. De afgelopen 30 dagen klikten 37 lezers door naar je shop: [shoppagina]\n\nMet de badge Geverifieerd (15 euro per maand) laat je dat zien. Aanmelden: [betaallink]",
 };
 
 describe("outreach draft checks", () => {

@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { createServiceClient } from "@/lib/supabase/service";
 import { Button } from "@/components/ui/button";
-import { decideCandidates } from "./actions";
+import { decideCandidates, rejectCandidate } from "./actions";
 
 type Candidate = {
   id: string;
@@ -16,9 +16,9 @@ type Candidate = {
 
 async function CandidateList() {
   await requireAdmin();
-  const { data, error } = await createServiceClient()
+  const { data, error, count } = await createServiceClient()
     .from("shop_candidates")
-    .select("id, domain, name, source, reason, created_at, categories:suggested_category_id (name_nl)")
+    .select("id, domain, name, source, reason, created_at, categories:suggested_category_id (name_nl)", { count: "exact" })
     .eq("status", "new")
     .order("created_at")
     .limit(100)
@@ -29,7 +29,8 @@ async function CandidateList() {
   return (
     <form action={decideCandidates} className="flex flex-col gap-4">
       <p className="text-sm">
-        {data.length} kandidaten. Vink aan wat je wilt beoordelen en kies goedkeuren of afwijzen. Goedgekeurde
+        {count !== null && count > data.length ? `De eerste ${data.length} van ${count} kandidaten.` : `${data.length} kandidaten.`} Alles
+        is aangevinkt. Wijs eerst losse domeinen af met de knop op hun regel, en keur daarna de rest in één keer goed. Goedgekeurde
         domeinen worden vannacht gecrawld en blijven concept tot de pipeline ze publiceert.
       </p>
       <ul className="flex flex-col divide-y border rounded-md">
@@ -43,6 +44,9 @@ async function CandidateList() {
               <span className="text-muted-foreground"> · {c.name ?? "geen naam"} · {c.categories?.name_nl ?? "geen categorie"}</span>
               {/* reason is agent output: shown as text, never as HTML */}
               <p className="text-muted-foreground">{c.reason}</p>
+              <Button type="submit" formAction={rejectCandidate} name="one" value={c.id} variant="outline" size="sm" className="mt-2">
+                Alleen deze afwijzen
+              </Button>
             </div>
           </li>
         ))}

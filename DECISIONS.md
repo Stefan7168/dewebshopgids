@@ -103,3 +103,9 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 
 ## 2026-10-28: Gids issues 5 and 6
 - Reference drafts for 2026-week-49 (vintage and second-hand design, from Home & Living list 2) and 2026-week-50 (last Christmas gifts) in `lib/guide/fixtures/`. Delivery times are not inputs, so issue 6 promises no date and tells readers to check each shop's delivery time.
+
+## 2026-10-29: QA round 2 (admin)
+- `/admin/kandidaten` ticks every row, so rejecting a few domains meant unticking the rest. Each row now has "Alleen deze afwijzen"; the page says "de eerste 100 van N" when more wait.
+- `/admin/gids` shows the shops of each issue (name, domain, score) and flags one that is not published, because the approval also covers the shop block under the mail.
+- `app/error.tsx` and `app/admin/error.tsx`: a failed read or a refused admin action (such as a second click on a decided item) shows a Dutch message instead of Next.js's English error page.
+- `/AGENTS.md`, written by `next dev`, is ignored so no agent commits it.

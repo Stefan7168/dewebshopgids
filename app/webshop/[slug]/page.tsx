@@ -4,14 +4,15 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { JsonLd } from "@/components/json-ld";
 import { NewsletterForm } from "@/components/newsletter-form";
+import { ShopList } from "@/components/shop-list";
 import { ScoreBadge } from "@/components/score-badge";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { KEURMERK_PAGES } from "@/lib/keurmerk/pages";
 import { signupHeadline } from "@/lib/newsletter/core";
-import { cachedToday, getCategories, getShop } from "@/lib/shops/data";
+import { cachedToday, getCategories, getPublishedShops, getShop } from "@/lib/shops/data";
 import { getEarnedSubScores } from "@/lib/shops/evidence";
-import { countryName, hasVerifiedBadge, keurmerkText, onlineSince, priceLevelText, productCountText, scoreDisplay, SUB_SCORE_NAMES, type PublicShop } from "@/lib/shops/present";
+import { countryName, hasVerifiedBadge, keurmerkText, onlineSince, priceLevelText, productCountText, scoreDisplay, similarShops, SUB_SCORE_NAMES, type Category, type PublicShop } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -57,6 +58,17 @@ async function EarnedSubScores({ shop }: { shop: PublicShop }) {
           </li>
         ))}
       </ul>
+    </section>
+  );
+}
+
+async function SimilarShops({ shop, categories }: { shop: PublicShop; categories: Category[] }) {
+  const similar = similarShops(shop, await getPublishedShops(), categories);
+  if (similar.length === 0) return null;
+  return (
+    <section className="flex flex-col gap-3">
+      <h2 className="text-xl font-semibold">Vergelijkbare webshops</h2>
+      <ShopList shops={similar} listName={`Vergelijkbare webshops voor ${shop.name}`} />
     </section>
   );
 }
@@ -154,6 +166,9 @@ async function ShopDetails({ params }: Props) {
         </Link>
         .
       </p>
+      <Suspense fallback={null}>
+        <SimilarShops shop={shop} categories={categories} />
+      </Suspense>
       <NewsletterForm headline={signupHeadline()} source={`/webshop/${shop.slug}`} />
       <JsonLd
         data={{

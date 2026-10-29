@@ -114,6 +114,22 @@ export function rankShops<T extends Pick<PublicShop, "score" | "score_label" | "
   });
 }
 
+/** Up to `n` other published shops for "Vergelijkbare webshops": same sub-category first, then the rest of its main category, each part by score. */
+export function similarShops<T extends Pick<PublicShop, "id" | "category_id" | "score" | "score_label" | "name"> & { status?: PublicShop["status"] }>(
+  shop: Pick<PublicShop, "id" | "category_id">,
+  shops: T[],
+  categories: Category[],
+  n = 3,
+): T[] {
+  const own = categories.find((c) => c.id === shop.category_id);
+  if (!own) return [];
+  const root = own.parent_id ? categories.find((c) => c.id === own.parent_id) : own;
+  const others = shops.filter((s) => s.id !== shop.id);
+  const near = rankShops(others.filter((s) => s.category_id === own.id));
+  const wider = root ? rankShops(shopsInCategory(others, root, categories).filter((s) => s.category_id !== own.id)) : [];
+  return [...near, ...wider].slice(0, n);
+}
+
 /** Shops in this category or any of its direct sub-categories. */
 export function shopsInCategory<T extends Pick<PublicShop, "category_id">>(shops: T[], category: Category, all: Category[]): T[] {
   const ids = new Set([category.id, ...all.filter((c) => c.parent_id === category.id).map((c) => c.id)]);

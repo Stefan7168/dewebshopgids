@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { MARKETPLACE_LABEL, MAX_POINTS } from "@/lib/scoring/weights";
 import { earnedSubScores, subScoreFor, type SignalRow } from "./evidence-rules";
-import { countryName, keurmerkText, onlineSince, productCountText, promotedRoots, rankingExplanation, siteScope, rankShops, scoreDisplay, shopsInCategory, type Category } from "./present";
+import { countryName, keurmerkText, onlineSince, productCountText, promotedRoots, rankingExplanation, siteScope, rankShops, scoreDisplay, shopsInCategory, similarShops, type Category } from "./present";
 
 describe("scoreDisplay", () => {
   it("shows the number only when no label is set", () => {
@@ -50,6 +50,22 @@ describe("promotedRoots", () => {
     expect(promotedRoots(cats, []).map((c) => c.slug)).toEqual(["wonen"]);
     expect(promotedRoots(cats, some).map((c) => c.slug)).toEqual(["wonen"]);
     expect(promotedRoots(cats, [...some, { category_id: "t" }]).map((c) => c.slug)).toEqual(["wonen", "tuin-buiten"]);
+  });
+});
+
+describe("similarShops", () => {
+  const cats: Category[] = [
+    { id: "w", slug: "wonen", name_nl: "Wonen", parent_id: null, intro_nl: null, seo_title: null, sort_order: 0 },
+    { id: "m", slug: "meubels", name_nl: "Meubels", parent_id: "w", intro_nl: null, seo_title: null, sort_order: 1 },
+    { id: "l", slug: "verlichting", name_nl: "Verlichting", parent_id: "w", intro_nl: null, seo_title: null, sort_order: 2 },
+    { id: "t", slug: "tuin-buiten", name_nl: "Tuin", parent_id: null, intro_nl: null, seo_title: null, sort_order: 3 },
+  ];
+  const s = (id: string, category_id: string, score: number) => ({ id, name: id, category_id, score, score_label: null });
+  const shops = [s("self", "m", 90), s("m1", "m", 50), s("m2", "m", 70), s("l1", "l", 95), s("w1", "w", 60), s("t1", "t", 99)];
+  it("takes the same sub-category first by score, then the main category, never itself or another main category", () => {
+    expect(similarShops(shops[0], shops, cats).map((x) => x.id)).toEqual(["m2", "m1", "l1"]);
+    expect(similarShops(shops[0], shops, cats, 10).map((x) => x.id)).toEqual(["m2", "m1", "l1", "w1"]);
+    expect(similarShops({ id: "x", category_id: "gone" }, shops, cats)).toEqual([]);
   });
 });
 

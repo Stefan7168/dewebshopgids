@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/auth/require-admin";
 import { SITE } from "@/lib/site";
 import { createServiceClient } from "@/lib/supabase/service";
 import { approvePins, rejectPins } from "./actions";
+import { draftCutoff } from "./expiry";
 
 type Pin = { id: string; target_path: string; title: string; description: string; board: string; created_at: string };
 
@@ -11,7 +12,14 @@ async function Pins() {
   await requireAdmin();
   const db = createServiceClient();
   const [{ data, error }, { count: posted }, { count: waiting }] = await Promise.all([
-    db.from("pin_drafts").select("id, target_path, title, description, board, created_at").eq("status", "draft").order("created_at").limit(30).returns<Pin[]>(),
+    db
+      .from("pin_drafts")
+      .select("id, target_path, title, description, board, created_at")
+      .eq("status", "draft")
+      .gt("created_at", draftCutoff())
+      .order("created_at")
+      .limit(30)
+      .returns<Pin[]>(),
     db.from("pin_drafts").select("id", { count: "exact", head: true }).eq("status", "posted"),
     db.from("pin_drafts").select("id", { count: "exact", head: true }).eq("status", "approved"),
   ]);

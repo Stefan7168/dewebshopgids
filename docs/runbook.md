@@ -37,7 +37,7 @@ Secrets: GitHub Environment `production` (bound to `main`) for jobs, Vercel env 
 | Symptom | First look | Usual fix |
 |---|---|---|
 | `/api/health` returns 503 | Its JSON names the stale table | Re-run the matching workflow with *Run workflow*; read its log |
-| Nightly pipeline failed | `agent_runs` rows with `trigger = 'pipeline'` (one per step: promote-candidates, score-collect, crawl, domain-age, retention, score-submit, search-console, apply-overrides, publish) and the Actions log | Steps are idempotent: fix, then *Run workflow* (`FORCE_RUN=1`) |
+| Nightly pipeline failed | `agent_runs` rows with `trigger = 'pipeline'` (one per step: promote-candidates, score-collect, crawl, domain-age, retention, score-submit, search-console, apply-overrides, publish, pinterest) and the Actions log | Steps are idempotent: fix, then *Run workflow* (`FORCE_RUN=1`) |
 | Score batch stuck | `score_runs.batch_status` (`submitted`, `in_progress`) | `score-collect` checks open batches every night; a new batch is only submitted when none is open |
 | A shop asks for removal | `disputes` row of type `removal` | Code removes after the signed link is clicked; `dispute-removals.yml` enforces 48 h. Never remove by hand without a dispute row |
 | Dispute waits for a person | `/admin/herbeoordelingen` | Decide "geen wijziging", "verbergen" or a correction there |

@@ -5,13 +5,14 @@
 // Every pin links to our own page with UTM tags, never to a shop or an affiliate link.
 // Docs: https://developers.pinterest.com/docs/api/v5/pins-create
 import type { Sql } from "../../../agents/shared/audit";
+import { pinImagePath } from "../../../lib/pinterest/card";
 import { SITE } from "../../../lib/site";
 
 export const MAX_POSTS_PER_RUN = 10;
 type Fetch = typeof fetch;
 export type ApprovedPin = { id: string; target_path: string; title: string; description: string; board: string };
 
-/** The Pinterest request body for one pin. The image is the site's share image. */
+/** The Pinterest request body for one pin. The image is the pin's own 2:3 image of its target page. */
 export function pinBody(pin: ApprovedPin, boardId: string) {
   return {
     board_id: boardId,
@@ -19,7 +20,7 @@ export function pinBody(pin: ApprovedPin, boardId: string) {
     description: pin.description,
     link: `${SITE.url}${pin.target_path}?utm_source=pinterest&utm_medium=social&utm_campaign=pins`,
     alt_text: pin.title,
-    media_source: { source_type: "image_url", url: `${SITE.url}/opengraph-image.png` },
+    media_source: { source_type: "image_url", url: `${SITE.url}${pinImagePath(pin.target_path)}` },
   };
 }
 

@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { pinImagePath } from "@/lib/pinterest/card";
 import { SITE } from "@/lib/site";
 import { createServiceClient } from "@/lib/supabase/service";
 import { approvePins, rejectPins } from "./actions";
@@ -42,6 +43,8 @@ async function Pins() {
           <ul className="flex flex-col gap-4">
             {data.map((p) => (
               <li key={p.id} className="border rounded-md p-4 flex flex-col gap-2 text-sm">
+                {/* eslint-disable-next-line @next/next/no-img-element -- generated image, no optimisation needed */}
+                <img src={pinImagePath(p.target_path)} alt={`Pin-afbeelding voor ${p.title}`} width={160} height={240} className="rounded border" />
                 <p className="text-xs text-muted-foreground">
                   Bord {p.board} · naar{" "}
                   <a href={`${SITE.url}${p.target_path}`} className="underline break-all">

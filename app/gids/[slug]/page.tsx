@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { GuideBody } from "@/components/guide-body";
+import { JsonLd } from "@/components/json-ld";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { ScoreBadge } from "@/components/score-badge";
 import { SiteFooter } from "@/components/site-footer";
@@ -62,6 +63,31 @@ async function Guide({ params }: Props) {
         Alle cijfers komen uit onze eigen controle van de webshops. <Link href="/hoe-wij-beoordelen" className="underline">Zo beoordelen we</Link>.
       </p>
       <NewsletterForm headline={signupHeadline()} source={`/gids/${g.slug}`} />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Article",
+              headline: g.title_nl ?? `Webshopgids week ${g.iso_week}`,
+              ...(g.intro_nl ? { description: g.intro_nl } : {}),
+              ...(g.published_at ? { datePublished: g.published_at } : {}),
+              inLanguage: "nl-NL",
+              url: `${SITE.url}/gids/${g.slug}`,
+              publisher: { "@type": "Organization", name: SITE.legalName ?? SITE.name, url: `${SITE.url}/` },
+              mentions: shops.map((s) => ({ "@type": "WebPage", name: s.name, url: `${SITE.url}/webshop/${s.slug}` })),
+            },
+            {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Home", item: `${SITE.url}/` },
+                { "@type": "ListItem", position: 2, name: "Webshopgids", item: `${SITE.url}/gids` },
+                { "@type": "ListItem", position: 3, name: `Week ${g.iso_week}, ${g.iso_year}`, item: `${SITE.url}/gids/${g.slug}` },
+              ],
+            },
+          ],
+        }}
+      />
     </article>
   );
 }

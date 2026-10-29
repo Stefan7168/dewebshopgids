@@ -71,7 +71,7 @@ async function main() {
   assert.ok(drafts.every((s) => s.age_sources !== "{}"), "domain age sources are stored");
   const [{ pages }] = await admin<{ pages: number }[]>`select count(*)::int as pages from public.crawl_pages`;
   assert.ok(pages >= SHOPS.length, "crawl stored pages");
-  // stoerwonen.test answers robots.txt with 503, which means "keep out": it is not scored.
+  // stoerwonen.test answers robots.txt with 503: we keep out (counted as a crawl error), so it is not scored.
   assert.equal(fake.submitted(), SHOPS.length - 1, "one batch with every shop that has page text");
 
   // Night 2: the batch has ended; scores are written and pre-notices queued.

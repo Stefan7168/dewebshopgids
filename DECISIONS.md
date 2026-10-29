@@ -116,3 +116,7 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 - Chosen by the coordinator's research thread under Stefan's autonomy mandate (sources and alternatives: `/mnt/project-files/launch/food-candidates-1-sources.md`). Same buyer as Home & Living, many makers sell from their own webshop, and "own roaster / own chocolate workshop" is easy to verify. Stefan may reverse it.
 - Scope: food and non-alcoholic drinks from makers and specialists. Shops whose main product is alcohol stay out (Alcoholwet age checks, Reclamecode voor Alcoholhoudende Dranken). The rule is in the category's `intro_nl`, so agents read it with the category.
 - Migration 0017 adds `eten-drinken` with koffie-thee, chocolade-koek, kaas-delicatessen and honing. Hidden from home page, header and llms.txt until 30 published shops, the same gate as Tuin & buiten.
+
+## 2026-10-29: Pinterest pin drafts
+- Plan v3 phase 3: the SEO/Growth Analyst drafts up to 10 pins a week, Stefan approves a batch (gate G3), code posts them. Migration 0018 adds `pin_drafts`. Pins link only to our own pages (`/webshop`, `/beste`, `/gids`, `/categorie`), never to a shop domain or affiliate link, which also keeps Daisycon's brand-ad rule out of reach.
+- Posting needs Stefan's Pinterest developer app and token. Until then approved pins wait; nothing is posted.

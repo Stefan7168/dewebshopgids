@@ -29,7 +29,9 @@ export type PoliteResult =
 const MAX_CRAWL_DELAY_MS = 30_000;
 
 type Robot = ReturnType<typeof robotsParser>;
-type RobotsEntry = { robot: Robot | null; allowAll: boolean; disallowAll: boolean };
+// unreachable: robots.txt gave 5xx or no answer. We stay out (RFC 9309), but report it as an
+// error, not as the shop's choice, so a network outage cannot pass as a quiet night.
+type RobotsEntry = { robot: Robot | null; allowAll: boolean; disallowAll: boolean; unreachable: boolean };
 
 const defaultSleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
@@ -104,14 +106,14 @@ export function createPoliteFetcher(deps: PoliteDeps = {}) {
     try {
       const { res, text } = await rawGet(robotsUrl, minIntervalMs);
       if (res.status >= 200 && res.status < 300) {
-        entry = { robot: robotsParser(robotsUrl, text), allowAll: false, disallowAll: false };
+        entry = { robot: robotsParser(robotsUrl, text), allowAll: false, disallowAll: false, unreachable: false };
       } else if (res.status >= 400 && res.status < 500) {
-        entry = { robot: null, allowAll: true, disallowAll: false };
+        entry = { robot: null, allowAll: true, disallowAll: false, unreachable: false };
       } else {
-        entry = { robot: null, allowAll: false, disallowAll: true };
+        entry = { robot: null, allowAll: false, disallowAll: true, unreachable: true };
       }
     } catch {
-      entry = { robot: null, allowAll: false, disallowAll: true };
+      entry = { robot: null, allowAll: false, disallowAll: true, unreachable: true };
     }
     robotsCache.set(origin, entry);
     return entry;
@@ -134,7 +136,10 @@ export function createPoliteFetcher(deps: PoliteDeps = {}) {
     if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
       return { kind: "error", url, error: "unsupported protocol" };
     }
-    if (!(await isAllowed(url))) return { kind: "robots_disallowed", url };
+    if (!(await isAllowed(url))) {
+      if (robotsCache.get(parsed.origin)?.unreachable) return { kind: "error", url, error: "robots.txt unreachable" };
+      return { kind: "robots_disallowed", url };
+    }
     const entry = robotsCache.get(parsed.origin);
     try {
       const { res, text } = await rawGet(url, intervalFor(entry));

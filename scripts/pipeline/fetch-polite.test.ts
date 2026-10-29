@@ -40,11 +40,25 @@ describe("fetchPolite on 3 fixture shops (no network)", () => {
     expect(res.kind).toBe("ok");
   });
 
-  it("treats a 5xx robots.txt as disallow all", async () => {
+  it("treats a 5xx robots.txt as disallow all, reported as an error", async () => {
     const { polite, requests } = setup();
     const res = await polite.fetchPolite("https://stoerwonen.test/");
-    expect(res.kind).toBe("robots_disallowed");
+    expect(res).toMatchObject({ kind: "error", error: "robots.txt unreachable" });
     expect(requests).toEqual(["https://stoerwonen.test/robots.txt"]);
+  });
+
+  it("treats an unreachable robots.txt as an error, not as the shop's choice", async () => {
+    const requests: string[] = [];
+    const polite = createPoliteFetcher({
+      fetchImpl: async (url: string) => {
+        requests.push(url);
+        throw new TypeError("fetch failed");
+      },
+      sleep: async () => {},
+    });
+    const res = await polite.fetchPolite("https://offline.test/");
+    expect(res).toMatchObject({ kind: "error", error: "robots.txt unreachable" });
+    expect(requests).toEqual(["https://offline.test/robots.txt"]);
   });
 
   it("waits at least 3 s between requests to the same domain", async () => {

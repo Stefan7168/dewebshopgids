@@ -96,6 +96,7 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 - Category pages hide subcategory chips with 0 shops. The shops under a gids issue follow the editor's order (`shop_ids`).
 - `/herbeoordeling?shop=` and `/beheer?shop=` that cannot load the shop now point to the email address instead of back to the shop page.
 - "Informatie voor webshops" explains the description edit and names the paid options (badge, "Uitgelicht") and that neither changes score or order.
+
 ## 2026-10-28: Tuin & buiten list 2
 - `garden-candidates.csv` grows to 39 queued shops (19 strong and 10 medium added, mostly growers). The SQL for setup is `garden-candidates-2-insert.sql`, folded into the one-paste setup file. The category stays hidden until 30 published shops (#89).
 - Correction (17:15): those dual-fit shops (Ofyr, Weltevree, 4 Seasons Outdoor, Esschert Design, Garden Impressions and others) were already in sub-category `tuin-buiten`, which 0016 made the garden's top level. So they count for Tuin & buiten, not for Home & Living. Production holds 53 garden and 278 Home & Living candidates, so both roots reach their targets without a second category. No secondary-category migration for now; revisit only if a shop is missing from a category where visitors expect it.

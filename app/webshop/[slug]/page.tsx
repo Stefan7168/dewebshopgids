@@ -12,6 +12,8 @@ import { KEURMERK_PAGES } from "@/lib/keurmerk/pages";
 import { signupHeadline } from "@/lib/newsletter/core";
 import { cachedToday, getCategories, getPublishedShops, getShop } from "@/lib/shops/data";
 import { getEarnedSubScores } from "@/lib/shops/evidence";
+import { getScoreChanges } from "@/lib/shops/score-history";
+import { dutchDate } from "@/lib/shops/score-history-rules";
 import { countryName, hasVerifiedBadge, keurmerkText, onlineSince, priceLevelText, productCountText, scoreDisplay, similarShops, SUB_SCORE_NAMES, type Category, type PublicShop } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 import { PageLoading } from "@/components/page-loading";
@@ -59,6 +61,35 @@ async function EarnedSubScores({ shop }: { shop: PublicShop }) {
           </li>
         ))}
       </ul>
+    </section>
+  );
+}
+
+async function ScoreHistory({ shop }: { shop: PublicShop }) {
+  const display = scoreDisplay(shop);
+  if (display.kind !== "number") return null;
+  const changes = await getScoreChanges(shop.id, display.value);
+  if (changes.length === 0) return null;
+  return (
+    <section className="flex flex-col gap-3">
+      <h2 className="text-xl font-semibold">Scoreverloop</h2>
+      <ol className="flex flex-col gap-1 text-sm">
+        {changes.map((c) => (
+          <li key={c.date} className="flex justify-between gap-4 border-b py-2 last:border-b-0">
+            <span className="text-muted-foreground">
+              {dutchDate(c.date)}
+              {c.newMethod && " (nieuwe versie van de methode)"}
+            </span>
+            <span className="font-medium">{c.total}</span>
+          </li>
+        ))}
+      </ol>
+      <p className="text-xs text-muted-foreground">
+        De score verandert als we nieuwe gegevens vinden op de site van de webshop of als we de methode aanpassen.{" "}
+        <Link href="/hoe-wij-beoordelen" className="underline">
+          Zo beoordelen wij
+        </Link>
+      </p>
     </section>
   );
 }
@@ -152,6 +183,9 @@ async function ShopDetails({ params }: Props) {
       </section>
       <Suspense fallback={null}>
         <EarnedSubScores shop={shop} />
+      </Suspense>
+      <Suspense fallback={null}>
+        <ScoreHistory shop={shop} />
       </Suspense>
       <p className="text-sm text-muted-foreground">
         {shop.status === "disputed" ? "Deze score wordt opnieuw beoordeeld na een vraag over de gegevens." : "Klopt er iets niet?"}{" "}

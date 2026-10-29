@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { LEAD_MAGNET_TITLE, leadMagnetShops, signupHeadline } from "@/lib/newsletter/core";
 import { getPublishedShops } from "@/lib/shops/data";
+import { PageLoading } from "@/components/page-loading";
 
 // Landing page for the lead magnet (plan v3 section 11, Meta ad test 1). The list itself only
 // arrives by email after double opt-in; the page promises it only once 25 shops have a score.
@@ -46,7 +47,7 @@ export default function LeadMagnetPage() {
       <SiteHeader />
       <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8 flex flex-col gap-6">
         <h1 className="text-2xl font-bold">{LEAD_MAGNET_TITLE}</h1>
-        <Suspense fallback={<p className="text-muted-foreground">Laden...</p>}>
+        <Suspense fallback={<PageLoading />}>
           <Offer />
         </Suspense>
       </main>

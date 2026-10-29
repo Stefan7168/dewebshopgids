@@ -14,6 +14,7 @@ import { getCategories, getPublishedShops } from "@/lib/shops/data";
 import { getEarnedSubScores } from "@/lib/shops/evidence";
 import { keurmerkText, onlineSince, productCountText, rankingExplanation, SUB_SCORE_NAMES, type PublicShop } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
+import { PageLoading } from "@/components/page-loading";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -119,7 +120,7 @@ export default function BestePage(props: Props) {
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
       <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-8">
-        <Suspense fallback={<p className="text-muted-foreground">Laden...</p>}>
+        <Suspense fallback={<PageLoading />}>
           <List {...props} />
         </Suspense>
       </main>

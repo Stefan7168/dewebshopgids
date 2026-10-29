@@ -3,7 +3,7 @@ import { getCategories, getPublishedShops } from "@/lib/shops/data";
 import { promotedRoots } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 
-const SHORT_NAME: Record<string, string> = { "tuin-buiten": "Tuin" };
+const SHORT_NAME: Record<string, string> = { "tuin-buiten": "Tuin", "eten-drinken": "Eten" };
 
 export async function SiteHeader() {
   const [categories, shops] = await Promise.all([getCategories(), getPublishedShops()]);

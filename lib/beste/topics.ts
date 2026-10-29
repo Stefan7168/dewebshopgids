@@ -132,6 +132,46 @@ export const TOPICS: BesteTopic[] = [
     ],
   },
   {
+    slug: "eten-en-drinken",
+    categorySlug: "eten-drinken",
+    title: "De meest unieke webshops voor eten en drinken",
+    intro: [
+      "Koffie, thee, chocolade, kaas en honing van Nederlandse makers: deze lijst toont webshops voor eten en drinken, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Een eigen branderij, chocolademakerij, kaaspakhuis of eigen bijenvolken zegt hier veel. Webshops die vooral alcohol verkopen staan niet in deze lijst.",
+    ],
+  },
+  {
+    slug: "koffie-en-thee",
+    categorySlug: "koffie-thee",
+    title: "De meest unieke webshops voor koffie en thee",
+    intro: [
+      "Vers gebrande bonen en losse thee: deze lijst toont Nederlandse webshops voor koffie en thee, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Branders die zelf inkopen en in eigen branderij branden, scoren hier hoger dan winkels die vooral andere merken doorverkopen.",
+    ],
+  },
+  {
+    slug: "chocolade",
+    categorySlug: "chocolade-koek",
+    title: "De meest unieke webshops voor chocolade",
+    intro: [
+      "Bonbons, repen en koek: deze lijst toont Nederlandse webshops voor chocolade en koek, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Shops die zelf branden, conchen en gieten, of in eigen atelier bonbons maken, scoren hier hoger dan doorverkopers van dezelfde merken.",
+    ],
+  },
+  {
+    slug: "kaas-en-delicatessen",
+    categorySlug: "kaas-delicatessen",
+    title: "De meest unieke webshops voor kaas en delicatessen",
+    intro: [
+      "Boerenkaas, gerijpte kazen en andere delicatessen: deze lijst toont Nederlandse webshops voor kaas en delicatessen, gerangschikt op echtheidsscore.",
+      COMMON,
+      "Shops die zelf kaas maken of laten rijpen, of hun herkomst per product noemen, scoren hier hoger. Bij elke shop zie je de zin van zijn eigen site waar de punten op gebaseerd zijn.",
+    ],
+  },
+  {
     slug: "met-showroom",
     categorySlug: "wonen",
     title: "Unieke woonwebshops met een winkel of showroom",

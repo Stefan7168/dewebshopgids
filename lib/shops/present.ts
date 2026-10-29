@@ -83,6 +83,24 @@ export function promotedRoots<T extends Pick<PublicShop, "category_id">>(categor
   );
 }
 
+/** Words for each main category in "webshops voor ...". Order follows sort_order. */
+const SCOPE_WORDS: Record<string, string[]> = { wonen: ["wonen", "interieur"], "tuin-buiten": ["tuin"], "eten-drinken": ["eten", "drinken"] };
+
+/** Home page headline and the "webshops voor ..." phrase for the promoted main categories. */
+export function siteScope(roots: Pick<Category, "slug">[]): { headline: string; scope: string } {
+  const slugs = roots.map((c) => c.slug);
+  const words = (slugs.length ? slugs : [LAUNCH_ROOT_SLUG]).flatMap((s) => SCOPE_WORDS[s] ?? []);
+  const scope = words.length > 1 ? `${words.slice(0, -1).join(", ")} en ${words[words.length - 1]}` : words.join("");
+  const others = slugs.filter((s) => s !== LAUNCH_ROOT_SLUG);
+  const headline =
+    others.length === 0
+      ? "Unieke en betrouwbare woonwinkels"
+      : others.length === 1 && others[0] === "tuin-buiten"
+        ? "Unieke en betrouwbare webshops voor huis en tuin"
+        : "Unieke en betrouwbare Nederlandse webshops";
+  return { headline, scope };
+}
+
 const RANK_ORDER: Record<ScoreDisplay["kind"], number> = { number: 0, pending: 1, label: 2, none: 3 };
 
 /** Numbered shops by score, high to low; then the rest. Ties and the rest by name. */

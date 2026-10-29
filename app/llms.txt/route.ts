@@ -2,7 +2,7 @@ import { liveTopics } from "@/lib/beste/topics";
 import { getGuides } from "@/lib/guide/data";
 import { indexableKeurmerkPages } from "@/lib/keurmerk/pages";
 import { getCategories, getPublishedShops } from "@/lib/shops/data";
-import { MIN_SHOPS_TO_INDEX, promotedRoots, shopsInCategory } from "@/lib/shops/present";
+import { MIN_SHOPS_TO_INDEX, promotedRoots, shopsInCategory, siteScope } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 
 // llms.txt (https://llmstxt.org): a plain summary for AI crawlers. Low expected value
@@ -15,7 +15,7 @@ export async function GET() {
     (c) => rootIds.has(c.parent_id ?? c.id) && shopsInCategory(shops, c, categories).length >= MIN_SHOPS_TO_INDEX,
   );
   const lists = liveTopics(shops, categories).filter((t) => listed.some((c) => c.slug === t.categorySlug));
-  const scope = roots.some((c) => c.slug === "tuin-buiten") ? "wonen, interieur en tuin" : "wonen en interieur";
+  const { scope } = siteScope(roots);
   const body = [
     `# ${SITE.name}`,
     "",

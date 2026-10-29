@@ -61,7 +61,7 @@ describe("/beste/ lists", () => {
   it("has a list for every launch sub-category, the garden sub-categories, and unique slugs", () => {
     const slugs = TOPICS.map((t) => t.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
-    for (const c of ["meubels", "verlichting", "woontextiel", "woonaccessoires", "keuken-tafelen", "slapen", "tuin-buiten", "tuinmeubels", "potten-plantenbakken", "buitenverlichting", "vuur-bbq"]) {
+    for (const c of ["meubels", "verlichting", "woontextiel", "woonaccessoires", "keuken-tafelen", "slapen", "tuin-buiten", "tuinmeubels", "potten-plantenbakken", "buitenverlichting", "vuur-bbq", "eten-drinken", "koffie-thee", "chocolade-koek", "kaas-delicatessen"]) {
       expect(TOPICS.some((t) => t.categorySlug === c && !t.only)).toBe(true);
     }
   });

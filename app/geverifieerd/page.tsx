@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { TextPage } from "@/components/text-page";
+import { CHECKOUT_BLOCK_TEXT, isCheckoutBlock } from "@/lib/badge/eligibility";
 import { BADGE_MIN_SCORE, BADGE_PLANS, badgePriceText, checkoutConfig, formatEur, yearlySavingMonths } from "@/lib/badge/pricing";
 import { SITE } from "@/lib/site";
 
@@ -19,6 +20,13 @@ async function Notice({ searchParams }: { searchParams: Search }) {
     return (
       <p role="status" className="rounded-md border p-4">
         Bedankt voor je betaling. Binnen een paar minuten staat de badge op je pagina. Je krijgt de bon van Stripe per e-mail.
+      </p>
+    );
+  }
+  if (isCheckoutBlock(fout)) {
+    return (
+      <p role="status" className="rounded-md border p-4">
+        {CHECKOUT_BLOCK_TEXT[fout]}
       </p>
     );
   }

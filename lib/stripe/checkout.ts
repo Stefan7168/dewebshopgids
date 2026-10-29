@@ -20,6 +20,14 @@ export function checkoutForm(shopId: string, plan: BadgePlan["key"], config: Che
   });
 }
 
+/**
+ * One key per shop, plan and day: a double click or a second tab gets the same Stripe session back
+ * instead of a second one, so the same badge cannot be paid twice before the webhook marks it active.
+ */
+export function idempotencyKey(shopId: string, plan: BadgePlan["key"], now = new Date()): string {
+  return `badge-${shopId}-${plan}-${now.toISOString().slice(0, 10)}`;
+}
+
 /** Returns the hosted checkout URL, or null when Stripe refuses (the caller shows a plain error). */
 export async function createBadgeCheckout(
   shopId: string,
@@ -27,10 +35,15 @@ export async function createBadgeCheckout(
   config: CheckoutConfig,
   siteUrl: string,
   fetchImpl: typeof fetch = fetch,
+  now = new Date(),
 ): Promise<string | null> {
   const res = await fetchImpl(CHECKOUT_URL, {
     method: "POST",
-    headers: { authorization: `Bearer ${config.secretKey}`, "content-type": "application/x-www-form-urlencoded" },
+    headers: {
+      authorization: `Bearer ${config.secretKey}`,
+      "content-type": "application/x-www-form-urlencoded",
+      "idempotency-key": idempotencyKey(shopId, plan, now),
+    },
     body: checkoutForm(shopId, plan, config, siteUrl),
   });
   if (!res.ok) {

@@ -39,17 +39,17 @@ export async function postPins(sql: Sql, env: Record<string, string | undefined>
   const token = env.PINTEREST_ACCESS_TOKEN;
   const boards = parseBoards(env.PINTEREST_BOARDS);
   if (!token || !boards) return { summary: "not configured (PINTEREST_ACCESS_TOKEN or PINTEREST_BOARDS missing)" };
+  // Pins for a board without an id wait (they never block the queue). A pin for a shop page waits
+  // while that shop is not published, e.g. after a removal request between approval and posting.
   const pins = await sql<ApprovedPin[]>`
-    select id, target_path, title, description, board from public.pin_drafts
-    where status = 'approved' order by created_at limit ${MAX_POSTS_PER_RUN}`;
+    select d.id, d.target_path, d.title, d.description, d.board from public.pin_drafts d
+    where d.status = 'approved' and d.board = any(${Object.keys(boards)})
+      and (d.target_path not like '/webshop/%'
+           or exists (select 1 from public.shops s where s.status = 'published' and '/webshop/' || s.slug = d.target_path))
+    order by d.created_at limit ${MAX_POSTS_PER_RUN}`;
   let posted = 0;
-  const skipped: string[] = [];
   for (const pin of pins) {
     const boardId = boards[pin.board];
-    if (!boardId) {
-      skipped.push(`${pin.id}: no board id for "${pin.board}"`);
-      continue;
-    }
     const res = await f("https://api.pinterest.com/v5/pins", {
       method: "POST",
       headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
@@ -63,5 +63,5 @@ export async function postPins(sql: Sql, env: Record<string, string | undefined>
       where id = ${pin.id} and status = 'approved'`;
     posted++;
   }
-  return { summary: `posted ${posted} of ${pins.length} approved pins${skipped.length ? `; skipped ${skipped.join("; ")}` : ""}` };
+  return { summary: `posted ${posted} of ${pins.length} approved pins ready to post` };
 }

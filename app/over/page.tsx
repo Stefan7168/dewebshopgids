@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { TextPage } from "@/components/text-page";
 import { SITE } from "@/lib/site";
@@ -24,7 +25,12 @@ export default function OverPage() {
         score zelf berekenen we met een vast rekenmodel, en elke getoonde
         bewering staat letterlijk op de site van de webshop. Een tweede,
         onafhankelijke controle kijkt steekproefsgewijs mee. Klopt er iets niet
-        over jouw webshop? Mail ons via{" "}
+        over jouw webshop? Klik onderaan de pagina van je webshop op &ldquo;Klopt
+        er iets niet?&rdquo;. Hoe dat werkt, lees je bij{" "}
+        <Link href="/informatie-voor-webshops" className="underline">
+          informatie voor webshops
+        </Link>
+        . Lukt dat niet, mail dan naar{" "}
         <a href={`mailto:${SITE.email}`} className="underline">
           {SITE.email}
         </a>

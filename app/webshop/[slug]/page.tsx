@@ -94,7 +94,7 @@ async function ShopDetails({ params }: Props) {
         <div className="min-w-0 flex flex-col gap-1">
           <h1 className="text-2xl font-bold break-words">{shop.name}</h1>
           <p className="text-muted-foreground break-words">{shop.domain}</p>
-          <p className="text-sm text-muted-foreground">Echtheidsscore van 1 tot 100</p>
+          {scoreDisplay(shop).kind !== "label" && <p className="text-sm text-muted-foreground">Echtheidsscore van 1 tot 100</p>}
           {hasVerifiedBadge(shop, today) && (
             <p className="text-sm">
               <span className="rounded-full border px-2 py-0.5 font-medium">Geverifieerd</span>{" "}

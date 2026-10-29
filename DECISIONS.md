@@ -103,3 +103,7 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 
 ## 2026-10-28: Gids issues 5 and 6
 - Reference drafts for 2026-week-49 (vintage and second-hand design, from Home & Living list 2) and 2026-week-50 (last Christmas gifts) in `lib/guide/fixtures/`. Delivery times are not inputs, so issue 6 promises no date and tells readers to check each shop's delivery time.
+
+## 2026-10-29: Affiliate links in /admin
+- `/admin/affiliate` sets or clears `shops.affiliate_url` per shop (and `affiliate_available` with it). Until now nothing wrote the column, so an approved Daisycon campaign had no way onto the site. The link must be https, without credentials and not on our own domain; `/go/[slug]` uses it unchanged (Daisycon terms art. 2.14). Order and score never read it.
+- The plan's weekly Daisycon Publisher API job (section 8 step 13) waits until after approval: the API needs OAuth with a publisher login, and its endpoint reference is not readable without one, so writing that client now would mean guessing endpoints.

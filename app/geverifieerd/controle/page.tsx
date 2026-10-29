@@ -10,8 +10,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/geverifieerd/controle" },
 };
 
-// The fixed checklist behind the badge. Every item is enforced in code (claim link, lib/badge/eligibility.ts,
-// the Stripe webhook); add a line here only when code checks it too.
+// The fixed checklist behind the badge. Every item is enforced in code: the claim link, badgeEligibility()
+// in startBadgeCheckout and in the Outreach selection, and the Stripe webhook. The webhook itself does not
+// re-check score or status, so the text says when the checks run; add a line here only when code checks it too.
 export default function Page() {
   return (
     <TextPage title="Wat we controleren voor de badge">
@@ -20,7 +21,8 @@ export default function Page() {
         punten. Ze gelden voor elke webshop op dezelfde manier.
       </p>
 
-      <h2>Voordat de badge aangaat</h2>
+      <h2>Voordat je kunt betalen</h2>
+      <p>We bieden de badge alleen aan als punten 1 tot en met 3 kloppen. Start je de betaling op je beheerpagina, dan controleren we ze op dat moment opnieuw.</p>
       <ol className="list-decimal pl-5 flex flex-col gap-1">
         <li>
           <strong>De aanvrager hoort bij de webshop.</strong> De betaallink staat alleen achter een link die we mailen naar een adres op het
@@ -34,10 +36,12 @@ export default function Page() {
           <strong>De echtheidsscore is {BADGE_MIN_SCORE} of hoger.</strong> De score komt uit wat letterlijk op de eigen site staat, zie{" "}
           <Link href="/hoe-wij-beoordelen">hoe wij beoordelen</Link>.
         </li>
-        <li>
-          <strong>De betaling is gelukt.</strong> Stripe bevestigt de betaling aan ons. Pas dan staat de badge aan.
-        </li>
       </ol>
+
+      <h2>Wanneer de badge aangaat</h2>
+      <p>
+        <strong>Als de betaling is gelukt.</strong> Stripe bevestigt de betaling aan ons. Pas dan staat de badge aan.
+      </p>
 
       <h2>Zolang de badge aan staat</h2>
       <ul>

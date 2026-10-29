@@ -45,6 +45,9 @@ async function AdminHome() {
       <Link href="/admin/agents" className="underline">
         Agents: kill switch, pauzes, schema en runs
       </Link>
+      <Link href="/admin/affiliate" className="underline">
+        Affiliatelinks per webshop
+      </Link>
     </div>
   );
 }

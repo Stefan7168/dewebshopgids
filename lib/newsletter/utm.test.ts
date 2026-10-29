@@ -23,6 +23,15 @@ describe("sourceWithUtm", () => {
   });
 });
 
+describe("parseUtm on AI links", () => {
+  it("tags utm_source=chatgpt.com, which ChatGPT adds to its links, as an AI visit", () => {
+    expect(parseUtm("?utm_source=chatgpt.com")).toEqual({ utm_source: "chatgpt", utm_medium: "ai-referral" });
+    expect(parseUtm("?utm_source=perplexity.ai&utm_campaign=x")).toEqual({ utm_source: "perplexity", utm_medium: "ai-referral", utm_campaign: "x" });
+    expect(parseUtm("?utm_source=chatgpt.com&utm_medium=cpc")).toEqual({ utm_source: "chatgpt.com", utm_medium: "cpc" });
+    expect(parseUtm({ utm_source: "chatgpt", utm_medium: "ai-referral" })).toEqual({ utm_source: "chatgpt", utm_medium: "ai-referral" });
+  });
+});
+
 describe("aiReferralUtm", () => {
   it("tags visits from AI assistants by name only", () => {
     expect(aiReferralUtm("https://chatgpt.com/c/abc-123")).toEqual({ utm_source: "chatgpt", utm_medium: "ai-referral" });

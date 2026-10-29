@@ -16,8 +16,10 @@ export default async function Home() {
   const [categories, shops, ranks] = await Promise.all([getCategories(), getPublishedShops(), getPopularity()]);
   const roots = promotedRoots(categories, shops);
   const { headline, scope } = siteScope(roots);
-  const top = rankShops(shops).slice(0, TOP_N);
-  const popular = popularShops(shops, ranks, TOP_N);
+  // Both lists only show shops of promoted main categories, so a hidden category stays hidden here too.
+  const visible = roots.flatMap((r) => shopsInCategory(shops, r, categories));
+  const top = rankShops(visible).slice(0, TOP_N);
+  const popular = popularShops(visible, ranks, TOP_N);
   // Only lists inside a promoted root, so a hidden category (plan: under 30 shops) stays hidden.
   const rootIds = new Set(roots.map((c) => c.id));
   const lists = liveTopics(shops, categories).filter((t) => {

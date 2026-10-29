@@ -2,13 +2,12 @@
 // A draft with any finding here is rejected; the agent then checks what code cannot (claims,
 // tone, names) against the same snapshot.
 import type { GuideSnapshot } from "./inputs";
-import { parseGuideMarkdown, plainText } from "./markdown";
+import { parseGuideMarkdown, plainText, SITE_PAGES } from "./markdown";
 
 export const MAX_WORDS = 350;
 const BANNED = [/onbetrouwbaar/i, /\breview/i, /advertentie/i, /gesponsord/i, /marketplace_pattern/i, /dropship/i, /aggregaterating/i, /korting/i];
 
-/** Own pages a gids may link to besides this week's shops and other gids issues. */
-export const SITE_PAGES = ["/hoe-wij-beoordelen", "/informatie-voor-webshops", "/gids"];
+export { SITE_PAGES };
 
 export type Draft = { title_nl: string | null; intro_nl: string | null; body_md: string | null; shop_ids: string[] };
 

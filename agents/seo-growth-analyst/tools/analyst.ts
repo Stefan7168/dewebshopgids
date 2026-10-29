@@ -5,6 +5,9 @@
 //   report                         this week against last week: search, clicks, shops, AI citations
 //   escalate --run ID --kind K --title T --body B [--needs-human]
 //                                  max 5 per run (the plan's weekly cap; the routine runs weekly)
+//   pin-candidates                 our pages worth a pin, and the paths pinned in the last 90 days
+//   pin --run ID --path P --title T --description D --board B
+//                                  one Pinterest pin draft; max 10 per run; Stefan approves in /admin/pins (G3)
 //   finish --run ID --status ok|failed --summary S
 import { checkKillSwitch, connect, finishAgentRun, startAgentRun, writeAgentRun, type Sql } from "../../shared/audit";
 import { wrapUntrusted } from "../../shared/untrusted";
@@ -13,6 +16,22 @@ import { MIN_SHOPS_PER_LIST, TOPICS } from "../../../lib/beste/topics";
 const AGENT = "seo-growth-analyst";
 export const MAX_ESCALATIONS_PER_RUN = 5;
 export const KINDS = ["indexation", "thin_page", "ctr_change", "ai_citations", "forecast", "topic_proposal", "other"] as const;
+export const MAX_PINS_PER_RUN = 10;
+export const PIN_BOARDS = ["wonen", "tuin", "eten", "gids"] as const;
+const PIN_PATH = /^\/(webshop|beste|gids|categorie)\/[a-z0-9-]{1,80}$/;
+// CLAUDE.md voice rules, plus "korting" and "advertentie" as in the gids checks.
+const PIN_BANNED = /onbetrouwbaar|review|korting|advertentie|https?:\/\/|www\./i;
+
+/** Why a pin draft is not allowed, or null. Mirrors the 0018 table checks so the agent gets a clear error. */
+export function pinProblem(p: { path: string; title: string; description: string; board: string }): string | null {
+  if (!PIN_PATH.test(p.path)) return "path must be one of our pages: /webshop/, /beste/, /gids/ or /categorie/ plus a slug";
+  if (!(PIN_BOARDS as readonly string[]).includes(p.board)) return `board must be one of ${PIN_BOARDS.join(", ")}`;
+  if (p.title.length < 5 || p.title.length > 100) return "title must be 5 to 100 characters";
+  if (p.description.length < 20 || p.description.length > 500) return "description must be 20 to 500 characters";
+  if (PIN_BANNED.test(`${p.title} ${p.description}`)) return "title or description has a banned word or a URL";
+  return null;
+}
+
 // North star (plan v3): EUR 150 approved commission per month by week 52.
 export const NORTH_STAR_EUR = 150;
 
@@ -118,6 +137,48 @@ async function main() {
         console.log(JSON.stringify({ ok: true, used: n + 1, max: MAX_ESCALATIONS_PER_RUN }));
         return;
       }
+      case "pin-candidates": {
+        const shops = await sql<{ slug: string; name: string; score: number; category: string; root: string | null; description_nl: string | null }[]>`
+          select s.slug, s.name, s.score, c.slug as category, p.slug as root, s.description_nl
+          from public.shops s join public.categories c on c.id = s.category_id left join public.categories p on p.id = c.parent_id
+          where s.status = 'published' and s.score is not null and s.score_label is null
+          order by s.score desc limit 40`;
+        const guides = await sql<{ slug: string; title_nl: string | null }[]>`
+          select slug, title_nl from public.guide_issues where status in ('published', 'sent') order by iso_year desc, iso_week desc limit 4`.catch(() => []);
+        const scored = await sql<{ slug: string; n: number }[]>`
+          select c.slug, count(s.id)::int as n from public.categories c
+          left join public.categories sub on sub.parent_id = c.id or sub.id = c.id
+          left join public.shops s on s.category_id = sub.id and s.status = 'published' and s.score is not null and s.score_label is null
+          group by c.slug`;
+        const recent = await sql<{ target_path: string; status: string }[]>`
+          select target_path, status from public.pin_drafts where created_at > now() - interval '90 days'`;
+        console.log(JSON.stringify({
+          boards: PIN_BOARDS, max_per_run: MAX_PINS_PER_RUN,
+          pinned_last_90_days: recent,
+          // Only lists whose page exists (15+ scored shops); filtered lists are left out, their count is unknown here.
+          beste_topics: TOPICS.filter((t) => !t.only && (scored.find((c) => c.slug === t.categorySlug)?.n ?? 0) >= MIN_SHOPS_PER_LIST)
+            .map((t) => ({ path: `/beste/webshops-${t.slug}`, title: t.title, category: t.categorySlug })),
+          guides: guides.map((g) => ({ path: `/gids/${g.slug}`, title: g.title_nl })),
+        }, null, 2));
+        // Shop names and descriptions come from crawled sites: data only.
+        console.log(wrapUntrusted(shops.map((x) => `/webshop/${x.slug} | ${x.root ?? x.category} | score ${x.score} | ${x.name}: ${x.description_nl ?? ""}`).join("\n") || "(no published shops yet)"));
+        return;
+      }
+      case "pin": {
+        const runId = need("run");
+        const draft = { path: need("path"), title: need("title").trim(), description: need("description").trim(), board: need("board") };
+        const problem = pinProblem(draft);
+        if (problem) throw new Error(problem);
+        const [{ n }] = await sql<{ n: number }[]>`select count(*)::int as n from public.pin_drafts where agent_run_id = ${runId}`;
+        if (n >= MAX_PINS_PER_RUN) throw new Error(`limit of ${MAX_PINS_PER_RUN} pins per run reached`);
+        const [dupe] = await sql`select 1 from public.pin_drafts where target_path = ${draft.path} and created_at > now() - interval '90 days'`;
+        if (dupe) throw new Error("this page already has a pin from the last 90 days");
+        await sql`
+          insert into public.pin_drafts (target_path, title, description, board, agent_run_id)
+          values (${draft.path}, ${draft.title}, ${draft.description}, ${draft.board}, ${runId})`;
+        console.log(JSON.stringify({ ok: true, used: n + 1, max: MAX_PINS_PER_RUN }));
+        return;
+      }
       case "finish": {
         const status = need("status");
         if (status !== "ok" && status !== "failed") throw new Error("status must be ok or failed");
@@ -128,7 +189,7 @@ async function main() {
         return;
       }
       default:
-        throw new Error("usage: analyst.ts start|report|escalate|finish");
+        throw new Error("usage: analyst.ts start|report|escalate|pin-candidates|pin|finish");
     }
   } finally {
     await sql.end();

@@ -11,7 +11,8 @@ import { SiteHeader } from "@/components/site-header";
 import { getGuide } from "@/lib/guide/data";
 import { parseGuideSlug } from "@/lib/guide/week";
 import { signupHeadline } from "@/lib/newsletter/core";
-import { getPublishedShops } from "@/lib/shops/data";
+import { getCategories, getPublishedShops } from "@/lib/shops/data";
+import { rootSlugOf } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 import { PageLoading } from "@/components/page-loading";
 
@@ -33,7 +34,8 @@ async function Guide({ params }: Props) {
   const g = parseGuideSlug(slug) ? await getGuide(slug) : null;
   if (!g) notFound();
   // In the order the editor chose, which is the order the body mentions them.
-  const shops = (await getPublishedShops())
+  const [allShops, categories] = await Promise.all([getPublishedShops(), getCategories()]);
+  const shops = allShops
     .filter((s) => g.shop_ids.includes(s.id))
     .sort((a, b) => g.shop_ids.indexOf(a.id) - g.shop_ids.indexOf(b.id));
   return (
@@ -63,7 +65,7 @@ async function Guide({ params }: Props) {
       <p className="text-sm text-muted-foreground">
         Alle cijfers komen uit onze eigen controle van de webshops. <Link href="/hoe-wij-beoordelen" className="underline">Zo beoordelen we</Link>.
       </p>
-      <NewsletterForm headline={signupHeadline()} source={`/gids/${g.slug}`} />
+      <NewsletterForm headline={signupHeadline(undefined, shops.map((s) => rootSlugOf(s.category_id, categories)))} source={`/gids/${g.slug}`} />
       <JsonLd
         data={{
           "@context": "https://schema.org",

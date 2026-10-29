@@ -14,7 +14,7 @@ import { cachedToday, getCategories, getPublishedShops, getShop } from "@/lib/sh
 import { getEarnedSubScores } from "@/lib/shops/evidence";
 import { getScoreChanges } from "@/lib/shops/score-history";
 import { dutchDate } from "@/lib/shops/score-history-rules";
-import { countryName, hasVerifiedBadge, keurmerkText, onlineSince, priceLevelText, productCountText, scoreDisplay, similarShops, SUB_SCORE_NAMES, type Category, type PublicShop } from "@/lib/shops/present";
+import { countryName, hasVerifiedBadge, keurmerkText, onlineSince, priceLevelText, rootSlugOf, productCountText, scoreDisplay, similarShops, SUB_SCORE_NAMES, type Category, type PublicShop } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 import { PageLoading } from "@/components/page-loading";
 
@@ -208,7 +208,7 @@ async function ShopDetails({ params }: Props) {
       <Suspense fallback={null}>
         <SimilarShops shop={shop} categories={categories} />
       </Suspense>
-      <NewsletterForm headline={signupHeadline()} source={`/webshop/${shop.slug}`} />
+      <NewsletterForm headline={signupHeadline(undefined, [rootSlugOf(shop.category_id, categories)])} source={`/webshop/${shop.slug}`} />
       <JsonLd
         data={{
           "@context": "https://schema.org",

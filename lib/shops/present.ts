@@ -83,6 +83,13 @@ export function promotedRoots<T extends Pick<PublicShop, "category_id">>(categor
   );
 }
 
+/** Slug of the main category a (sub)category belongs to; null when unknown. */
+export function rootSlugOf(categoryId: string | null, categories: Pick<Category, "id" | "slug" | "parent_id">[]): string | null {
+  const c = categories.find((x) => x.id === categoryId);
+  if (!c) return null;
+  return c.parent_id ? (categories.find((x) => x.id === c.parent_id)?.slug ?? null) : c.slug;
+}
+
 /** Words for each main category in "webshops voor ...". Order follows sort_order. */
 const SCOPE_WORDS: Record<string, string[]> = { wonen: ["wonen", "interieur"], "tuin-buiten": ["tuin"], "eten-drinken": ["eten", "drinken"], "sieraden-accessoires": ["sieraden", "accessoires"] };
 

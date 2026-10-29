@@ -12,7 +12,7 @@ import { besteList, topicBySlug } from "@/lib/beste/topics";
 import { signupHeadline } from "@/lib/newsletter/core";
 import { getCategories, getPublishedShops } from "@/lib/shops/data";
 import { getEarnedSubScores } from "@/lib/shops/evidence";
-import { keurmerkText, onlineSince, productCountText, rankingExplanation, SUB_SCORE_NAMES, type PublicShop } from "@/lib/shops/present";
+import { keurmerkText, onlineSince, productCountText, rankingExplanation, rootSlugOf, SUB_SCORE_NAMES, type PublicShop } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 import { PageLoading } from "@/components/page-loading";
 
@@ -23,7 +23,7 @@ async function load(slug: string) {
   if (!topic) return null;
   const [categories, shops] = await Promise.all([getCategories(), getPublishedShops()]);
   const list = besteList(topic, shops, categories);
-  return list ? { topic, list, category: categories.find((c) => c.slug === topic.categorySlug)! } : null;
+  return list ? { topic, list, categories, category: categories.find((c) => c.slug === topic.categorySlug)! } : null;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -53,7 +53,7 @@ async function List({ params }: Props) {
   const { slug } = await params;
   const data = await load(slug);
   if (!data) notFound();
-  const { topic, list, category } = data;
+  const { topic, list, categories, category } = data;
   return (
     <article className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold">{topic.title}</h1>
@@ -100,7 +100,7 @@ async function List({ params }: Props) {
           .
         </p>
       </section>
-      <NewsletterForm headline={signupHeadline()} source={`/beste/${slug}`} />
+      <NewsletterForm headline={signupHeadline(undefined, [rootSlugOf(category.id, categories)])} source={`/beste/${slug}`} />
       <JsonLd
         data={{
           "@context": "https://schema.org",

@@ -3,6 +3,7 @@ import { getGuides } from "@/lib/guide/data";
 import { indexableKeurmerkPages } from "@/lib/keurmerk/pages";
 import { getCategories, getPublishedShops } from "@/lib/shops/data";
 import { MIN_SHOPS_TO_INDEX, promotedRoots, shopsInCategory, siteScope } from "@/lib/shops/present";
+import { BADGE_MIN_SCORE, badgePriceText } from "@/lib/badge/pricing";
 import { SITE } from "@/lib/site";
 
 // llms.txt (https://llmstxt.org): a plain summary for AI crawlers. Low expected value
@@ -36,6 +37,11 @@ export async function GET() {
     "",
     `- ${shops.length} gepubliceerde webshops, elk met een pagina op ${SITE.url}/webshop/[naam]`,
     "- Per webshop: echtheidsscore, geschat aantal producten, online sinds, keurmerk (gecontroleerd of niet), en de zinnen van de eigen site waarop de punten gebaseerd zijn",
+    "",
+    "## Voor webshops",
+    "",
+    `- [Badge Geverifieerd](${SITE.url}/geverifieerd): betaalde vermelding voor webshops met een score van ${BADGE_MIN_SCORE} of hoger, ${badgePriceText()}. De badge verandert de score en de volgorde niet en is geen keurmerk.`,
+    `- [Informatie voor webshops](${SITE.url}/informatie-voor-webshops): opname is gratis; herbeoordeling, verwijdering en eigen beschrijving`,
     "",
   ].join("\n");
   return new Response(body, { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" } });

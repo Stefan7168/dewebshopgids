@@ -33,10 +33,11 @@ export function ShopFilterBar({
             key={t.key}
             href={toggleHref(path, filters, t.key)}
             className={chip(t.on)}
-            aria-pressed={t.on}
+            aria-current={t.on ? "true" : undefined}
             rel="nofollow"
           >
             {t.label}
+            {t.on && <span className="sr-only"> (aan)</span>}
           </Link>
         ))}
         {PRICE_FILTERS.map((p) => (
@@ -44,10 +45,11 @@ export function ShopFilterBar({
             key={p.level}
             href={toggleHref(path, filters, "prijs", p.level)}
             className={chip(filters.prijs === p.level)}
-            aria-pressed={filters.prijs === p.level}
+            aria-current={filters.prijs === p.level ? "true" : undefined}
             rel="nofollow"
           >
             {p.label}
+            {filters.prijs === p.level && <span className="sr-only"> (aan)</span>}
           </Link>
         ))}
       </div>

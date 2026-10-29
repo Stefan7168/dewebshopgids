@@ -120,5 +120,6 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 ## 2026-10-29: Pinterest pin drafts
 - Plan v3 phase 3: the SEO/Growth Analyst drafts up to 10 pins a week, Stefan approves a batch (gate G3), code posts them. Migration 0018 adds `pin_drafts`. Pins link only to our own pages (`/webshop`, `/beste`, `/gids`, `/categorie`), never to a shop domain or affiliate link, which also keeps Daisycon's brand-ad rule out of reach.
 - Posting needs Stefan's Pinterest developer app and token. Until then approved pins wait; nothing is posted.
+
 ## 2026-10-29: AI-referrer segment for sign-ups
 - The AI strategy assessment asked for an AI-referrer segment. Page views already show the referrer in Vercel Web Analytics. For sign-ups, a landing from ChatGPT, Perplexity, Gemini, Copilot or Claude without its own UTM tags now stores `utm_source=<assistant>&utm_medium=ai-referral` in `subscribers.source_path`, the same place as other UTM tags. Only the assistant's name is kept, never the referrer URL.

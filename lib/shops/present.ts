@@ -84,7 +84,7 @@ export function promotedRoots<T extends Pick<PublicShop, "category_id">>(categor
 }
 
 /** Words for each main category in "webshops voor ...". Order follows sort_order. */
-const SCOPE_WORDS: Record<string, string[]> = { wonen: ["wonen", "interieur"], "tuin-buiten": ["tuin"], "eten-drinken": ["eten", "drinken"] };
+const SCOPE_WORDS: Record<string, string[]> = { wonen: ["wonen", "interieur"], "tuin-buiten": ["tuin"], "eten-drinken": ["eten", "drinken"], "sieraden-accessoires": ["sieraden", "accessoires"] };
 
 /** Home page headline and the "webshops voor ..." phrase for the promoted main categories. */
 export function siteScope(roots: Pick<Category, "slug">[]): { headline: string; scope: string } {

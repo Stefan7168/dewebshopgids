@@ -4,7 +4,7 @@ import { getCategories, getPublishedShops } from "@/lib/shops/data";
 import { promotedRoots } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 
-const SHORT_NAME: Record<string, string> = { "tuin-buiten": "Tuin", "eten-drinken": "Eten" };
+const SHORT_NAME: Record<string, string> = { "tuin-buiten": "Tuin", "eten-drinken": "Eten", "sieraden-accessoires": "Sieraden" };
 const LINK = "inline-flex min-h-11 items-center underline-offset-4 hover:underline";
 
 export async function SiteHeader() {

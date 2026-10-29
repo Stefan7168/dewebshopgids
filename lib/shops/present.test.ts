@@ -82,6 +82,10 @@ describe("siteScope", () => {
       headline: "Unieke en betrouwbare Nederlandse webshops",
       scope: "wonen, interieur, tuin, eten en drinken",
     });
+    expect(siteScope([{ slug: "wonen" }, { slug: "sieraden-accessoires" }])).toEqual({
+      headline: "Unieke en betrouwbare Nederlandse webshops",
+      scope: "wonen, interieur, sieraden en accessoires",
+    });
     expect(siteScope([]).scope).toBe("wonen en interieur");
   });
 });

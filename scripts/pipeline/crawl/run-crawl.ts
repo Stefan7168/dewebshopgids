@@ -89,15 +89,26 @@ export async function runCrawl(sql: Sql, fetchPolite = createPoliteFetcher().fet
   async function worker() {
     for (let s = queue.shift(); s; s = queue.shift()) {
       const r = await crawlShop(fetchPolite, s.domain);
-      // A shop whose robots.txt keeps us out made a choice; it is not a pipeline error.
-      if (!r.ok && r.error === "robots_disallowed") robotsBlocked++;
-      else if (!r.ok) failed++;
+      const kind = crawlKind(r);
+      if (kind === "robots") robotsBlocked++;
+      else if (kind === "failed") failed++;
       await storeCrawl(sql, s.id, r);
     }
   }
   await Promise.all(Array.from({ length: Math.min(CONCURRENCY, shops.length) }, worker));
-  const summary = `crawled ${shops.length} shops, ${failed} failed, ${robotsBlocked} blocked by robots.txt`;
-  if (crawlFailed(failed, shops.length - robotsBlocked)) throw new Error(`${summary}: over 10% errors`);
+  return crawlVerdict(shops.length, failed, robotsBlocked);
+}
+
+/** A shop whose robots.txt keeps us out made a choice; it is not a pipeline error. Anything else that is not ok is. */
+export function crawlKind(r: CrawlResult): "ok" | "robots" | "failed" {
+  if (r.ok) return "ok";
+  return r.error === "robots_disallowed" ? "robots" : "failed";
+}
+
+/** The step's summary; throws (so the step and the health check fail) over the error threshold. */
+export function crawlVerdict(total: number, failed: number, robotsBlocked: number): { summary: string } {
+  const summary = `crawled ${total} shops, ${failed} failed, ${robotsBlocked} blocked by robots.txt`;
+  if (crawlFailed(failed, total - robotsBlocked)) throw new Error(`${summary}: over 10% errors`);
   return { summary };
 }
 

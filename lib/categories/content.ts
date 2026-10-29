@@ -10,7 +10,7 @@ export type CategoryContent = { keyword: string; intro: string[]; faq: Faq[] };
 
 const REVIEW_Q: Faq = {
   q: "Wat betekent 'In beoordeling' bij een shop?",
-  a: `De score van die shop ligt tussen ${LABEL_BELOW} en ${AUDIT_BAND_MAX} en krijgt eerst een tweede controle. Tot die klaar is, tonen we geen getal en staat de shop onder de shops met een score.`,
+  a: `Dat de score nog niet getoond wordt. Dat gebeurt in twee gevallen: de webshop heeft om een herbeoordeling gevraagd, of de score ligt tussen ${LABEL_BELOW} en ${AUDIT_BAND_MAX} en krijgt eerst een tweede controle. Zulke shops staan onder de shops met een score.`,
 };
 
 export const CATEGORY_CONTENT: Record<string, CategoryContent> = {

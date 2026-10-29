@@ -1,5 +1,6 @@
 // /admin/status: one screen with what still blocks publishing. Reads only the database and whether
 // env vars are present; never shows a value. Pure so it can be tested without a database.
+import { checkoutConfig } from "@/lib/badge/pricing";
 import { SITE } from "@/lib/site";
 
 export type Blocker = { key: string; label: string; ok: boolean; detail: string; href?: string };
@@ -8,18 +9,22 @@ export type StatusInput = {
   env: Record<string, string | undefined>;
   /** Latest agent_runs row per pipeline step (trigger = 'pipeline'), newest first. */
   pipelineRuns: { agent: string; status: string; started_at: string }[];
+  /** score-submit runs that really sent a batch ("submitted N shops ..."): only possible with a working Anthropic key. */
+  batchesSubmitted: number;
   emailsSent: number;
   prenoticeOn: boolean;
 };
 
 const has = (env: StatusInput["env"], k: string) => Boolean(env[k]?.trim());
 
-export function launchBlockers({ env, pipelineRuns, emailsSent, prenoticeOn }: StatusInput): Blocker[] {
+export function launchBlockers({ env, pipelineRuns, batchesSubmitted, emailsSent, prenoticeOn }: StatusInput): Blocker[] {
   const ran = pipelineRuns.length > 0;
-  const scored = pipelineRuns.some((r) => r.agent === "score-collect" && r.status === "ok");
+  // score-collect is "ok" with "no open batch" even without a key, so only a submitted batch counts.
+  const scored = batchesSubmitted > 0;
   const host = env.VERCEL_PROJECT_PRODUCTION_URL?.replace(/^www\./, "");
   const domainOk = host === SITE.domain;
-  const stripe = ["STRIPE_SECRET_KEY", "STRIPE_PRICE_BADGE_MONTH", "STRIPE_PRICE_BADGE_YEAR", "STRIPE_WEBHOOK_SECRET"].filter((k) => !has(env, k));
+  // Same test as the checkout itself (key and price id formats), plus the webhook secret.
+  const stripeOk = checkoutConfig(env) !== null && has(env, "STRIPE_WEBHOOK_SECRET");
   return [
     {
       key: "service",
@@ -37,7 +42,7 @@ export function launchBlockers({ env, pipelineRuns, emailsSent, prenoticeOn }: S
       key: "anthropic",
       label: "GitHub: ANTHROPIC_API_KEY",
       ok: scored,
-      detail: scored ? "er is een scorebatch opgehaald" : "nog geen scorebatch opgehaald (pas na de 2e nacht te zien)",
+      detail: scored ? "er is een scorebatch ingediend" : "nog geen scorebatch ingediend (zichtbaar na de eerste nacht met gecrawlde shops)",
     },
     {
       key: "domain",
@@ -61,8 +66,10 @@ export function launchBlockers({ env, pipelineRuns, emailsSent, prenoticeOn }: S
     {
       key: "stripe",
       label: "Stripe voor de badge",
-      ok: stripe.length === 0,
-      detail: stripe.length ? `ontbreekt: ${stripe.join(", ")}` : "betalen staat aan",
+      ok: stripeOk,
+      detail: stripeOk
+        ? "betalen staat aan"
+        : "uit: STRIPE_SECRET_KEY (sk_/rk_), STRIPE_PRICE_BADGE_MONTH en _YEAR (price_) en STRIPE_WEBHOOK_SECRET nodig",
     },
   ];
 }

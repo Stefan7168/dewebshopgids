@@ -14,32 +14,43 @@ async function Status() {
     return <p className="text-sm">SUPABASE_SERVICE_ROLE_KEY ontbreekt in Vercel. Zonder die sleutel kan deze pagina de database niet lezen.</p>;
   }
   const db = createServiceClient();
-  const count = async (q: PromiseLike<{ count: number | null }>) => (await q).count ?? 0;
-  const [flag, runsRes, emailsSent, candidates, statusCounts, publishedRes, catsRes, scheduleRes] = await Promise.all([
+  // Head-only counts: exact at any size (a row select would stop at the API's 1000-row cap). An error
+  // shows on the page instead of a silent 0.
+  const count = async (q: PromiseLike<{ count: number | null; error: { message: string } | null }>) => {
+    const r = await q;
+    if (r.error) throw new Error(r.error.message);
+    return r.count ?? 0;
+  };
+  const [flag, runsRes, catsRes, scheduleRes] = await Promise.all([
     db.from("agent_settings").select("value").eq("key", "prenotice_enabled").maybeSingle(),
     db.from("agent_runs").select("agent, status, started_at, summary").eq("trigger", "pipeline").order("started_at", { ascending: false }).limit(40),
-    count(db.from("email_queue").select("id", { count: "exact", head: true }).not("sent_at", "is", null)),
-    count(db.from("shop_candidates").select("id", { count: "exact", head: true }).eq("status", "new")),
-    Promise.all(STATUSES.map((s) => count(db.from("shops").select("id", { count: "exact", head: true }).eq("status", s)))),
-    db.from("shops").select("category_id").eq("status", "published").limit(10000),
     db.from("categories").select("id, parent_id, name_nl"),
     db.from("agent_schedule").select("agent"),
   ]);
-  const err = runsRes.error ?? publishedRes.error ?? catsRes.error ?? scheduleRes.error;
+  const err = runsRes.error ?? catsRes.error ?? scheduleRes.error;
   if (err) return <p className="text-sm text-red-600">Fout: {err.message}</p>;
 
-  const runs = runsRes.data as Run[];
-  const blockers = launchBlockers({ env: process.env, pipelineRuns: runs, emailsSent, prenoticeOn: flag.data?.value === true });
-  const night = lastNight(runs);
-
   const cats = catsRes.data as { id: string; parent_id: string | null; name_nl: string }[];
-  const rootOf = (id: string | null) => {
-    let c = cats.find((x) => x.id === id);
-    while (c?.parent_id) c = cats.find((x) => x.id === c!.parent_id);
-    return c?.name_nl ?? "zonder categorie";
-  };
-  const perRoot = new Map<string, number>();
-  for (const s of publishedRes.data as { category_id: string | null }[]) perRoot.set(rootOf(s.category_id), (perRoot.get(rootOf(s.category_id)) ?? 0) + 1);
+  const roots = cats.filter((c) => c.parent_id === null);
+  const subtree = (root: string) => cats.filter((c) => c.id === root || c.parent_id === root).map((c) => c.id);
+  let counts: [number, number, number, number[], number[]];
+  try {
+    counts = await Promise.all([
+      count(db.from("email_queue").select("id", { count: "exact", head: true }).not("sent_at", "is", null)),
+      count(db.from("shop_candidates").select("id", { count: "exact", head: true }).eq("status", "new")),
+      count(db.from("agent_runs").select("id", { count: "exact", head: true }).eq("agent", "score-submit").eq("status", "ok").like("summary", "submitted%")),
+      Promise.all(STATUSES.map((s) => count(db.from("shops").select("id", { count: "exact", head: true }).eq("status", s)))),
+      Promise.all(roots.map((r) => count(db.from("shops").select("id", { count: "exact", head: true }).eq("status", "published").in("category_id", subtree(r.id))))),
+    ]);
+  } catch (e) {
+    return <p className="text-sm text-red-600">Fout: {(e as Error).message}</p>;
+  }
+  const [emailsSent, candidates, batchesSubmitted, statusCounts, publishedPerRoot] = counts;
+
+  const runs = runsRes.data as Run[];
+  const blockers = launchBlockers({ env: process.env, pipelineRuns: runs, batchesSubmitted, emailsSent, prenoticeOn: flag.data?.value === true });
+  const night = lastNight(runs);
+  const perRoot = new Map(roots.map((r, i) => [r.name_nl, publishedPerRoot[i]]));
 
   const agents = [...new Set((scheduleRes.data as { agent: string }[]).map((s) => s.agent))].sort();
   const agentRuns = await Promise.all(

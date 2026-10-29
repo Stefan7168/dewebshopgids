@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 // The fixed checklist behind the badge. Every item is enforced in code: the claim link, badgeEligibility()
-// in startBadgeCheckout and in the Outreach selection, and the Stripe webhook. The webhook itself does not
+// in startBadgeCheckout, the same rule in the Outreach tool query, and the Stripe webhook. The webhook itself does not
 // re-check score or status, so the text says when the checks run; add a line here only when code checks it too.
 export default function Page() {
   return (

@@ -26,6 +26,9 @@ insert into public.crawl_pages (shop_id, url, page_type, robots_allowed) values
   ('00000000-0000-4000-8000-000000002601', 'https://rp1.example/', 'home', true);
 insert into public.scores (shop_id, score_version, total) values ('00000000-0000-4000-8000-000000002601', 'v2', 80);
 insert into public.email_queue (shop_id, template) values ('00000000-0000-4000-8000-000000002601', 'prenotice');
+update public.shops set stripe_subscription_id = 'sub_rp1', verified_badge_until = current_date + 20
+  where id = '00000000-0000-4000-8000-000000002601';
+insert into public.shop_candidates (domain, name, source, reason) values ('rp1.example', 'Atelier Jan', 'scout', 'Jan maakt alles zelf');
 
 do $$
 declare r jsonb; s record;
@@ -49,6 +52,9 @@ begin
     and s.score is null and s.purged_at is not null and s.slug = 'rp-1' and s.status = 'removed', 'only the minimal record stays';
   assert not exists (select 1 from public.crawl_pages where shop_id = '00000000-0000-4000-8000-000000002601'), 'crawl text deleted';
   assert exists (select 1 from public.disputes where shop_id = '00000000-0000-4000-8000-000000002601'), 'dispute kept as proof';
+  assert (select name = 'rp1.example' and reason is null from public.shop_candidates where domain = 'rp1.example'), 'candidate row keeps only the domain';
+  assert exists (select 1 from public.agent_escalations where kind = 'removed_shop_paid' and label = 'needs-human'
+                 and title like '%rp1.example'), 'live badge escalated for a Stripe cancel';
   assert (select contact_email from public.shops where id = '00000000-0000-4000-8000-000000002602') is not null, 'unconfirmed shop untouched';
 end $$;
 

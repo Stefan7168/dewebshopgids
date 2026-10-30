@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { createServiceClient } from "@/lib/supabase/service";
+import { CheckAll } from "@/components/check-all";
 import { Button } from "@/components/ui/button";
 import { decideCandidates, rejectCandidate } from "./actions";
 
@@ -30,9 +31,14 @@ async function CandidateList() {
     <form action={decideCandidates} className="flex flex-col gap-4">
       <p className="text-sm">
         {count !== null && count > data.length ? `De eerste ${data.length} van ${count} kandidaten.` : `${data.length} kandidaten.`} Alles
-        is aangevinkt. Wijs eerst losse domeinen af met de knop op hun regel, en keur daarna de rest in één keer goed. Goedgekeurde
-        domeinen worden vannacht gecrawld en blijven concept tot de pipeline ze publiceert.
+        is aangevinkt. Wijs eerst losse domeinen af met de knop op hun regel, en keur daarna de rest in één keer goed. Wil je er maar een
+        paar goedkeuren, vink dan eerst alles uit. Goedgekeurde domeinen worden vannacht gecrawld en blijven concept tot de pipeline ze
+        publiceert.
       </p>
+      <div className="flex gap-2">
+        <CheckAll name="id" checked={false}>Alles uitvinken</CheckAll>
+        <CheckAll name="id" checked>Alles aanvinken</CheckAll>
+      </div>
       <ul className="flex flex-col divide-y border rounded-md">
         {data.map((c) => (
           <li key={c.id} className="flex gap-3 p-3 text-sm">
@@ -51,7 +57,8 @@ async function CandidateList() {
           </li>
         ))}
       </ul>
-      <div className="flex gap-3">
+      {/* Sticky, so the buttons are reachable on a phone without scrolling past 100 rows. */}
+      <div className="sticky bottom-0 flex gap-3 border-t bg-background py-3">
         <Button type="submit" name="decision" value="accepted">
           Goedkeuren
         </Button>

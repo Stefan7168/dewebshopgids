@@ -64,9 +64,6 @@ async function Guide({ params }: Props) {
       <p className="text-sm text-muted-foreground">
         Alle cijfers komen uit onze eigen controle van de webshops. <Link href="/hoe-wij-beoordelen" className="underline">Zo beoordelen we</Link>.
       </p>
-      <Suspense fallback={null}>
-        <GuideNav slug={g.slug} />
-      </Suspense>
       <NewsletterForm headline={signupHeadline()} source={`/gids/${g.slug}`} />
       <JsonLd
         data={{
@@ -93,6 +90,9 @@ async function Guide({ params }: Props) {
           ],
         }}
       />
+      <Suspense fallback={null}>
+        <GuideNav slug={g.slug} />
+      </Suspense>
     </article>
   );
 }

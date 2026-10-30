@@ -25,7 +25,7 @@ export function ownerFaqs(): OwnerFaq[] {
     },
     {
       q: "Wat kost de badge Geverifieerd en wie kan hem krijgen?",
-      a: `De badge kost ${badgePriceText()}. Hij is er voor webshops met een echtheidsscore van ${BADGE_MIN_SCORE} of hoger. We controleren je bedrijfsgegevens en je mag de badge op je eigen site tonen. Opzeggen kan elke maand. De badge verandert je score en je plek niet.`,
+      a: `De badge kost ${badgePriceText()}. Hij is er voor webshops met een echtheidsscore van ${BADGE_MIN_SCORE} of hoger. We controleren dat de aanvrager bij de webshop hoort; je KvK-inschrijving en levering controleren we niet. Opzeggen kan altijd; de badge loopt dan tot het einde van de betaalde periode. De badge verandert je score en je plek niet.`,
     },
     {
       q: "Wat is Uitgelicht?",

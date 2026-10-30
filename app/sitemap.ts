@@ -20,6 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...indexableKeurmerkPages(shops).map((p) => ({ url: `${SITE.url}/keurmerk/${p.slug}`, lastModified: newest, changeFrequency: "weekly" as const, priority: 0.6 })),
     ...(guides.length ? [{ url: `${SITE.url}/gids`, lastModified: guides[0].published_at ?? undefined, changeFrequency: "weekly" as const, priority: 0.7 }] : []),
     ...guides.map((g) => ({ url: `${SITE.url}/gids/${g.slug}`, lastModified: g.published_at ?? undefined, changeFrequency: "yearly" as const, priority: 0.5 })),
+    { url: `${SITE.url}/informatie-voor-webshops/vragen`, changeFrequency: "monthly" as const, priority: 0.3 },
     ...shops.map((s) => ({ url: `${SITE.url}/webshop/${s.slug}`, lastModified: s.updated_at, changeFrequency: "weekly" as const, priority: 0.6 })),
   ];
 }

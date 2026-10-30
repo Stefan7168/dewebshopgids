@@ -32,7 +32,7 @@ async function Notice({ searchParams }: { searchParams: Search }) {
   if (portaal) {
     return (
       <p role="status" className="rounded-md border p-4">
-        Je abonnement kon nu niet openen. Open de link uit je e-mail opnieuw, of mail <a href={`mailto:${SITE.email}`}>{SITE.email}</a> om op te zeggen.
+        We konden je abonnement nu niet openen. Open de link uit je e-mail opnieuw, of mail <a href={`mailto:${SITE.email}`}>{SITE.email}</a> om op te zeggen.
       </p>
     );
   }

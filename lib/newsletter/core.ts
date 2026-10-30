@@ -15,8 +15,10 @@ export const SUBSCRIBE_PER_SENDER_PER_HOUR = 5;
 /** New unconfirmed sign-ups site-wide per hour; above this the form pauses, so it cannot be used to mail-bomb. */
 export const SUBSCRIBE_SITE_WIDE_PER_HOUR = 100;
 
-export function signupHeadline(startMonth = GUIDE_START_MONTH): string {
-  const base = "Elke week 5 unieke woonwinkels in je inbox";
+/** The sign-up line; "woonwinkels" only on pages that are all Wonen, "webshops" on food, garden or mixed pages. */
+export function signupHeadline(startMonth = GUIDE_START_MONTH, rootSlugs: (string | null)[] = ["wonen"]): string {
+  const noun = rootSlugs.length > 0 && rootSlugs.every((s) => s === "wonen") ? "woonwinkels" : "webshops";
+  const base = `Elke week 5 unieke ${noun} in je inbox`;
   return startMonth ? `Vanaf ${startMonth}: ${base.charAt(0).toLowerCase()}${base.slice(1)}` : base;
 }
 

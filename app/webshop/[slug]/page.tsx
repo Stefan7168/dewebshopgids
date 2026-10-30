@@ -10,6 +10,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { KEURMERK_PAGES } from "@/lib/keurmerk/pages";
 import { signupHeadline } from "@/lib/newsletter/core";
+import { rootSlugOf } from "@/lib/shops/present";
 import { cachedToday, getCategories, getPublishedShops, getShop } from "@/lib/shops/data";
 import { getEarnedSubScores } from "@/lib/shops/evidence";
 import { getScoreChanges } from "@/lib/shops/score-history";
@@ -208,7 +209,7 @@ async function ShopDetails({ params }: Props) {
       <Suspense fallback={null}>
         <SimilarShops shop={shop} categories={categories} />
       </Suspense>
-      <NewsletterForm headline={signupHeadline()} source={`/webshop/${shop.slug}`} />
+      <NewsletterForm headline={signupHeadline(undefined, [rootSlugOf(shop.category_id, categories)])} source={`/webshop/${shop.slug}`} />
       <JsonLd
         data={{
           "@context": "https://schema.org",

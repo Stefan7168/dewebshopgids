@@ -21,10 +21,16 @@ export function newestCheckPerShop(rows: { shop_id: string; fetched_at: string }
 
 /** Cities with a physical store in a list, alphabetical, each with its shops in list order. Not a ranking. */
 export function shopsByCity<T extends { store_city: string | null; has_physical_store: boolean | null }>(shops: T[]): [string, T[]][] {
-  const by = new Map<string, T[]>();
+  // Grouped by the trimmed, lower-cased name, so "Amsterdam", "amsterdam" and "Amsterdam " are one city;
+  // shown with the first spelling, capitalised.
+  const by = new Map<string, { city: string; list: T[] }>();
   for (const s of shops) {
-    if (!s.has_physical_store || !s.store_city) continue;
-    by.set(s.store_city, [...(by.get(s.store_city) ?? []), s]);
+    const city = s.has_physical_store ? s.store_city?.trim() : null;
+    if (!city) continue;
+    const key = city.toLocaleLowerCase("nl");
+    const group = by.get(key) ?? { city: city.charAt(0).toLocaleUpperCase("nl") + city.slice(1), list: [] };
+    group.list.push(s);
+    by.set(key, group);
   }
-  return [...by.entries()].sort(([a], [b]) => a.localeCompare(b, "nl"));
+  return [...by.values()].map((g): [string, T[]] => [g.city, g.list]).sort(([a], [b]) => a.localeCompare(b, "nl"));
 }

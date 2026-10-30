@@ -33,3 +33,11 @@ describe("shopsByCity", () => {
     ]);
   });
 });
+
+describe("shopsByCity spelling", () => {
+  it("treats case and spaces as one city", () => {
+    const shop = (store_city: string) => ({ store_city, has_physical_store: true });
+    const groups = shopsByCity([shop("Amsterdam"), shop("amsterdam"), shop("Zwolle "), shop("zwolle")]);
+    expect(groups.map(([c, l]) => [c, l.length])).toEqual([["Amsterdam", 2], ["Zwolle", 2]]);
+  });
+});

@@ -10,11 +10,12 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { KEURMERK_PAGES } from "@/lib/keurmerk/pages";
 import { signupHeadline } from "@/lib/newsletter/core";
+import { rootSlugOf } from "@/lib/shops/present";
 import { cachedToday, getCategories, getPublishedShops, getShop } from "@/lib/shops/data";
 import { getEarnedSubScores } from "@/lib/shops/evidence";
 import { getScoreChanges } from "@/lib/shops/score-history";
 import { dutchDate } from "@/lib/shops/score-history-rules";
-import { countryName, hasVerifiedBadge, keurmerkText, onlineSince, priceLevelText, rootSlugOf, productCountText, scoreDisplay, similarShops, SUB_SCORE_NAMES, type Category, type PublicShop } from "@/lib/shops/present";
+import { countryName, hasVerifiedBadge, keurmerkText, onlineSince, priceLevelText, productCountText, scoreDisplay, similarShops, SUB_SCORE_NAMES, type Category, type PublicShop } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 import { PageLoading } from "@/components/page-loading";
 

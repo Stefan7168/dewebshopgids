@@ -29,7 +29,9 @@ function need(name: string): string {
 /**
  * Plan v3: shops scoring 70+ with clicks and no affiliate programme, no badge yet, not opted out,
  * and no draft in the last 90 days (one email per shop per 90 days). Most clicked first.
- * Since 2026-10-30 also only shops whose owner interacted: opened a claim link on their own domain.
+ * Since 2026-10-30 also only shops whose owner interacted: used a claim link on their own domain to send a description
+ * (verified_at is set on that submit in app/beheer/actions.ts, not when the link is opened, so a mail
+ * scanner that opens links does not count as consent).
  * Cold commercial email is opt-in by default in NL (Telecommunicatiewet art. 11.7); this gate stays
  * until the lawyer says otherwise (migration 0022).
  */

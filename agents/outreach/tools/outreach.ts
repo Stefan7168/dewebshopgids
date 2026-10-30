@@ -29,6 +29,9 @@ function need(name: string): string {
 /**
  * Plan v3: shops scoring 70+ with clicks and no affiliate programme, no badge yet, not opted out,
  * and no draft in the last 90 days (one email per shop per 90 days). Most clicked first.
+ * Since 2026-10-30 also only shops whose owner interacted: opened a claim link on their own domain.
+ * Cold commercial email is opt-in by default in NL (Telecommunicatiewet art. 11.7); this gate stays
+ * until the lawyer says otherwise (migration 0022).
  */
 export async function candidates(sql: Sql): Promise<(OutreachCandidate & { description_nl: string | null })[]> {
   return sql<(OutreachCandidate & { description_nl: string | null })[]>`
@@ -38,6 +41,7 @@ export async function candidates(sql: Sql): Promise<(OutreachCandidate & { descr
     where s.status = 'published' and s.score >= ${MIN_SCORE} and not s.affiliate_available
       and (s.verified_badge_until is null or s.verified_badge_until < current_date)
       and s.outreach_opt_out_at is null
+      and exists (select 1 from public.shop_claims sc where sc.shop_id = s.id and sc.verified_at is not null)
       and not exists (
         select 1 from public.outreach_drafts d
         where d.shop_id = s.id and d.created_at > now() - make_interval(days => ${COOLDOWN_DAYS}))

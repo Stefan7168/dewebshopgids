@@ -239,6 +239,19 @@ export const TOPIC_CONTENT: Record<string, TopicContent> = {
       { q: "Hoe is de volgorde van deze lijst bepaald?", a: ORDER_A },
     ],
   },
+  "vintage-interieur": {
+    keyword: "vintage interieur webshop",
+    intro: [
+      "Zoek je een vintage stoel, een lamp uit de jaren zestig of servies van vroeger, maar liever niet via een grote marktplaats? Deze lijst toont Nederlandse webshops die zelf vintage verkopen, met een eigen site en een eigen collectie.",
+      "Een shop staat hier alleen als vintage, antiek of tweedehands design het hoofdaanbod is. Dat hebben we op de eigen site van de shop nagekeken. Een winkel met alleen een klein vintagehoekje telt niet mee. Veel van deze shops kopen hun stukken in, knappen ze op en verkopen ze per stuk. Ze maken dus meestal geen nieuwe producten. Daardoor is hun echtheidsscore vaak lager dan die van een meubelmaker, ook als ze veel zelf restaureren. De volgorde is ook hier alleen de echtheidsscore. Bij elke shop zie je de feiten die we zelf hebben gecontroleerd.",
+    ],
+    faq: [
+      { q: "Waarom geen marktplaatsen zoals Marktplaats of Catawiki?", a: "Op een marktplaats verkopen veel verschillende verkopers. Deze lijst toont alleen shops met een eigen site en een eigen collectie." },
+      { q: "Waarom scoren vintage shops vaak lager dan makers?", a: "De echtheidsscore geeft de meeste punten aan shops die zelf maken of ontwerpen. Een vintage shop verkoopt bestaande stukken, ook als hij die zelf opknapt." },
+      { q: "Hoe weten jullie dat een shop vintage verkoopt?", a: "Een mens heeft de eigen site van de shop bekeken en een zin bewaard waarin de shop dat zelf zegt. Alleen shops waar vintage het hoofdaanbod is, staan op de lijst." },
+      { q: "Hoe is de volgorde van deze lijst bepaald?", a: ORDER_A },
+    ],
+  },
   "met-keurmerk": {
     keyword: "woonwebshops met keurmerk",
     intro: [

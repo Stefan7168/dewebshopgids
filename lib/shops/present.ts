@@ -39,6 +39,8 @@ export type PublicShop = {
   updated_at: string;
   /** `disputed` shows "In beoordeling" instead of the score (migration 0008). */
   status: "published" | "disputed";
+  /** Hand-checked facts from `shop_tags` (migration 0025), e.g. "vintage". Absent until that runs. */
+  tags?: string[];
 };
 
 export type Category = {

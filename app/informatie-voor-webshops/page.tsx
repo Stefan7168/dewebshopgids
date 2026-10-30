@@ -15,7 +15,8 @@ export default function Page() {
     <TextPage title="Informatie voor webshops">
       <p>
         De Webshopgids is een onafhankelijke gids met Nederlandse webshops voor wonen. Opname is gratis en je hoeft er niets voor te doen.
-        Hieronder staat wat we over je webshop tonen, waar het vandaan komt en wat je kunt doen als je het er niet mee eens bent.
+        Hieronder staat wat we over je webshop tonen, waar het vandaan komt en wat je kunt doen als je het er niet mee eens bent. Kort
+        antwoord op een vraag? Kijk bij de <Link href="/informatie-voor-webshops/vragen">vragen van webshops</Link>.
       </p>
 
       <h2>Wat we tonen</h2>

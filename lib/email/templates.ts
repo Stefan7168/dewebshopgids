@@ -129,7 +129,11 @@ export const TEMPLATES: Record<string, Template> = {
         text: [
           "Hoi,",
           "",
-          clicks === 1 ? `In ${label} klikte een lezer van De Webshopgids door naar ${name}.` : `In ${label} klikten lezers van De Webshopgids ${clicks} keer door naar ${name}.`,
+          clicks === 0
+            ? `In ${label} klikte nog geen lezer van De Webshopgids door naar ${name}.`
+            : clicks === 1
+              ? `In ${label} klikte een lezer van De Webshopgids door naar ${name}.`
+              : `In ${label} klikten lezers van De Webshopgids ${clicks} keer door naar ${name}.`,
           `Je pagina met score en feiten: ${SITE.url}/webshop/${slug}`,
           `Je beschrijving aanpassen kan hier: ${SITE.url}/beheer?shop=${slug}`,
           "",

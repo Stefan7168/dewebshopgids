@@ -31,6 +31,7 @@ describe("badge click report", () => {
     expect(r?.text).toContain("geclaimd");
     expect(r?.text).not.toMatch(/badge|geverifieerd|€|eur|stripe|betaal/i);
     expect(t.render({ shop_name: "Atelier X", shop_slug: "atelier-x", month: "2026-10", clicks: 1 })?.text).toContain("klikte een lezer");
+    expect(t.render({ shop_name: "Atelier X", shop_slug: "atelier-x", month: "2026-10", clicks: 0 })?.text).toContain("klikte nog geen lezer");
     expect(t.render({ shop_name: "X", shop_slug: "x", month: "oktober", clicks: 1 })).toBeNull();
   });
 });

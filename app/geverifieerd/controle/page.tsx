@@ -5,7 +5,7 @@ import { BADGE_MIN_SCORE } from "@/lib/badge/pricing";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Wat we controleren voor de badge Geverifieerd | De Webshopgids",
+  title: "Wat we controleren voor de badge Geverifieerd",
   description: "De vaste lijst met controles voordat een webshop de badge Geverifieerd krijgt, en wat de badge niet zegt.",
   alternates: { canonical: "/geverifieerd/controle" },
 };

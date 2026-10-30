@@ -26,8 +26,12 @@ describe("shopAnswer", () => {
       "Houtatelier Noord is online sinds 2009 en heeft geen keurmerk dat we konden vinden.",
     );
     expect(shopAnswer({ ...base, keurmerk_status: "unverified", domain_first_seen: null, has_physical_store: false, score: null })).toBe(
-      "Houtatelier Noord noemt een keurmerk op de site (Thuiswinkel Waarborg) dat we nog niet konden controleren.",
+      "Houtatelier Noord noemt een keurmerk op de site dat we nog niet konden controleren.",
     );
+  });
+  it("names a keurmerk only when it was confirmed with the register", () => {
+    expect(shopAnswer({ ...base, keurmerk_status: "unverified" })).not.toContain("Thuiswinkel");
+    expect(shopAnswer(base)).toContain("Thuiswinkel Waarborg");
   });
   it("never uses opinion words or the words the voice rules forbid", () => {
     const texts = [base, { ...base, keurmerk: [], keurmerk_status: "none" as const, score: 12 }].map((s) => shopAnswer(s));

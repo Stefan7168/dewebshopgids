@@ -20,7 +20,8 @@ export function shopAnswer(s: AnswerShop): string {
   if (since) parts.push(`is online sinds ${since}`);
   const names = s.keurmerk.map((k) => KEURMERK_NAMES[k] ?? k).join(", ");
   if (s.keurmerk_status === "verified" && names) parts.push(`heeft een gecontroleerd keurmerk (${names})`);
-  else if (s.keurmerk_status === "unverified" && names) parts.push(`noemt een keurmerk op de site (${names}) dat we nog niet konden controleren`);
+  // Not named: the answer is quoted by search engines and AI tools, which would drop the "not checked" part.
+  else if (s.keurmerk_status === "unverified" && names) parts.push("noemt een keurmerk op de site dat we nog niet konden controleren");
   else parts.push("heeft geen keurmerk dat we konden vinden");
   if (s.has_physical_store) parts.push(s.store_city ? `heeft een fysieke winkel in ${s.store_city}` : "heeft een fysieke winkel");
   const score = scoreDisplay(s);

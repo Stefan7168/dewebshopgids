@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { keurmerkRowText, newestCheckPerShop } from "./keurmerk-check";
+import { keurmerkRowText, newestCheckPerShop, shopsByCity } from "./keurmerk-check";
 
 describe("keurmerkRowText", () => {
   it("names a confirmed keurmerk with its check date", () => {
@@ -20,5 +20,16 @@ describe("newestCheckPerShop", () => {
       { shop_id: "b", fetched_at: "2026-08-20T02:00:00Z" },
     ]);
     expect(Object.fromEntries(m)).toEqual({ a: "2026-10-03", b: "2026-08-20" });
+  });
+});
+
+describe("shopsByCity", () => {
+  it("groups store cities alphabetically and keeps list order inside a city", () => {
+    const s = (name: string, store_city: string | null, has_physical_store = true) => ({ name, store_city, has_physical_store });
+    const groups = shopsByCity([s("A", "Utrecht"), s("B", "Amsterdam"), s("C", "Utrecht"), s("D", null), s("E", "Zwolle", false)]);
+    expect(groups.map(([c, list]) => [c, list.map((x) => x.name)])).toEqual([
+      ["Amsterdam", ["B"]],
+      ["Utrecht", ["A", "C"]],
+    ]);
   });
 });

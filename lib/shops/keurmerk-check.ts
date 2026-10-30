@@ -18,3 +18,13 @@ export function newestCheckPerShop(rows: { shop_id: string; fetched_at: string }
   }
   return out;
 }
+
+/** Cities with a physical store in a list, alphabetical, each with its shops in list order. Not a ranking. */
+export function shopsByCity<T extends { store_city: string | null; has_physical_store: boolean | null }>(shops: T[]): [string, T[]][] {
+  const by = new Map<string, T[]>();
+  for (const s of shops) {
+    if (!s.has_physical_store || !s.store_city) continue;
+    by.set(s.store_city, [...(by.get(s.store_city) ?? []), s]);
+  }
+  return [...by.entries()].sort(([a], [b]) => a.localeCompare(b, "nl"));
+}

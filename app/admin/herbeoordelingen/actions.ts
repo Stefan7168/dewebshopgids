@@ -1,12 +1,18 @@
 "use server";
 
 import { revalidatePath, updateTag } from "next/cache";
+import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { validateReplySlots } from "@/lib/disputes/replies";
 import { CORRECTION_ROWS, factColumns, isOverrideFact, parseFactInput, type OverrideFact } from "@/lib/overrides/facts";
 import { createServiceClient } from "@/lib/supabase/service";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+/** A form mistake goes back to the page with a short code the page explains, instead of the error page. */
+function backWith(code: "feiten" | "dubbel" | "waarde" | "score" | "leeg" | "reden"): never {
+  redirect(`/admin/herbeoordelingen?fout=${code}`);
+}
 
 // G4 (plan v3 section 4): Stefan decides disputes the Dispute Handler handed over.
 // "No change" queues the dispute_no_change template; the hourly restore job then gives the
@@ -28,7 +34,7 @@ export async function decideDispute(formData: FormData) {
 
   if (decision === "no_change") {
     const v = validateReplySlots("dispute_no_change", { checked_facts: formData.getAll("fact").map(String) });
-    if (!v.ok) throw new Error(v.errors.join("; "));
+    if (!v.ok) backWith("feiten");
     const { template, ...slots } = v.slots;
     const { error: e } = await db.from("disputes")
       .update({ status: "agent_replied", reply_template_id: template, reply_slots: slots, resolved_note: `No change, decided by ${email}.` })
@@ -54,6 +60,7 @@ export async function decideDispute(formData: FormData) {
   // A decided dispute retires the agent's draft score corrections for that shop.
   await db.from("score_overrides").update({ status: "rejected", approved_by: email }).eq("shop_id", d.shop_id).eq("status", "draft");
   revalidatePath("/admin/herbeoordelingen");
+  redirect("/admin/herbeoordelingen"); // drops an old ?fout= notice after a decision that worked
 }
 
 // G4 "correction": Stefan agrees the sender is right. Fact corrections go in fact_overrides and
@@ -66,7 +73,7 @@ export async function correctDispute(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   if (!UUID.test(id)) throw new Error("invalid dispute");
   const reason = String(formData.get("reason") ?? "").trim().slice(0, 2000);
-  if (!reason) throw new Error("give a reason: what did you check?");
+  if (!reason) backWith("reden");
 
   const facts: { fact: OverrideFact; value: Record<string, unknown>; publicValue: string }[] = [];
   for (let i = 1; i <= CORRECTION_ROWS; i++) {
@@ -74,15 +81,15 @@ export async function correctDispute(formData: FormData) {
     const raw = String(formData.get(`value_${i}`) ?? "");
     if (!fact || !raw.trim()) continue;
     if (!isOverrideFact(fact)) throw new Error(`unknown fact ${fact}`);
-    if (facts.some((f) => f.fact === fact)) throw new Error(`${fact} given twice`);
+    if (facts.some((f) => f.fact === fact)) backWith("dubbel");
     const p = parseFactInput(fact, raw);
-    if (!p.ok) throw new Error(p.error);
+    if (!p.ok) backWith("waarde");
     facts.push({ fact, value: p.value, publicValue: p.publicValue });
   }
   const scoreRaw = String(formData.get("score") ?? "").trim();
   const newScore = scoreRaw ? Number(scoreRaw) : null;
-  if (newScore !== null && !(Number.isInteger(newScore) && newScore >= 1 && newScore <= 100)) throw new Error("score must be a whole number from 1 to 100");
-  if (!facts.length && newScore === null) throw new Error("nothing to correct");
+  if (newScore !== null && !(Number.isInteger(newScore) && newScore >= 1 && newScore <= 100)) backWith("score");
+  if (!facts.length && newScore === null) backWith("leeg");
 
   const corrected = [
     ...facts.map((f) => ({ fact: f.fact, value: f.publicValue })),
@@ -136,4 +143,5 @@ export async function correctDispute(formData: FormData) {
   await db.from("score_overrides").update({ status: "rejected", approved_by: email }).eq("shop_id", d.shop_id).eq("status", "draft");
   updateTag("shops");
   revalidatePath("/admin/herbeoordelingen");
+  redirect("/admin/herbeoordelingen"); // drops an old ?fout= notice after a decision that worked
 }

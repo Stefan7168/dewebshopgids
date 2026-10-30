@@ -36,6 +36,10 @@ begin
   assert pg_temp.fails('pipeline', 'select public.purge_removed_shop(''00000000-0000-4000-8000-000000002603'')'), 'no purge of a shop that is not removed';
 
   set local role pipeline;
+  -- the hourly job's candidate query (scripts/disputes/enforce-removals.ts, purgeRemoved)
+  assert (select count(*) from public.shops sh where sh.status = 'removed' and sh.purged_at is null
+          and exists (select 1 from public.disputes d where d.shop_id = sh.id
+                      and d.type in ('removal', 'objection') and d.confirmed_at is not null)) = 1, 'pipeline sees one shop to purge';
   r := public.purge_removed_shop('00000000-0000-4000-8000-000000002601');
   reset role;
   assert (r->>'crawl_pages')::int = 1 and (r->>'scores')::int = 1 and (r->>'email_queue_unsent')::int = 1, 'counts: ' || r::text;

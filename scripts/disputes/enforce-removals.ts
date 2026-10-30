@@ -1,6 +1,7 @@
 // Hourly backstop for confirmed removals and objections (plan v3 section 7, step 9).
 // The confirm action removes the shop at once; this job catches any confirmation whose
 // removal did not land, so the 48-hour duty holds even when the action failed halfway.
+// After that it purges each removed shop (migration 0026): only id, slug, domain and status stay.
 import { connect, runAgentJob, type Sql } from "../../agents/shared/audit";
 
 type Row = { dispute_id: string; shop_id: string; slug: string };
@@ -20,6 +21,17 @@ export async function enforceRemovals(sql: Sql): Promise<{ summary: string; slug
   }
   const slugs = [...new Set(rows.map((r) => r.slug))];
   return { summary: rows.length ? `removed ${slugs.length} shop(s): ${slugs.join(", ")}` : "nothing to remove", slugs };
+}
+
+/** Deletes what we hold about each removed shop with a confirmed request that is not purged yet. */
+export async function purgeRemoved(sql: Sql): Promise<{ summary: string; purged: number }> {
+  const rows = await sql<{ id: string; slug: string }[]>`
+    select s.id, s.slug from public.shops s
+    where s.status = 'removed' and s.purged_at is null
+      and exists (select 1 from public.disputes d where d.shop_id = s.id
+                  and d.type in ('removal', 'objection') and d.confirmed_at is not null)`;
+  for (const r of rows) await sql`select public.purge_removed_shop(${r.id}::uuid)`;
+  return { summary: rows.length ? `purged ${rows.length} shop(s): ${rows.map((r) => r.slug).join(", ")}` : "nothing to purge", purged: rows.length };
 }
 
 /** Best effort: without REVALIDATE_URL the page drops out of the cache within the hour (cacheLife "hours"). */
@@ -42,8 +54,10 @@ async function main() {
     await runAgentJob(sql, { agent: "dispute-removals", runsOn: "code", trigger: "schedule", spendsTokens: false }, async () => {
       const r = await enforceRemovals(sql);
       await revalidate(r.slugs);
-      console.log(r.summary);
-      return { summary: r.summary };
+      const p = await purgeRemoved(sql);
+      const summary = `${r.summary}; ${p.summary}`;
+      console.log(summary);
+      return { summary };
     });
   } finally {
     await sql.end();

@@ -8,8 +8,9 @@ type MetaShop = Pick<
   "name" | "domain" | "keurmerk" | "keurmerk_status" | "domain_first_seen" | "score" | "score_label" | "status" | "store_city" | "has_physical_store" | "description_nl"
 >;
 
-// Google shows about 60 characters but reads the whole title; past 90 the facts stop helping.
-export const TITLE_MAX = 90;
+// The root layout adds " | De Webshopgids" (18 characters). Google shows about 60 to 70; with 55 here the
+// whole title stays near 70 and a typical "naam: online sinds, echtheidsscore" still fits.
+export const TITLE_MAX = 55;
 export const DESCRIPTION_MAX = 160;
 const FALLBACK_TITLE = "echtheidsscore, keurmerk en feiten";
 
@@ -25,14 +26,12 @@ function facts(s: MetaShop): string[] {
 }
 
 export function shopTitle(s: MetaShop): string {
-  const parts = facts(s);
-  // Drop facts from the end until the title fits; a long name keeps at least the fallback.
-  while (parts.length) {
-    const t = `${s.name}: ${parts.join(", ")}`;
-    if (t.length <= TITLE_MAX) return t;
-    parts.pop();
-  }
-  return `${s.name}: ${FALLBACK_TITLE}`;
+  const all = facts(s);
+  if (!all.length) return `${s.name}: ${FALLBACK_TITLE}`;
+  // Take facts in order while they fit; a fact that does not fit is skipped, a later shorter one may still fit.
+  const parts: string[] = [];
+  for (const f of all) if (`${s.name}: ${[...parts, f].join(", ")}`.length <= TITLE_MAX) parts.push(f);
+  return parts.length ? `${s.name}: ${parts.join(", ")}` : s.name;
 }
 
 export function shopDescription(s: MetaShop): string {

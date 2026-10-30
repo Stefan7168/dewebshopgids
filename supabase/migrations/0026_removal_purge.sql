@@ -4,6 +4,8 @@
 -- Kept on purpose: disputes (proof that we handled the request), commissions and featured_placements
 -- (bookkeeping), clicks (no personal data). One narrow function instead of broad delete grants: it refuses
 -- any shop that is not removed with a confirmed request, and only `pipeline` may call it.
+-- The candidate row keeps only the domain (so the Scout never suggests it again). A live badge or Uitgelicht
+-- subscription is not cancelled here: it gets a needs-human escalation so a person cancels it in Stripe.
 alter table public.shops add column purged_at timestamptz;
 
 create function public.purge_removed_shop(p_shop_id uuid) returns jsonb
@@ -39,6 +41,20 @@ begin
   if to_regclass('public.shop_tags') is not null then -- 0025, may not be applied yet
     execute 'delete from public.shop_tags where domain = $1' using s.domain;
     get diagnostics n = row_count; out := out || jsonb_build_object('shop_tags', n);
+  end if;
+
+  update public.shop_candidates set name = s.domain, reason = null where domain = s.domain;
+  get diagnostics n = row_count; out := out || jsonb_build_object('shop_candidates', n);
+
+  if exists (select 1 from public.shops where id = p_shop_id and stripe_subscription_id is not null
+             and verified_badge_until >= current_date)
+     or exists (select 1 from public.featured_placements where shop_id = p_shop_id and active_until >= current_date) then
+    insert into public.agent_escalations (agent, kind, title, body_md, label)
+    values ('dispute-removals', 'removed_shop_paid', 'Removed shop still pays: cancel in Stripe: ' || s.domain,
+            'Shop `' || s.domain || '` was removed at the owner''s request but still has a live badge or Uitgelicht '
+            || 'subscription. Cancel it in the Stripe dashboard (Customers, search the domain) and refund the unused part.',
+            'needs-human');
+    out := out || jsonb_build_object('escalated_subscription', true);
   end if;
 
   update public.shops set

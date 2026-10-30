@@ -1,5 +1,6 @@
 import { revalidateTag } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
+import { paidLinkProblem } from "@/lib/badge/paid-link";
 import { badgeAction, verifyStripeSignature } from "@/lib/stripe/webhook";
 import { createServiceClient } from "@/lib/supabase/service";
 
@@ -45,6 +46,25 @@ export async function POST(req: NextRequest) {
     if (placed?.length) {
       revalidateTag("shops", "max");
       return NextResponse.json({ ok: true, action: action.kind });
+    }
+  }
+
+  if (action.kind === "link") {
+    const { data: shop, error } = await db.from("shops").select("slug, status, score, verified_badge_until, stripe_subscription_id").eq("id", action.shopId).maybeSingle();
+    if (error) return NextResponse.json({ ok: false, error: "database" }, { status: 500 });
+    const problem = shop ? paidLinkProblem(shop, action.subscriptionId) : null;
+    if (shop && problem) {
+      // Paid, but this shop may not have the badge (or already pays for one): a person refunds or
+      // cancels in Stripe. Ids only; 200 so Stripe stops retrying.
+      const { error: escError } = await db.from("agent_escalations").insert({
+        agent: "stripe-webhook",
+        kind: "badge_payment_not_linked",
+        title: `Betaalde badge niet aangezet voor ${shop.slug} (${problem})`,
+        body_md: `Stripe subscription \`${action.subscriptionId}\` was paid for shop \`${shop.slug}\`, but the badge stays off: ${problem}. Refund or cancel it in the Stripe dashboard.`,
+        label: "needs-human",
+      });
+      if (escError) return NextResponse.json({ ok: false, error: "database" }, { status: 500 });
+      return NextResponse.json({ ok: true, ignored: problem });
     }
   }
 

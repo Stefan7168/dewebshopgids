@@ -33,8 +33,7 @@ async function Guide({ params }: Props) {
   const g = parseGuideSlug(slug) ? await getGuide(slug) : null;
   if (!g) notFound();
   // In the order the editor chose, which is the order the body mentions them.
-  const published = await getPublishedShops();
-  const shops = published
+  const shops = (await getPublishedShops())
     .filter((s) => g.shop_ids.includes(s.id))
     .sort((a, b) => g.shop_ids.indexOf(a.id) - g.shop_ids.indexOf(b.id));
   return (
@@ -44,7 +43,7 @@ async function Guide({ params }: Props) {
       </p>
       <h1 className="text-2xl font-bold">{g.title_nl}</h1>
       {g.intro_nl ? <p className="text-lg">{g.intro_nl}</p> : null}
-      <GuideBody md={g.body_md ?? ""} liveShops={new Set(published.map((s) => s.slug))} />
+      <GuideBody md={g.body_md ?? ""} liveShops={new Set((await getPublishedShops()).map((s) => s.slug))} />
       {shops.length ? (
         <section className="flex flex-col gap-3" aria-label="Webshops in deze gids">
           <h2 className="text-xl font-semibold">De webshops van deze week</h2>

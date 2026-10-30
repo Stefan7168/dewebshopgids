@@ -22,3 +22,17 @@ export async function decideCandidates(formData: FormData) {
   if (error) throw new Error(error.message);
   revalidatePath("/admin/kandidaten");
 }
+
+// One row from the same form: rejects only the domain on that row, whatever else is ticked.
+export async function rejectCandidate(formData: FormData) {
+  const email = await requireAdmin();
+  const id = String(formData.get("one") ?? "");
+  if (!UUID.test(id)) throw new Error("invalid candidate");
+  const { error } = await createServiceClient()
+    .from("shop_candidates")
+    .update({ status: "rejected", decided_by: email })
+    .eq("id", id)
+    .eq("status", "new");
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/kandidaten");
+}

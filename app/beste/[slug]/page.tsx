@@ -13,7 +13,9 @@ import { METHOD_NOTE, besteList, liveTopics, siblingTopics, topicBySlug } from "
 import { signupHeadline } from "@/lib/newsletter/core";
 import { getCategories, getPublishedShops } from "@/lib/shops/data";
 import { getEarnedSubScores } from "@/lib/shops/evidence";
-import { keurmerkText, onlineSince, productCountText, rankingExplanation, SUB_SCORE_NAMES, type PublicShop } from "@/lib/shops/present";
+import { keurmerkRowText } from "@/lib/shops/keurmerk-check";
+import { getKeurmerkCheckDates } from "@/lib/shops/keurmerk-checked";
+import { onlineSince, productCountText, rankingExplanation, SUB_SCORE_NAMES, type PublicShop } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 import { PageLoading } from "@/components/page-loading";
 
@@ -57,6 +59,7 @@ async function List({ params }: Props) {
   const data = await load(slug);
   if (!data) notFound();
   const { topic, list, siblings, category } = data;
+  const checkedOn = await getKeurmerkCheckDates(list.filter((s) => s.keurmerk_status === "verified").map((s) => s.id));
   return (
     <article className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold">{topic.title}</h1>
@@ -68,7 +71,7 @@ async function List({ params }: Props) {
         <RankingDisclosure />
         <ol className="flex flex-col gap-3">
           {list.map((s, i) => {
-            const facts = [onlineSince(s.domain_first_seen) ? `Online sinds ${onlineSince(s.domain_first_seen)}` : null, productCountText(s.product_count_est), keurmerkText(s)].filter(Boolean);
+            const facts = [onlineSince(s.domain_first_seen) ? `Online sinds ${onlineSince(s.domain_first_seen)}` : null, productCountText(s.product_count_est), keurmerkRowText(s, checkedOn.get(s.id))].filter(Boolean);
             return (
               <li key={s.id} className="rounded-lg border p-4 flex flex-col gap-2">
                 <div className="flex gap-4 items-start">

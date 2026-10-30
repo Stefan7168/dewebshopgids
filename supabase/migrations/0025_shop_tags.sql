@@ -1,10 +1,10 @@
 -- 0025: hand-checked facts per shop domain for /beste list filters (coordinator decisions 2026-10-30:
--- "vintage interieur" and "handgemaakt servies" lists). A tag is set only after a person checked the shop's own site and kept a
--- quote (research/beste-topics-2026-10-30.md, research/handgemaakt-servies-2026-10-30.md); the crawl does not set tags. Keyed by domain, so a tag
+-- "vintage interieur", "handgemaakt servies" and "koffiebranderijen" lists). A tag is set only after a person checked the shop's own site and kept a
+-- quote (research/beste-topics-2026-10-30.md, research/handgemaakt-servies-2026-10-30.md, research/koffiebranderijen-2026-10-30.md); the crawl does not set tags. Keyed by domain, so a tag
 -- can be added before the shop is promoted. Public read only for listed shops, domain and tag only.
 create table public.shop_tags (
   domain text not null check (domain ~ '^[a-z0-9.-]+\.[a-z]{2,}$'),
-  tag text not null check (tag in ('vintage', 'handgemaakt-servies')),
+  tag text not null check (tag in ('vintage', 'handgemaakt-servies', 'eigen-branderij')),
   evidence text not null check (char_length(evidence) between 10 and 500),
   checked_on date not null,
   created_at timestamptz not null default now(),

@@ -265,6 +265,18 @@ export const TOPIC_CONTENT: Record<string, TopicContent> = {
       { q: "Hoe is de volgorde van deze lijst bepaald?", a: ORDER_A },
     ],
   },
+  koffiebranderijen: {
+    keyword: "koffiebranders nederland",
+    intro: [
+      "Wil je koffie die kort geleden is gebrand, rechtstreeks van de brander? Deze lijst toont Nederlandse webshops van koffiebranderijen die hun bonen zelf branden, van kleine branderijen met een paar soorten tot specialty-branders met een abonnement.",
+      "Een shop staat hier alleen als zijn eigen site zegt dat hij de koffie zelf brandt. Dat hebben we op de site van de shop nagekeken. Een winkel die gebrande koffie van anderen verkoopt, staat er niet op. Let bij het bestellen op de branddatum: veel branders zetten die op de zak, en hele bonen smaken het best in de weken daarna. Vraag je je af welke maling je nodig hebt, kijk dan bij het product: veel branders malen op bestelling voor filter, espresso of French press. De volgorde is alleen de echtheidsscore.",
+    ],
+    faq: [
+      { q: "Waarom koffie bij een branderij kopen?", a: "Een branderij brandt in kleine hoeveelheden en verstuurt kort daarna. Daardoor is de koffie vaak verser dan koffie die lang in een magazijn heeft gelegen." },
+      { q: "Hoe weten jullie dat een shop zelf brandt?", a: "Een mens heeft de eigen site van de shop bekeken en een zin bewaard waarin de shop dat zelf zegt. Shops zonder zo'n zin staan niet op de lijst." },
+      { q: "Hoe is de volgorde van deze lijst bepaald?", a: ORDER_A },
+    ],
+  },
   "met-keurmerk": {
     keyword: "woonwebshops met keurmerk",
     intro: [

@@ -6,7 +6,8 @@
 import { AUDIT_BAND_MAX, LABEL_BELOW } from "../scoring/weights";
 import type { Faq } from "../seo/faq";
 
-export type CategoryContent = { keyword: string; intro: string[]; faq: Faq[] };
+/** `searchTitle` leads the page title with the search phrase and the shop count (lib/categories/freshness.ts). */
+export type CategoryContent = { keyword: string; searchTitle?: string; intro: string[]; faq: Faq[] };
 
 const REVIEW_Q: Faq = {
   q: "Wat betekent 'In beoordeling' bij een shop?",
@@ -16,6 +17,7 @@ const REVIEW_Q: Faq = {
 export const CATEGORY_CONTENT: Record<string, CategoryContent> = {
   wonen: {
     keyword: "leuke woonwebshops",
+    searchTitle: "Leuke woonwebshops",
     intro: [
       "Wonen & interieur is de grootste categorie van De Webshopgids. Je vindt hier Nederlandse webshops voor meubels, verlichting, woontextiel, woonaccessoires, keuken en tafelen en slapen. Bovenaan staan de shops met de hoogste echtheidsscore: makers, ontwerpers en specialisten met een eigen collectie.",
       "Gebruik de subcategorieën om sneller te vinden wat je zoekt, of de filters om bijvoorbeeld alleen shops met een gecontroleerd keurmerk of een fysieke winkel te zien. Bij elke shop staan dezelfde feiten: hoe lang het domein bestaat, ongeveer hoeveel producten hij verkoopt en of het keurmerk klopt. Die feiten meten we zelf. De echtheidsscore zegt hoe sterk een shop zelf maakt of ontwerpt, niet hoe goed de producten bij jouw smaak passen. Shops die alles doorverkopen, staan lager, maar je vindt ze hier wel.",

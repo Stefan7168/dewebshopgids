@@ -12,6 +12,7 @@
 import { checkKillSwitch, connect, finishAgentRun, startAgentRun, writeAgentRun, type Sql } from "../../shared/audit";
 import { wrapUntrusted } from "../../shared/untrusted";
 import { MIN_SHOPS_PER_LIST, TOPICS } from "../../../lib/beste/topics";
+import { BADGE_PLANS, UITGELICHT_EUR } from "../../../lib/badge/pricing";
 
 const AGENT = "seo-growth-analyst";
 export const MAX_ESCALATIONS_PER_RUN = 5;
@@ -34,6 +35,16 @@ export function pinProblem(p: { path: string; title: string; description: string
 
 // North star (plan v3): EUR 150 approved commission per month by week 52.
 export const NORTH_STAR_EUR = 150;
+// North star (plan v4, 2026-10-29): EUR 500 a month by week 52 from badge, commission and Uitgelicht together.
+export const NORTH_STAR_TOTAL_EUR = 500;
+const BADGE_MONTH_EUR = BADGE_PLANS.find((p) => p.key === "month")!.eur;
+
+/** Monthly revenue estimate. A badge counts at the monthly price, so yearly badges are slightly over-counted. */
+export function revenueEstimate(badges: number, slots: number, commissionEur: number) {
+  const badgeEur = badges * BADGE_MONTH_EUR;
+  const uitgelichtEur = slots * UITGELICHT_EUR;
+  return { badges_active: badges, uitgelicht_active: slots, badge_eur: badgeEur, uitgelicht_eur: uitgelichtEur, commission_eur: commissionEur, total_eur: badgeEur + uitgelichtEur + commissionEur, north_star_total_eur: NORTH_STAR_TOTAL_EUR };
+}
 
 function arg(name: string): string | undefined {
   const i = process.argv.indexOf(`--${name}`);
@@ -109,11 +120,18 @@ async function main() {
         const citations = await sql<{ checked_on: string; cited: number; found: number; total: number }[]>`
           select checked_on::text, count(*) filter (where cited)::int as cited, count(*) filter (where found)::int as found, count(*)::int as total
           from public.ai_citation_checks group by checked_on order by checked_on desc limit 2`.catch(() => "not available yet");
+        // Needs migration 0023 (PR #155); until then the grant is missing and this reports so.
+        const revenue = await sql<{ badges: number; slots: number }[]>`
+          select (select count(*)::int from public.shops where verified_badge_until >= current_date) as badges,
+                 (select count(*)::int from public.featured_placements where active_until >= current_date) as slots`
+          .then(([r]) => revenueEstimate(r.badges, r.slots, money.approved_month))
+          .catch(() => "not available until migration 0023 runs");
         console.log(JSON.stringify({
           search_console: { ...gsc, impressions_change_pct: change(gsc.imp_now, gsc.imp_before), clicks_change_pct: change(gsc.clk_now, gsc.clk_before) },
           shops,
           outbound_clicks: { ...clicks, change_pct: change(clicks.now, clicks.before) },
           commissions: { ...money, north_star_eur: NORTH_STAR_EUR },
+          revenue_month_estimate: revenue,
           beste_topics: TOPICS.map((t) => ({ slug: t.slug, category: t.categorySlug, min_shops: MIN_SHOPS_PER_LIST })),
           scored_published_per_category: perCategory,
           ai_citations_last_two_months: citations,

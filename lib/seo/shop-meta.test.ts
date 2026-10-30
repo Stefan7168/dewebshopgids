@@ -17,16 +17,18 @@ const base = {
 
 describe("shopTitle", () => {
   it("names the facts people search for", () => {
-    expect(shopTitle(base)).toBe("Houtatelier Noord: keurmerk Thuiswinkel Waarborg, online sinds 2009, echtheidsscore 94");
+    expect(shopTitle(base)).toBe("Houtatelier Noord: keurmerk Thuiswinkel Waarborg");
+    expect(shopTitle({ ...base, keurmerk: [] })).toBe("Houtatelier Noord: online sinds 2009, echtheidsscore 94");
   });
   it("leaves out an unchecked keurmerk and a score that is not shown", () => {
     expect(shopTitle({ ...base, keurmerk_status: "unverified", status: "disputed" })).toBe("Houtatelier Noord: online sinds 2009");
     expect(shopTitle({ ...base, score_label: "audit_required", keurmerk: [] })).toBe("Houtatelier Noord: online sinds 2009");
   });
-  it("drops facts from the end to fit, and falls back without facts", () => {
-    const long = shopTitle({ ...base, name: "Het Grote Ambachtelijke Meubelhuis van Noord" });
-    expect(long.length).toBeLessThanOrEqual(TITLE_MAX);
-    expect(long).toContain("keurmerk Thuiswinkel Waarborg");
+  it("skips facts that do not fit, and falls back without facts", () => {
+    const mid = shopTitle({ ...base, name: "Ambachtelijk Meubelhuis Noord" });
+    expect(mid).toBe("Ambachtelijk Meubelhuis Noord: online sinds 2009");
+    expect(mid.length).toBeLessThanOrEqual(TITLE_MAX);
+    expect(shopTitle({ ...base, name: "Het Grote Ambachtelijke Meubelhuis van Noord" })).toBe("Het Grote Ambachtelijke Meubelhuis van Noord");
     expect(shopTitle({ ...base, keurmerk: [], domain_first_seen: null, score: null })).toBe("Houtatelier Noord: echtheidsscore, keurmerk en feiten");
   });
 });

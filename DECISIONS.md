@@ -73,6 +73,12 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 - 2026-10-28: Second category is Tuin & buiten (coordinator, under Stefan's autonomy mandate; he can reverse it). Same homeowner audience, many small makers, seasonal demand. The existing sub-category `tuin-buiten` becomes the top level (migration 0016), so its URLs, shops and queued candidates stay valid; new sub-categories: tuinmeubels, potten-plantenbakken, buitenverlichting, vuur-bbq, tuinaccessoires.
 - 2026-10-28: Garden source list: `scripts/pipeline/sources/garden-candidates.csv`, same columns as the launch list plus `source_url` (the page the fit was checked on). 10 strong or medium fits enter the queue with source `scout:garden-list` (`import-launch-candidates.ts garden`); 3 checked shops stay in the file as weak (wholesale only, no webshop, mass-brand reseller). Fewer than planned: many Dutch garden brands (DeWit, BonFeu, Lightpro, Apple Bee, Pottery Pots, WWOO, RB73) sell only through dealers or show no own webshop, so they are left out rather than guessed. Half the list are growers (bulbs, roses, seeds, plants); they get the top-level `tuin-buiten` category because no sub-category fits. No row repeats a launch-list shop. Same production write block, so the insert is in `/mnt/project-files/build/garden-candidates-insert.sql`; it needs migration 0016 first and reports `missing_category` if that is not applied.
 
+## 2026-10-29: QA round 2 (admin)
+- `/admin/kandidaten` ticks every row, so rejecting a few domains meant unticking the rest. Each row now has "Alleen deze afwijzen"; the page says "de eerste 100 van N" when more wait.
+- `/admin/gids` shows the shops of each issue (name, domain, score) and flags one that is not published, because the approval also covers the shop block under the mail.
+- `app/error.tsx` and `app/admin/error.tsx`: a failed read or a refused admin action (such as a second click on a decided item) shows a Dutch message instead of Next.js's English error page.
+- `/AGENTS.md`, written by `next dev`, is ignored so no agent commits it.
+
 ## 2026-10-28: Tuin & buiten stays unpromoted until 30 shops
 - Coordinator call: 10 verified garden shops is too thin to present as a category. The category pages and /beste lists stay built (a /beste list already needs 15 shops to appear).
 - `promotedRoots()` in `lib/shops/present.ts` decides what the home page, the header and llms.txt show: Wonen always, any other main category from 30 published shops (`MIN_SHOPS_TO_PROMOTE`). No code change is needed when garden reaches 30; the next publish shows it.
@@ -131,9 +137,3 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 ## 2026-10-29: Fourth category Sieraden & accessoires
 - Picked by the coordinator under Stefan's autonomy mandate, on the category research thread's recommendation ("handmade jewellery, good 4th"). Same buyer as Home & Living, many goldsmiths, silversmiths and leather workers sell from their own webshop, and "eigen atelier" is easy to verify on their sites. Stefan may reverse it.
 - Migration 0021 adds `sieraden-accessoires` with sieraden, tassen-leer and sjaals-mutsen. Hidden from home page, header and llms.txt until 30 published shops, the same gate as the other new categories. No candidate list yet; that needs a research pass like the food list.
-
-## 2026-10-29: QA round 2 (admin)
-- `/admin/kandidaten` ticks every row, so rejecting a few domains meant unticking the rest. Each row now has "Alleen deze afwijzen"; the page says "de eerste 100 van N" when more wait.
-- `/admin/gids` shows the shops of each issue (name, domain, score) and flags one that is not published, because the approval also covers the shop block under the mail.
-- `app/error.tsx` and `app/admin/error.tsx`: a failed read or a refused admin action (such as a second click on a decided item) shows a Dutch message instead of Next.js's English error page.
-- `/AGENTS.md`, written by `next dev`, is ignored so no agent commits it.

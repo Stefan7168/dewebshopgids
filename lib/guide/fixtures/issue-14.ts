@@ -14,7 +14,7 @@ export const issue14Snapshot: GuideSnapshot = {
   shops: [
     shop("s-oogstgoudsmeden", "oogst-goudsmeden", "Oogst Goudsmeden", "Sieraden", "Amsterdam", "Ringen, trouwringen, oorbellen en kettingen, ontworpen en gemaakt in een eigen goudsmidsatelier in de Jordaan. Van de werkbank zo naar de webshop."),
     shop("s-solitudethelabel", "solitude-the-label", "Solitude the Label", "Sieraden", "Amsterdam", "Ringen, kettingen en oorbellen, met de hand gemaakt in een eigen atelier van gerecycled goud en zilver. Bezoek op afspraak."),
-    shop("s-zilverzoet", "zilver-zoet", "Zilver & Zoet", "Sieraden", "Voorburg", "Ringen, oorbellen en kettingen in zilver en goud, met de hand gemaakt door een opgeleide goudsmid. Gerecyclede metalen. Atelier aan huis."),
+    shop("s-zilverzoet", "zilver-en-zoet", "Zilver & Zoet", "Sieraden", "Voorburg", "Ringen, oorbellen en kettingen in zilver en goud, met de hand gemaakt door een opgeleide goudsmid. Gerecyclede metalen. Atelier aan huis."),
     shop("s-atelieraroha", "atelier-aroha", "Atelier Aroha", "Sieraden", "Eindhoven", "Ringen, trouwringen en kettingen, ontworpen en met de hand gemaakt in een eigen atelier van gerecycled goud. Atelier in het Klokgebouw."),
     shop("s-zandjuweel", "zandjuweel", "Zandjuweel", "Sieraden", "Terschelling", "Sieraden, ontworpen en gemaakt in een eigen atelier op Terschelling. Bezoek op afspraak."),
   ],
@@ -43,7 +43,7 @@ Ringen, kettingen en oorbellen, met de hand gemaakt in een eigen atelier van ger
 
 Ringen, oorbellen en kettingen in zilver en goud, met de hand gemaakt door een opgeleide goudsmid. Gerecyclede metalen. Klein en persoonlijk: een atelier aan huis.
 
-[Bekijk Zilver & Zoet](/webshop/zilver-zoet)
+[Bekijk Zilver & Zoet](/webshop/zilver-en-zoet)
 
 ## Atelier Aroha, Eindhoven
 

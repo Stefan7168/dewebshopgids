@@ -15,8 +15,8 @@ export const issue16Snapshot: GuideSnapshot = {
     shop("s-hartholt", "hartholt-woodworks", "Hartholt Woodworks", "Potten & plantenbakken", "Esch", "Bloembakken en haagbakken van FSC-hardhout, ook op maat."),
     shop("s-woodworkvoorschoten", "woodwork-voorschoten", "Woodwork Voorschoten", "Potten & plantenbakken", "Voorschoten", "Houten plantenbakken, schermen, pergola's en tuintafels, ontworpen en gemaakt in een eigen timmerwerkplaats."),
     shop("s-betonfabriek", "betonfabriek", "Betonfabriek", "Potten & plantenbakken", "Emmen", "Betonnen plantenbakken, tuinbeelden en buitenkeukens uit een eigen fabriek, zonder tussenhandel."),
-    shop("s-cortenstaalwebshop", "cortenstaal-webshop", "Cortenstaal Webshop", "Potten & plantenbakken", "Wijchen", "Plantenbakken, randen en hekken van cortenstaal uit eigen productie, ook op maat. Met showroom."),
-    shop("s-cortenstaaltuin", "cortenstaaltuin", "CortenstaalTuin", "Tuinaccessoires", "Winsum", "Kantopsluiting, plantenbakken, houtopslag en verhoogde bakken van cortenstaal uit een eigen werkplaats."),
+    shop("s-cortenstaalwebshop", "cortenstaal-webshop-blumeta", "Cortenstaal Webshop", "Potten & plantenbakken", "Wijchen", "Plantenbakken, randen en hekken van cortenstaal uit eigen productie, ook op maat. Met showroom."),
+    shop("s-cortenstaaltuin", "cortenstaaltuin-kramer-staal", "CortenstaalTuin", "Tuinaccessoires", "Winsum", "Kantopsluiting, plantenbakken, houtopslag en verhoogde bakken van cortenstaal uit een eigen werkplaats."),
   ],
 };
 
@@ -49,13 +49,13 @@ Betonnen plantenbakken, tuinbeelden en buitenkeukens uit een eigen fabriek, zond
 
 Plantenbakken, randen en hekken van cortenstaal uit eigen productie, ook op maat. Met showroom. Cortenstaal krijgt vanzelf een roestbruine kleur.
 
-[Bekijk Cortenstaal Webshop](/webshop/cortenstaal-webshop)
+[Bekijk Cortenstaal Webshop](/webshop/cortenstaal-webshop-blumeta)
 
 ## CortenstaalTuin, Winsum
 
 Kantopsluiting, plantenbakken, houtopslag en verhoogde bakken van cortenstaal uit een eigen werkplaats. Een verhoogde bak voor groente.
 
-[Bekijk CortenstaalTuin](/webshop/cortenstaaltuin)
+[Bekijk CortenstaalTuin](/webshop/cortenstaaltuin-kramer-staal)
 
 ## Meer tips
 

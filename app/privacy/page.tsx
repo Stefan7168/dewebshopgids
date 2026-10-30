@@ -4,7 +4,7 @@ import { TextPage } from "@/components/text-page";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Privacyverklaring | De Webshopgids",
+  title: "Privacyverklaring",
   description: "Welke gegevens De Webshopgids verwerkt, waarom, en welke rechten je hebt.",
   alternates: { canonical: "/privacy" },
 };

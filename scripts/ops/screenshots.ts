@@ -11,14 +11,33 @@ export const RANDOM_PAGES = 4;
 export type PageResult = { url: string; status: number | null; scrollWidth: number | null; file: string | null };
 export type ScreenshotCheck = { status: "ok" | "warn" | "fail"; detail: { pages: PageResult[]; problems: string[] } };
 
-/** Page URLs from a sitemap, minus the home page, `n` picked with `rand` (injectable for tests). */
+/**
+ * Page URLs from a sitemap, minus the home page, `n` picked with `rand` (injectable for tests). The sitemap
+ * always names the production domain, so each page's path is opened on `base`: before the domain is
+ * connected SITE_URL is the vercel.app address, and filtering by host would leave only the home page.
+ */
 export function pickUrls(sitemapXml: string, base: string, n: number, rand: () => number = Math.random): string[] {
   const home = base.replace(/\/$/, "");
-  const all = [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].trim()).filter((u) => u.startsWith(home) && u.replace(/\/$/, "") !== home);
+  const all = [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)]
+    .map((m) => {
+      try {
+        return new URL(m[1].trim()).pathname;
+      } catch {
+        return null;
+      }
+    })
+    .filter((path): path is string => !!path && path !== "/")
+    .map((path) => `${home}${path}`);
   const pool = [...new Set(all)];
   const out: string[] = [];
   while (out.length < n && pool.length) out.push(pool.splice(Math.floor(rand() * pool.length), 1)[0]);
   return [`${home}/`, ...out];
+}
+
+/** True on Sunday 17:00 in Amsterdam. The workflow has two UTC crons (summer and winter time); the other one exits here. */
+export function sundayAt17(now: Date): boolean {
+  const parts = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Amsterdam", weekday: "short", hour: "2-digit", hourCycle: "h23" }).formatToParts(now);
+  return parts.find((p) => p.type === "weekday")?.value === "Sun" && parts.find((p) => p.type === "hour")?.value === "17";
 }
 
 export function judge(pages: PageResult[], privateSite: boolean): ScreenshotCheck {
@@ -78,6 +97,11 @@ async function capture(base: string, outDir: string): Promise<ScreenshotCheck> {
 }
 
 async function main() {
+  // A manual run from the Actions tab always runs; a scheduled one only at 17:00 Amsterdam time.
+  if (process.env.GITHUB_EVENT_NAME !== "workflow_dispatch" && process.env.FORCE_RUN !== "1" && !sundayAt17(new Date())) {
+    console.log("not Sunday 17:00 in Amsterdam, exiting");
+    return;
+  }
   const sql = connect();
   try {
     await runAgentJob(sql, { agent: "screenshots", runsOn: "code", trigger: "schedule", spendsTokens: false }, async () => {

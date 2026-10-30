@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { paidLinkProblem } from "./paid-link";
+import { paidLinkProblem, uitgelichtProblem } from "./paid-link";
 
 const base = { status: "published", score: 82, verified_badge_until: null, stripe_subscription_id: null };
 const today = "2026-10-30";
@@ -18,5 +18,24 @@ describe("paidLinkProblem", () => {
   });
   it("accepts a retry of the same checkout", () => {
     expect(paidLinkProblem({ ...base, score: 40, verified_badge_until: "2026-12-01", stripe_subscription_id: "sub_1" }, "sub_1", today)).toBeNull();
+  });
+});
+
+describe("uitgelichtProblem", () => {
+  const shop = { status: "published", score: 82 };
+  const ok = { alreadyLinked: false, hasVerifiedClaim: true, otherActiveSlot: false };
+  it("lets a published 70+ shop with a verified claim and no running slot pay", () => {
+    expect(uitgelichtProblem(shop, ok)).toBeNull();
+    expect(uitgelichtProblem({ ...shop, score: 70 }, ok)).toBeNull();
+  });
+  it("refuses everyone else", () => {
+    expect(uitgelichtProblem({ ...shop, status: "disputed" }, ok)).toBe("not_published");
+    expect(uitgelichtProblem({ ...shop, score: 69 }, ok)).toBe("score_too_low");
+    expect(uitgelichtProblem({ ...shop, score: null }, ok)).toBe("score_too_low");
+    expect(uitgelichtProblem(shop, { ...ok, hasVerifiedClaim: false })).toBe("no_verified_claim");
+    expect(uitgelichtProblem(shop, { ...ok, otherActiveSlot: true })).toBe("second_slot");
+  });
+  it("accepts a retry of the same subscription", () => {
+    expect(uitgelichtProblem({ status: "removed", score: 10 }, { alreadyLinked: true, hasVerifiedClaim: false, otherActiveSlot: true })).toBeNull();
   });
 });

@@ -1,6 +1,6 @@
 import { revalidateTag } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
-import { paidLinkProblem } from "@/lib/badge/paid-link";
+import { paidLinkProblem, uitgelichtProblem } from "@/lib/badge/paid-link";
 import { badgeAction, verifyStripeSignature } from "@/lib/stripe/webhook";
 import { createServiceClient } from "@/lib/supabase/service";
 
@@ -9,6 +9,21 @@ import { createServiceClient } from "@/lib/supabase/service";
 // touches score or order.
 /** PostgREST and Postgres codes for a table that does not exist (yet). */
 const MISSING_TABLE = ["PGRST205", "42P01"];
+
+type Db = ReturnType<typeof createServiceClient>;
+
+/** Paid, but this shop may not have what it paid for: a person refunds or cancels in Stripe. Ids only; 200 so Stripe stops retrying. */
+async function refuseLink(db: Db, what: "badge" | "Uitgelicht", slug: string, subscriptionId: string, problem: string) {
+  const { error } = await db.from("agent_escalations").insert({
+    agent: "stripe-webhook",
+    kind: what === "badge" ? "badge_payment_not_linked" : "uitgelicht_payment_not_linked",
+    title: `Betaalde ${what} niet aangezet voor ${slug} (${problem})`,
+    body_md: `Stripe subscription \`${subscriptionId}\` was paid (${what}) for shop \`${slug}\`, but it stays off: ${problem}. Refund or cancel it in the Stripe dashboard.`,
+    label: "needs-human",
+  });
+  if (error) return NextResponse.json({ ok: false, error: "database" }, { status: 500 });
+  return NextResponse.json({ ok: true, ignored: problem });
+}
 
 export async function POST(req: NextRequest) {
   const raw = await req.text();
@@ -27,6 +42,23 @@ export async function POST(req: NextRequest) {
 
   const db = createServiceClient();
   if (action.kind === "link" && action.product === "uitgelicht") {
+    const today = new Date().toISOString().slice(0, 10);
+    const [shopRes, claimRes, slotRes] = await Promise.all([
+      db.from("shops").select("slug, status, score").eq("id", action.shopId).maybeSingle(),
+      db.from("shop_claims").select("id", { count: "exact", head: true }).eq("shop_id", action.shopId).not("verified_at", "is", null),
+      db.from("featured_placements").select("stripe_subscription_id, active_until").eq("shop_id", action.shopId),
+    ]);
+    if (shopRes.error || claimRes.error || (slotRes.error && !MISSING_TABLE.includes(slotRes.error.code))) return NextResponse.json({ ok: false, error: "database" }, { status: 500 });
+    const slots = slotRes.data ?? [];
+    const shop = shopRes.data;
+    const problem = shop
+      ? uitgelichtProblem(shop, {
+          alreadyLinked: slots.some((p) => p.stripe_subscription_id === action.subscriptionId),
+          hasVerifiedClaim: (claimRes.count ?? 0) > 0,
+          otherActiveSlot: slots.some((p) => p.stripe_subscription_id !== action.subscriptionId && p.active_until != null && p.active_until >= today),
+        })
+      : null;
+    if (shop && problem) return refuseLink(db, "Uitgelicht", shop.slug, action.subscriptionId, problem);
     const { error } = await db
       .from("featured_placements")
       .upsert({ shop_id: action.shopId, stripe_subscription_id: action.subscriptionId, active_until: action.until }, { onConflict: "stripe_subscription_id" });
@@ -53,19 +85,7 @@ export async function POST(req: NextRequest) {
     const { data: shop, error } = await db.from("shops").select("slug, status, score, verified_badge_until, stripe_subscription_id").eq("id", action.shopId).maybeSingle();
     if (error) return NextResponse.json({ ok: false, error: "database" }, { status: 500 });
     const problem = shop ? paidLinkProblem(shop, action.subscriptionId) : null;
-    if (shop && problem) {
-      // Paid, but this shop may not have the badge (or already pays for one): a person refunds or
-      // cancels in Stripe. Ids only; 200 so Stripe stops retrying.
-      const { error: escError } = await db.from("agent_escalations").insert({
-        agent: "stripe-webhook",
-        kind: "badge_payment_not_linked",
-        title: `Betaalde badge niet aangezet voor ${shop.slug} (${problem})`,
-        body_md: `Stripe subscription \`${action.subscriptionId}\` was paid for shop \`${shop.slug}\`, but the badge stays off: ${problem}. Refund or cancel it in the Stripe dashboard.`,
-        label: "needs-human",
-      });
-      if (escError) return NextResponse.json({ ok: false, error: "database" }, { status: 500 });
-      return NextResponse.json({ ok: true, ignored: problem });
-    }
+    if (shop && problem) return refuseLink(db, "badge", shop.slug, action.subscriptionId, problem);
   }
 
   const shops = db.from("shops");

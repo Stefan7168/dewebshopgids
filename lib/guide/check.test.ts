@@ -91,7 +91,7 @@ describe("gids issues 3 and 4 reference drafts", () => {
   });
 
   it("repeat no shop from an earlier issue", async () => {
-    const issues = await Promise.all([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map((n) => import(`./fixtures/issue-${n}`)));
+    const issues = await Promise.all([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].map((n) => import(`./fixtures/issue-${n}`)));
     const slugs = issues.flatMap((m) => (Object.values(m).find((v) => (v as { shops?: unknown }).shops) as { shops: { slug: string }[] }).shops.map((s) => s.slug));
     expect(new Set(slugs).size).toBe(slugs.length);
   });
@@ -131,6 +131,15 @@ describe("gids issues 7 to 9 reference drafts", () => {
 describe("gids issues 10 to 13 reference drafts", () => {
   it("pass checkDraft", async () => {
     for (const n of [10, 11, 12, 13]) {
+      const m = await import(`./fixtures/issue-${n}`);
+      expect(checkDraft(m[`issue${n}Draft`], m[`issue${n}Snapshot`])).toEqual([]);
+    }
+  });
+});
+
+describe("gids issues 14 to 17 reference drafts", () => {
+  it("pass checkDraft", async () => {
+    for (const n of [14, 15, 16, 17]) {
       const m = await import(`./fixtures/issue-${n}`);
       expect(checkDraft(m[`issue${n}Draft`], m[`issue${n}Snapshot`])).toEqual([]);
     }

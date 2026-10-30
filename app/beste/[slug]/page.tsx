@@ -157,6 +157,17 @@ async function List({ params }: Props) {
           itemListElement: list.map((s, i) => ({ "@type": "ListItem", position: i + 1, url: `${SITE.url}/webshop/${s.slug}`, name: s.name })),
         }}
       />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: `${SITE.url}/` },
+            { "@type": "ListItem", position: 2, name: category.name_nl, item: `${SITE.url}/categorie/${category.slug}` },
+            { "@type": "ListItem", position: 3, name: topic.title, item: `${SITE.url}/beste/webshops-${topic.slug}` },
+          ],
+        }}
+      />
     </article>
   );
 }

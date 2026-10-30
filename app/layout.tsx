@@ -11,7 +11,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "De Webshopgids",
+  // Every page title ends with the site name; a page sets only its own part.
+  title: { default: "De Webshopgids", template: "%s | De Webshopgids" },
   description:
     "Unieke en betrouwbare Nederlandse webshops, onafhankelijk beoordeeld.",
 };

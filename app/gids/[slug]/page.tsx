@@ -43,7 +43,7 @@ async function Guide({ params }: Props) {
       </p>
       <h1 className="text-2xl font-bold">{g.title_nl}</h1>
       {g.intro_nl ? <p className="text-lg">{g.intro_nl}</p> : null}
-      <GuideBody md={g.body_md ?? ""} />
+      <GuideBody md={g.body_md ?? ""} liveShops={new Set((await getPublishedShops()).map((s) => s.slug))} />
       {shops.length ? (
         <section className="flex flex-col gap-3" aria-label="Webshops in deze gids">
           <h2 className="text-xl font-semibold">De webshops van deze week</h2>

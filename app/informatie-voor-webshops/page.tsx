@@ -5,7 +5,7 @@ import { badgePriceText, formatEur, UITGELICHT_EUR } from "@/lib/badge/pricing";
 import { SITE, USER_AGENT_TOKEN } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Informatie voor webshops | De Webshopgids",
+  title: "Informatie voor webshops",
   description: "Waarom je webshop in De Webshopgids staat, welke gegevens we gebruiken en hoe je iets laat aanpassen of verwijderen.",
   alternates: { canonical: "/informatie-voor-webshops" },
 };

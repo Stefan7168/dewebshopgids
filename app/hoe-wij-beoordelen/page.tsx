@@ -5,7 +5,7 @@ import { rankingExplanation } from "@/lib/shops/present";
 import { MIN_VALID_SIGNALS } from "@/lib/scoring/weights";
 
 export const metadata: Metadata = {
-  title: "Hoe wij beoordelen | De Webshopgids",
+  title: "Hoe wij beoordelen",
   description: "Hoe de echtheidsscore van 1 tot 100 wordt berekend, waar de gegevens vandaan komen en wat geen invloed heeft.",
   alternates: { canonical: "/hoe-wij-beoordelen" },
 };

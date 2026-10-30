@@ -11,7 +11,7 @@ export async function GuideNav({ slug }: { slug: string }) {
     <nav aria-label="Andere gidsen" className="grid gap-3 sm:grid-cols-2">
       {older ? (
         <Link href={`/gids/${older.slug}`} className="flex min-h-11 flex-col rounded-lg border p-4 hover:bg-muted">
-          <span className="text-sm text-muted-foreground">Vorige gids · week {older.iso_week}</span>
+          <span className="text-sm text-muted-foreground">Vorige gids · week {older.iso_week}, {older.iso_year}</span>
           <span className="font-medium">{label(older)}</span>
         </Link>
       ) : (
@@ -19,7 +19,7 @@ export async function GuideNav({ slug }: { slug: string }) {
       )}
       {newer && (
         <Link href={`/gids/${newer.slug}`} className="flex min-h-11 flex-col rounded-lg border p-4 hover:bg-muted sm:text-right">
-          <span className="text-sm text-muted-foreground">Volgende gids · week {newer.iso_week}</span>
+          <span className="text-sm text-muted-foreground">Volgende gids · week {newer.iso_week}, {newer.iso_year}</span>
           <span className="font-medium">{label(newer)}</span>
         </Link>
       )}

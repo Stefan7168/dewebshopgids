@@ -25,6 +25,9 @@ export async function enforceRemovals(sql: Sql): Promise<{ summary: string; slug
 
 /** Deletes what we hold about each removed shop with a confirmed request that is not purged yet. */
 export async function purgeRemoved(sql: Sql): Promise<{ summary: string; purged: number }> {
+  // Until migration 0026 runs (setup step 1k) the removal above still lands; only the purge waits.
+  const [fn] = await sql<{ ok: boolean }[]>`select to_regprocedure('public.purge_removed_shop(uuid)') is not null as ok`;
+  if (!fn?.ok) return { summary: "purge skipped: migration 0026 not applied", purged: 0 };
   const rows = await sql<{ id: string; slug: string }[]>`
     select s.id, s.slug from public.shops s
     where s.status = 'removed' and s.purged_at is null

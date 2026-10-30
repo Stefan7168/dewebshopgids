@@ -35,20 +35,40 @@ describe("enforceRemovals", () => {
   });
 });
 
+/** First answer: is migration 0026 there; second: the shops to purge; later calls are recorded. */
+function purgeSql(applied: boolean, rows: unknown[]) {
+  const calls: string[] = [];
+  let n = 0;
+  const sql = ((strings: TemplateStringsArray) => {
+    n += 1;
+    if (n === 1) return Promise.resolve([{ ok: applied }]);
+    if (n === 2) return Promise.resolve(rows);
+    calls.push(strings.join("?"));
+    return Promise.resolve([]);
+  }) as unknown as Sql;
+  return { sql, calls };
+}
+
 describe("purgeRemoved", () => {
   it("calls the purge function once per removed shop", async () => {
-    const { sql, updates } = fakeSql([
+    const { sql, calls } = purgeSql(true, [
       { id: "s1", slug: "mooi" },
       { id: "s2", slug: "fraai" },
     ]);
     const r = await purgeRemoved(sql);
     expect(r).toEqual({ summary: "purged 2 shop(s): mooi, fraai", purged: 2 });
-    expect(updates.filter((u) => u.includes("purge_removed_shop"))).toHaveLength(2);
+    expect(calls.filter((u) => u.includes("purge_removed_shop"))).toHaveLength(2);
   });
 
   it("does nothing when every removed shop is purged", async () => {
-    const { sql, updates } = fakeSql([]);
+    const { sql, calls } = purgeSql(true, []);
     expect((await purgeRemoved(sql)).summary).toBe("nothing to purge");
-    expect(updates).toHaveLength(0);
+    expect(calls).toHaveLength(0);
+  });
+
+  it("skips the purge until migration 0026 is applied", async () => {
+    const { sql, calls } = purgeSql(false, [{ id: "s1", slug: "mooi" }]);
+    expect(await purgeRemoved(sql)).toEqual({ summary: "purge skipped: migration 0026 not applied", purged: 0 });
+    expect(calls).toHaveLength(0);
   });
 });

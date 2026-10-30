@@ -52,6 +52,6 @@ export function renderOutreach(body: string, links: { pay: string; shopPage: str
     "",
     "--",
     "De Webshopgids, dewebshopgids.nl",
-    "Je krijgt deze mail omdat je webshop in De Webshopgids staat. Liever geen mails meer over het de badge? Antwoord met \"stop\", dan mailen we je niet meer.",
+    "Je krijgt deze mail omdat je via 'Is dit jouw webshop?' hebt bevestigd dat de webshop van jou is. Liever geen mails meer over de badge? Antwoord met \"stop\", dan mailen we je niet meer.",
   ].join("\n");
 }

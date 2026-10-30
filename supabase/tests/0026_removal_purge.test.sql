@@ -55,6 +55,10 @@ begin
   assert (select name = 'rp1.example' and reason is null from public.shop_candidates where domain = 'rp1.example'), 'candidate row keeps only the domain';
   assert exists (select 1 from public.agent_escalations where kind = 'removed_shop_paid' and label = 'needs-human'
                  and title like '%rp1.example'), 'live badge escalated for a Stripe cancel';
+  set local role pipeline;
+  perform public.purge_removed_shop('00000000-0000-4000-8000-000000002601');
+  reset role;
+  assert (select count(*) from public.agent_escalations where kind = 'removed_shop_paid') = 1, 'a second purge files no second escalation';
   assert (select contact_email from public.shops where id = '00000000-0000-4000-8000-000000002602') is not null, 'unconfirmed shop untouched';
 end $$;
 

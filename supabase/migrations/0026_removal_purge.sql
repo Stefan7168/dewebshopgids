@@ -15,7 +15,7 @@ declare
   n int;
   out jsonb := '{}'::jsonb;
 begin
-  select id, slug, domain, status into s from public.shops where id = p_shop_id for update;
+  select id, slug, domain, status, purged_at into s from public.shops where id = p_shop_id for update;
   if not found or s.status <> 'removed' then
     raise exception 'shop % is not removed', p_shop_id;
   end if;
@@ -46,13 +46,13 @@ begin
   update public.shop_candidates set name = s.domain, reason = null where domain = s.domain;
   get diagnostics n = row_count; out := out || jsonb_build_object('shop_candidates', n);
 
-  if exists (select 1 from public.shops where id = p_shop_id and stripe_subscription_id is not null
+  if s.purged_at is null and (exists (select 1 from public.shops where id = p_shop_id and stripe_subscription_id is not null
              and verified_badge_until >= current_date)
-     or exists (select 1 from public.featured_placements where shop_id = p_shop_id and active_until >= current_date) then
+     or exists (select 1 from public.featured_placements where shop_id = p_shop_id and active_until >= current_date)) then
     insert into public.agent_escalations (agent, kind, title, body_md, label)
     values ('dispute-removals', 'removed_shop_paid', 'Removed shop still pays: cancel in Stripe: ' || s.domain,
             'Shop `' || s.domain || '` was removed at the owner''s request but still has a live badge or Uitgelicht '
-            || 'subscription. Cancel it in the Stripe dashboard (Customers, search the domain) and refund the unused part.',
+            || 'subscription. Cancel it in the Stripe dashboard (Customers, search the domain). Whether to refund is your call.',
             'needs-human');
     out := out || jsonb_build_object('escalated_subscription', true);
   end if;

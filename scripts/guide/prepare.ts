@@ -8,6 +8,12 @@ import { keurmerkText, onlineSince, productCountText } from "../../lib/shops/pre
 
 export class NightlyNotGreen extends Error {}
 
+/** The editor only ever sees a keurmerk we confirmed with the keurmerkorganisatie. An unchecked one is
+ * not named at all: a draft could quote the name and drop "nog niet gecontroleerd" (QA round 5, part 7). */
+export function guideKeurmerkText(s: { keurmerk: string[]; keurmerk_status: "none" | "unverified" | "verified" }): string {
+  return s.keurmerk_status === "verified" && s.keurmerk.length ? keurmerkText(s) : "geen gecontroleerd keurmerk";
+}
+
 type Row = {
   id: string; slug: string; name: string; category: string | null; score: number | null; score_label: string | null;
   keurmerk: string[]; keurmerk_status: "none" | "unverified" | "verified"; domain_first_seen: Date | null;
@@ -27,7 +33,7 @@ export async function loadCandidates(sql: Sql, start: Date, end: Date): Promise<
     where s.status = 'published'`;
   return rows.map((r) => ({
     id: r.id, slug: r.slug, name: r.name, category: r.category, score: r.score, score_label: r.score_label,
-    keurmerk: keurmerkText(r), online_since: onlineSince(r.domain_first_seen?.toISOString() ?? null),
+    keurmerk: guideKeurmerkText(r), online_since: onlineSince(r.domain_first_seen?.toISOString() ?? null),
     products: productCountText(r.product_count_est), city: r.store_city, description: r.description_nl,
     first_published_at: r.first_published_at?.toISOString() ?? null, score_before: r.score_before, clicks: r.clicks,
     featured_before: r.featured_before,

@@ -15,6 +15,7 @@ import { getEarnedSubScores } from "@/lib/shops/evidence";
 import { getScoreChanges } from "@/lib/shops/score-history";
 import { dutchDate } from "@/lib/shops/score-history-rules";
 import { countryName, hasVerifiedBadge, keurmerkText, onlineSince, priceLevelText, productCountText, scoreDisplay, similarShops, SUB_SCORE_NAMES, type Category, type PublicShop } from "@/lib/shops/present";
+import { shopDescription, shopTitle } from "@/lib/seo/shop-meta";
 import { SITE } from "@/lib/site";
 import { PageLoading } from "@/components/page-loading";
 
@@ -24,8 +25,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const shop = await getShop((await params).slug);
   if (!shop) return { title: "Webshop niet gevonden", robots: { index: false } };
   return {
-    title: `${shop.name}: echtheidsscore, keurmerk en feiten`,
-    description: shop.description_nl ?? `Echtheidsscore, keurmerk en feiten over ${shop.domain}.`,
+    title: shopTitle(shop),
+    description: shopDescription(shop),
     alternates: { canonical: `${SITE.url}/webshop/${shop.slug}` },
   };
 }

@@ -239,6 +239,44 @@ export const TOPIC_CONTENT: Record<string, TopicContent> = {
       { q: "Hoe is de volgorde van deze lijst bepaald?", a: ORDER_A },
     ],
   },
+  "vintage-interieur": {
+    keyword: "vintage interieur webshop",
+    intro: [
+      "Zoek je een vintage stoel, een lamp uit de jaren zestig of servies van vroeger, maar liever niet via een grote marktplaats? Deze lijst toont Nederlandse webshops die zelf vintage verkopen, met een eigen site en een eigen collectie.",
+      "Een shop staat hier alleen als vintage, antiek of tweedehands design het hoofdaanbod is. Dat hebben we op de eigen site van de shop nagekeken. Een winkel met alleen een klein vintagehoekje telt niet mee. Veel van deze shops kopen hun stukken in, knappen ze op en verkopen ze per stuk. Ze maken dus meestal geen nieuwe producten. Daardoor is hun echtheidsscore vaak lager dan die van een meubelmaker, ook als ze veel zelf restaureren. De volgorde is ook hier alleen de echtheidsscore. Bij elke shop zie je de feiten die we zelf hebben gecontroleerd.",
+    ],
+    faq: [
+      { q: "Waarom geen marktplaatsen zoals Marktplaats of Catawiki?", a: "Op een marktplaats verkopen veel verschillende verkopers. Deze lijst toont alleen shops met een eigen site en een eigen collectie." },
+      { q: "Waarom scoren vintage shops vaak lager dan makers?", a: "De echtheidsscore geeft de meeste punten aan shops die zelf maken of ontwerpen. Een vintage shop verkoopt bestaande stukken, ook als hij die zelf opknapt." },
+      { q: "Hoe weten jullie dat een shop vintage verkoopt?", a: "Een mens heeft de eigen site van de shop bekeken en een zin bewaard waarin de shop dat zelf zegt. Alleen shops waar vintage het hoofdaanbod is, staan op de lijst." },
+      { q: "Hoe is de volgorde van deze lijst bepaald?", a: ORDER_A },
+    ],
+  },
+  "handgemaakt-servies": {
+    keyword: "handgemaakt servies",
+    intro: [
+      "Zoek je borden, kommen of mokken die met de hand zijn gemaakt, in plaats van servies uit de fabriek? Deze lijst toont Nederlandse webshops die handgemaakt servies verkopen: van een pottenbakker met een eigen atelier tot een merk dat zijn servies met de hand laat beschilderen.",
+      "Een shop staat hier alleen als zijn eigen site zegt dat het servies met de hand wordt gemaakt of beschilderd, en als borden, kommen of bekers een vast deel van het aanbod zijn. Dat hebben we op de site van de shop nagekeken. Handgemaakt betekent ook: elk stuk is net iets anders, en een set is vaak in kleine aantallen te krijgen. Vraag bij een grote bestelling eerst na hoeveel er op voorraad is. Sommige merken laten hun servies maken in een atelier in het buitenland; dat zie je op de pagina van de shop. De volgorde is alleen de echtheidsscore.",
+    ],
+    faq: [
+      { q: "Is handgemaakt servies vaatwasserbestendig?", a: "Dat verschilt per maker en per glazuur. Kijk bij het product op de site van de shop; veel makers zetten het erbij." },
+      { q: "Waarom ziet elk bord er net anders uit?", a: "Omdat het met de hand is gedraaid, gevormd of beschilderd. Kleine verschillen in vorm en kleur horen daarbij." },
+      { q: "Hoe weten jullie dat het servies handgemaakt is?", a: "Een mens heeft de eigen site van de shop bekeken en een zin bewaard waarin de shop dat zelf zegt. Shops zonder zo'n zin staan niet op de lijst." },
+      { q: "Hoe is de volgorde van deze lijst bepaald?", a: ORDER_A },
+    ],
+  },
+  koffiebranderijen: {
+    keyword: "koffiebranders nederland",
+    intro: [
+      "Wil je koffie die kort geleden is gebrand, rechtstreeks van de brander? Deze lijst toont Nederlandse webshops van koffiebranderijen die hun bonen zelf branden, van kleine branderijen met een paar soorten tot specialty-branders met een abonnement.",
+      "Een shop staat hier alleen als zijn eigen site zegt dat hij de koffie zelf brandt. Dat hebben we op de site van de shop nagekeken. Een winkel die gebrande koffie van anderen verkoopt, staat er niet op. Let bij het bestellen op de branddatum: veel branders zetten die op de zak, en hele bonen smaken het best in de weken daarna. Vraag je je af welke maling je nodig hebt, kijk dan bij het product: veel branders malen op bestelling voor filter, espresso of French press. De volgorde is alleen de echtheidsscore.",
+    ],
+    faq: [
+      { q: "Waarom koffie bij een branderij kopen?", a: "Een branderij brandt in kleine hoeveelheden en verstuurt kort daarna. Daardoor is de koffie vaak verser dan koffie die lang in een magazijn heeft gelegen." },
+      { q: "Hoe weten jullie dat een shop zelf brandt?", a: "Een mens heeft de eigen site van de shop bekeken en een zin bewaard waarin de shop dat zelf zegt. Shops zonder zo'n zin staan niet op de lijst." },
+      { q: "Hoe is de volgorde van deze lijst bepaald?", a: ORDER_A },
+    ],
+  },
   "met-keurmerk": {
     keyword: "woonwebshops met keurmerk",
     intro: [

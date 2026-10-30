@@ -27,6 +27,6 @@ describe("outreach draft checks", () => {
     expect(text).toContain("https://dewebshopgids.nl/webshop/atelier-x");
     expect(text).not.toContain("[");
     expect(text).toMatch(/Antwoord met "stop"/);
-    expect(text).toContain("omdat je je webshop bij ons hebt geclaimd");
+    expect(text).toContain("omdat je via 'Is dit jouw webshop?' hebt bevestigd dat de webshop van jou is");
   });
 });

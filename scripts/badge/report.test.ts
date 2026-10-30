@@ -28,7 +28,7 @@ describe("badge click report", () => {
     const r = t.render({ shop_name: "Atelier X", shop_slug: "atelier-x", month: "2026-10", clicks: 12 });
     expect(r?.text).toContain("12 keer");
     expect(r?.text).toContain("https://dewebshopgids.nl/webshop/atelier-x");
-    expect(r?.text).toContain("geclaimd");
+    expect(r?.text).toContain("Is dit jouw webshop?");
     expect(r?.text).not.toMatch(/badge|geverifieerd|€|eur|stripe|betaal/i);
     expect(t.render({ shop_name: "Atelier X", shop_slug: "atelier-x", month: "2026-10", clicks: 1 })?.text).toContain("klikte een lezer");
     expect(t.render({ shop_name: "Atelier X", shop_slug: "atelier-x", month: "2026-10", clicks: 0 })?.text).toContain("klikte nog geen lezer");

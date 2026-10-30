@@ -137,7 +137,7 @@ export const TEMPLATES: Record<string, Template> = {
           `Je pagina met score en feiten: ${SITE.url}/webshop/${slug}`,
           `Je beschrijving aanpassen kan hier: ${SITE.url}/beheer?shop=${slug}`,
           "",
-          "Je krijgt dit overzicht omdat je je webshop bij ons hebt geclaimd. Liever niet meer? Antwoord op deze mail met \"stop\".",
+          "Je krijgt dit overzicht omdat je via 'Is dit jouw webshop?' hebt bevestigd dat de webshop van jou is. Liever niet meer? Antwoord op deze mail met \"stop\".",
           "",
           "Groet, De Webshopgids",
         ].join("\n"),

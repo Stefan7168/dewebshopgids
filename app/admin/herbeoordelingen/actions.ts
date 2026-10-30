@@ -60,6 +60,7 @@ export async function decideDispute(formData: FormData) {
   // A decided dispute retires the agent's draft score corrections for that shop.
   await db.from("score_overrides").update({ status: "rejected", approved_by: email }).eq("shop_id", d.shop_id).eq("status", "draft");
   revalidatePath("/admin/herbeoordelingen");
+  redirect("/admin/herbeoordelingen"); // drops an old ?fout= notice after a decision that worked
 }
 
 // G4 "correction": Stefan agrees the sender is right. Fact corrections go in fact_overrides and
@@ -142,4 +143,5 @@ export async function correctDispute(formData: FormData) {
   await db.from("score_overrides").update({ status: "rejected", approved_by: email }).eq("shop_id", d.shop_id).eq("status", "draft");
   updateTag("shops");
   revalidatePath("/admin/herbeoordelingen");
+  redirect("/admin/herbeoordelingen"); // drops an old ?fout= notice after a decision that worked
 }

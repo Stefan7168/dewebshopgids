@@ -15,7 +15,9 @@ import { getEarnedSubScores } from "@/lib/shops/evidence";
 import { getScoreChanges } from "@/lib/shops/score-history";
 import { dutchDate } from "@/lib/shops/score-history-rules";
 import { countryName, hasVerifiedBadge, keurmerkText, onlineSince, priceLevelText, productCountText, scoreDisplay, similarShops, SUB_SCORE_NAMES, type Category, type PublicShop } from "@/lib/shops/present";
+import { shopAnswer, shopAnswerJsonLd, shopQuestion } from "@/lib/seo/shop-answer";
 import { shopDescription, shopTitle } from "@/lib/seo/shop-meta";
+import { getLastChecked } from "@/lib/shops/last-checked";
 import { SITE } from "@/lib/site";
 import { PageLoading } from "@/components/page-loading";
 
@@ -63,6 +65,17 @@ async function EarnedSubScores({ shop }: { shop: PublicShop }) {
         ))}
       </ul>
     </section>
+  );
+}
+
+/** The last check date and the FAQPage markup; the visible answer itself renders without waiting. */
+async function LastChecked({ shop }: { shop: PublicShop }) {
+  const checkedOn = await getLastChecked(shop.id);
+  return (
+    <>
+      {checkedOn && <p className="text-xs text-muted-foreground">Laatst gecontroleerd op {dutchDate(checkedOn)}</p>}
+      <JsonLd data={shopAnswerJsonLd(shop, checkedOn)} />
+    </>
   );
 }
 
@@ -150,6 +163,18 @@ async function ShopDetails({ params }: Props) {
           )}
         </div>
       </div>
+      <section aria-labelledby="kort-antwoord" className="flex flex-col gap-1 rounded-lg border p-4">
+        <h2 id="kort-antwoord" className="font-semibold">{shopQuestion(shop)}</h2>
+        <p>
+          {shopAnswer(shop)}{" "}
+          <Link href="/hoe-wij-beoordelen" className="underline text-sm">
+            Zo beoordelen wij
+          </Link>
+        </p>
+        <Suspense fallback={null}>
+          <LastChecked shop={shop} />
+        </Suspense>
+      </section>
       {shop.description_nl && <p>{shop.description_nl}</p>}
       <div className="flex flex-col gap-2">
         <a

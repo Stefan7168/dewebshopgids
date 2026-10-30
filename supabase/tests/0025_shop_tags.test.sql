@@ -31,6 +31,7 @@ begin
   assert pg_temp.fails('anon', 'insert into public.shop_tags (domain, tag, evidence, checked_on) values (''x.example'', ''vintage'', ''0123456789'', current_date)'), 'anon must not write tags';
   assert pg_temp.fails('pipeline', 'insert into public.shop_tags (domain, tag, evidence, checked_on) values (''x.example'', ''vintage'', ''0123456789'', current_date)'), 'pipeline must not write tags';
   assert pg_temp.fails('agent_scout', 'select domain from public.shop_tags'), 'agents do not read tags';
+  assert pg_temp.fails('postgres', 'insert into public.shop_tags (domain, tag, evidence, checked_on) values (''y.example'', ''duurzaam'', ''0123456789'', current_date)'), 'only known tags';
 end $$;
 
 -- Publishing the shop makes its tag visible (status set by the owner here, standing in for the publish job).

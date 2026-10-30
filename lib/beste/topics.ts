@@ -134,6 +134,13 @@ const BASE: TopicBase[] = [
     title: "Webshops voor vintage interieur",
     only: (s) => s.tags?.includes("vintage") === true,
   },
+  {
+    // Coordinator backlog round 2, 2026-10-30. Tag hand-checked on the shop's own site (shop_tags, 0025).
+    slug: "handgemaakt-servies",
+    categorySlug: "keuken-tafelen",
+    title: "Webshops voor handgemaakt servies",
+    only: (s) => s.tags?.includes("handgemaakt-servies") === true,
+  },
 ];
 
 export const TOPICS: BesteTopic[] = BASE.map((t) => ({ ...t, ...TOPIC_CONTENT[t.slug] }));

@@ -252,6 +252,19 @@ export const TOPIC_CONTENT: Record<string, TopicContent> = {
       { q: "Hoe is de volgorde van deze lijst bepaald?", a: ORDER_A },
     ],
   },
+  "handgemaakt-servies": {
+    keyword: "handgemaakt servies",
+    intro: [
+      "Zoek je borden, kommen of mokken die met de hand zijn gemaakt, in plaats van servies uit de fabriek? Deze lijst toont Nederlandse webshops die handgemaakt servies verkopen: van een pottenbakker met een eigen atelier tot een merk dat zijn servies met de hand laat beschilderen.",
+      "Een shop staat hier alleen als zijn eigen site zegt dat het servies met de hand wordt gemaakt of beschilderd, en als borden, kommen of bekers een vast deel van het aanbod zijn. Dat hebben we op de site van de shop nagekeken. Handgemaakt betekent ook: elk stuk is net iets anders, en een set is vaak in kleine aantallen te krijgen. Vraag bij een grote bestelling eerst na hoeveel er op voorraad is. Sommige merken laten hun servies maken in een atelier in het buitenland; dat zie je op de pagina van de shop. De volgorde is alleen de echtheidsscore.",
+    ],
+    faq: [
+      { q: "Is handgemaakt servies vaatwasserbestendig?", a: "Dat verschilt per maker en per glazuur. Kijk bij het product op de site van de shop; veel makers zetten het erbij." },
+      { q: "Waarom ziet elk bord er net anders uit?", a: "Omdat het met de hand is gedraaid, gevormd of beschilderd. Kleine verschillen in vorm en kleur horen daarbij." },
+      { q: "Hoe weten jullie dat het servies handgemaakt is?", a: "Een mens heeft de eigen site van de shop bekeken en een zin bewaard waarin de shop dat zelf zegt. Shops zonder zo'n zin staan niet op de lijst." },
+      { q: "Hoe is de volgorde van deze lijst bepaald?", a: ORDER_A },
+    ],
+  },
   "met-keurmerk": {
     keyword: "woonwebshops met keurmerk",
     intro: [

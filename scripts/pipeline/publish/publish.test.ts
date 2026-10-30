@@ -31,6 +31,9 @@ describe("prenotice email", () => {
     expect(m.text).toContain("- Online sinds: ongeveer 2014");
     expect(m.text).toContain("https://dewebshopgids.nl/herbeoordeling?shop=mooi-huis");
     expect(m.text).not.toMatch(/review|onbetrouwbaar/i);
+    expect(m.text).toContain('gratis afbeelding "Vermeld op De Webshopgids"');
+    expect(m.text).toContain("https://dewebshopgids.nl/beheer?shop=mooi-huis");
+    expect(m.text).not.toMatch(/Geverifieerd|euro|badge/i);
   });
   it("shows the label instead of a number", () =>
     expect(renderPrenotice(prenoticeSlots({ ...base, score: 20, score_label: "Grote winkel / marktplaats" }, "2026-11-04T00:30:00Z"))!.text).toContain("- Echtheidsscore: Grote winkel / marktplaats"));

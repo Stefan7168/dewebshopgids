@@ -48,6 +48,9 @@ export function renderPrenotice(s: Record<string, unknown>): { subject: string; 
       `Klopt er iets niet, of wil je liever niet in de gids? Laat het ons weten via ${SITE.url}/herbeoordeling?shop=${slug}`,
       "Je hoeft verder niets te doen.",
       "",
+      // Free and optional (traffic plan: the cheapest source of links); not an offer of anything paid.
+      `Wil je zelf je beschrijving aanpassen, of een gratis afbeelding "Vermeld op ${SITE.name}" voor je eigen site? Dat vind je op ${SITE.url}/beheer?shop=${slug} . Het is niet verplicht en verandert niets aan je score.`,
+      "",
       `${SITE.name} · ${SITE.email}`,
     ].join("\n"),
   };

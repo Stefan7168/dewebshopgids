@@ -17,6 +17,8 @@ export type DigestData = {
   gates: unknown;
   pauses: string[];
   watchdogSummary: string | null;
+  /** Latest weekly 390 px check (scripts/ops/screenshots.ts); undefined before it first runs. */
+  screenshots?: { status: string; problems: string[] } | null;
 };
 
 /** ISO week label, for example 2026-W44. */
@@ -43,6 +45,12 @@ export function renderDigest(d: DigestData): string {
   if (d.runs.length === 0) lines.push("- geen runs");
   lines.push("", `Schema-gaten: ${d.gaps.length ? d.gaps.join(", ") : "geen"}`);
   lines.push(`Gepauzeerd: ${d.pauses.length ? d.pauses.join(", ") : "niets"}`);
+  if (d.screenshots !== undefined)
+    lines.push(
+      d.screenshots
+        ? `Telefooncheck 390 px: ${d.screenshots.status}${d.screenshots.problems.length ? ` (${d.screenshots.problems.join("; ")})` : ""}`
+        : "Telefooncheck 390 px: deze week niet gedraaid",
+    );
   const pct = d.budgetUsd > 0 ? Math.round((d.spendUsd / d.budgetUsd) * 100) : 0;
   lines.push(`Kosten deze maand: USD ${d.spendUsd.toFixed(2)} van USD ${d.budgetUsd.toFixed(0)} (${pct}%)`, "");
   lines.push("Escalaties deze week:");
@@ -88,6 +96,9 @@ export async function buildDigest(sql: Sql, prs: PrFetcher, now = new Date()): P
     from public.agent_runs where started_at > now() - interval '7 days' group by agent order by agent`;
   const [gap] = await sql<{ detail: { gaps?: { agent: string }[] } }[]>`
     select detail from public.health_checks where "check" = 'schedule_gap' order by checked_at desc limit 1`;
+  const [shots] = await sql<{ status: string; detail: { problems?: string[] } }[]>`
+    select status, detail from public.health_checks where "check" = 'screenshots' and checked_at > now() - interval '7 days'
+    order by checked_at desc limit 1`;
   const settings = await sql<{ key: string; value: unknown }[]>`
     select key, value from public.agent_settings
     where key in ('monthly_budget_usd', 'month_spend_usd', 'gates') or (key like 'enabled.%' and value = 'false'::jsonb)`;
@@ -104,6 +115,7 @@ export async function buildDigest(sql: Sql, prs: PrFetcher, now = new Date()): P
     week,
     runs,
     gaps: (gap?.detail.gaps ?? []).map((g) => g.agent),
+    screenshots: shots ? { status: shots.status, problems: shots.detail.problems ?? [] } : null,
     spendUsd: Number(get("month_spend_usd") ?? 0),
     budgetUsd: Number(get("monthly_budget_usd") ?? 0),
     escalations,

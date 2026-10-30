@@ -2,7 +2,8 @@ import Link from "next/link";
 import { JsonLd } from "@/components/json-ld";
 import { RankingDisclosure } from "@/components/ranking-disclosure";
 import { ScoreBadge } from "@/components/score-badge";
-import { keurmerkText, onlineSince, type PublicShop } from "@/lib/shops/present";
+import { keurmerkRowText } from "@/lib/shops/keurmerk-check";
+import { onlineSince, type PublicShop } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 
 /** A ranked list: disclosure directly above, ItemList markup, no paid entries inside. */
@@ -25,7 +26,7 @@ export function ShopList({ shops, listName, disclosure }: { shops: PublicShop[];
                   <span className="text-sm text-muted-foreground break-words">{s.domain}</span>
                   {s.description_nl && <span className="text-sm line-clamp-2">{s.description_nl}</span>}
                   <span className="text-xs text-muted-foreground">
-                    {[since ? `Online sinds ${since}` : null, s.keurmerk_status === "verified" ? keurmerkText(s).split(" (")[0] : null]
+                    {[since ? `Online sinds ${since}` : null, keurmerkRowText(s)]
                       .filter(Boolean)
                       .join(" · ")}
                   </span>

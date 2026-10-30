@@ -35,13 +35,13 @@ export const TOPIC_CONTENT: Record<string, TopicContent> = {
     ],
   },
   woontextiel: {
-    keyword: "duurzame vloerkleden webshop",
+    keyword: "wollen vloerkleed handgemaakt",
     intro: [
       "Kussens, plaids, gordijnen, tafelkleden en vloerkleden: textiel maakt een huis warm. Deze lijst toont Nederlandse webshops voor woontextiel, van weverijen en naaiateliers tot kleine labels met een eigen collectie. Grote ketens met duizenden artikelen staan hier zelden bovenaan.",
       "Bij textiel is de herkomst vaak goed na te gaan. Een shop die schrijft waar een vloerkleed geweven is, van welk materiaal en door welke werkplaats, geeft je meer houvast dan een shop met alleen sfeerfoto's. Natuurlijke materialen zoals wol, linnen en katoen gedragen zich anders dan kunststof: ze slijten langzamer, maar vragen soms meer zorg. Een goede shop zet de wasvoorschriften en de samenstelling bij elk product. Bij elke shop op de lijst zie je de zin van zijn eigen site waarop de punten zijn gebaseerd.",
     ],
     faq: [
-      { q: "Wat maakt een vloerkleed duurzaam?", a: "Vooral het materiaal en de bewerking: wol, jute of gerecycled garen, en een kleed dat lang meegaat. Een shop die de herkomst en samenstelling noemt, kun je daarop controleren." },
+      { q: "Waar let je op bij een vloerkleed van wol of jute?", a: "Op de samenstelling, hoe het kleed gemaakt is (handgeknoopt, handgeweven of machinaal) en waar het gemaakt is. Een shop die dat per kleed noemt, kun je daarop controleren." },
       { q: "Hoe weet je of textiel handgeweven is?", a: "De shop noemt het weefproces of de werkplaats, en kleine verschillen tussen exemplaren worden uitgelegd. Die tekst op de site telt mee in de echtheidsscore." },
       { q: "Hoe is de volgorde van deze lijst bepaald?", a: ORDER_A },
     ],

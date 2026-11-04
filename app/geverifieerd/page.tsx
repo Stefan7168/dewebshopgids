@@ -11,10 +11,10 @@ export const metadata: Metadata = {
   alternates: { canonical: "/geverifieerd" },
 };
 
-type Search = Promise<{ betaald?: string; fout?: string }>;
+type Search = Promise<{ betaald?: string; fout?: string; portaal?: string }>;
 
 async function Notice({ searchParams }: { searchParams: Search }) {
-  const { betaald, fout } = await searchParams;
+  const { betaald, fout, portaal } = await searchParams;
   if (betaald) {
     return (
       <p role="status" className="rounded-md border p-4">
@@ -26,6 +26,13 @@ async function Notice({ searchParams }: { searchParams: Search }) {
     return (
       <p role="status" className="rounded-md border p-4">
         Het betalen kon nu niet starten. Open de link uit je e-mail opnieuw, of mail <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+      </p>
+    );
+  }
+  if (portaal) {
+    return (
+      <p role="status" className="rounded-md border p-4">
+        We konden je abonnement nu niet openen. Open de link uit je e-mail opnieuw, of mail <a href={`mailto:${SITE.email}`}>{SITE.email}</a> om op te zeggen.
       </p>
     );
   }
@@ -89,7 +96,7 @@ export default function Page(props: { searchParams: Search }) {
         <li>Ga naar de pagina van je webshop en klik onderaan op &ldquo;Is dit jouw webshop?&rdquo;.</li>
         <li>Vul een e-mailadres op je eigen domein in. We sturen een link naar dat adres, of naar het algemene adres op je site.</li>
         <li>Open de link en kies {BADGE_PLANS.map((p) => `${formatEur(p.eur)} ${p.label}`).join(" of ")}. Je betaalt veilig via Stripe.</li>
-        <li>Binnen een paar minuten staat de badge op je pagina. Opzeggen kan via de link in je Stripe-bon of door ons te mailen; de badge loopt tot het einde van de betaalde periode.</li>
+        <li>Binnen een paar minuten staat de badge op je pagina. Opzeggen kan net zo makkelijk: via &ldquo;Abonnement beheren&rdquo; op dezelfde pagina, via de link in je Stripe-bon of door ons te mailen. De badge loopt tot het einde van de betaalde periode en gaat dan vanzelf uit. Bij een jaarbadge zie je de einddatum op die pagina.</li>
       </ol>
 
       <p className="text-sm text-muted-foreground">

@@ -20,6 +20,7 @@ import { sendEmail } from "@/lib/newsletter/resend";
 import { MemoryLimiter, senderKey } from "@/lib/rate-limit";
 import { SITE } from "@/lib/site";
 import { createBadgeCheckout } from "@/lib/stripe/checkout";
+import { createPortalSession } from "@/lib/stripe/portal";
 import { createServiceClient } from "@/lib/supabase/service";
 
 export type FormState = { ok: boolean; message: string } | null;
@@ -111,4 +112,24 @@ export async function startBadgeCheckout(formData: FormData) {
     console.error("badge checkout failed", err);
   }
   redirect(url ?? "/geverifieerd?fout=1");
+}
+
+/** Stripe customer portal from the claim link: cancel, change card, invoices. Same token check as buying. */
+export async function openBadgePortal(formData: FormData) {
+  const token = formData.get("t");
+  const secretKey = process.env.STRIPE_SECRET_KEY ?? "";
+  if (!isTokenShape(token) || !/^(sk|rk)_(live|test)_/.test(secretKey)) redirect("/geverifieerd?portaal=fout");
+  let url: string | null = null;
+  try {
+    const db = createServiceClient();
+    const { data: claim } = await db.from("shop_claims").select("shop_id, expires_at").eq("token_hash", hashToken(token)).maybeSingle();
+    if (claim && new Date(claim.expires_at) >= new Date()) {
+      const { data: shop } = await db.from("shops").select("stripe_subscription_id").eq("id", claim.shop_id).single();
+      // The return URL carries no claim token: Stripe stores it.
+      if (shop?.stripe_subscription_id) url = await createPortalSession(shop.stripe_subscription_id, secretKey, `${SITE.url}/geverifieerd`);
+    }
+  } catch (err) {
+    console.error("badge portal failed", err);
+  }
+  redirect(url ?? "/geverifieerd?portaal=fout");
 }

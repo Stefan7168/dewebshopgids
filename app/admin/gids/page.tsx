@@ -6,7 +6,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { approveGuide } from "./actions";
 
 type Issue = {
-  id: string; slug: string; status: string; title_nl: string | null; intro_nl: string | null; body_md: string | null;
+  id: string; slug: string; status: string; title_nl: string | null; intro_nl: string | null; body_md: string | null; shop_ids: string[];
   fact_check_report: { round?: number; code_findings?: string[]; agent_findings?: string[] } | null; approved_by: string | null;
 };
 
@@ -22,14 +22,19 @@ const STATUS: Record<string, string> = {
 
 async function Issues() {
   await requireAdmin();
-  const { data, error } = await createServiceClient()
+  const db = createServiceClient();
+  const { data, error } = await db
     .from("guide_issues")
-    .select("id, slug, status, title_nl, intro_nl, body_md, fact_check_report, approved_by")
+    .select("id, slug, status, title_nl, intro_nl, body_md, shop_ids, fact_check_report, approved_by")
     .order("slug", { ascending: false })
     .limit(6)
     .returns<Issue[]>();
   if (error) return <p className="text-sm text-red-600">Fout: {error.message}</p>;
   if (!data.length) return <p className="text-sm">Nog geen gids. Maandag 06:00 maakt de pipeline de eerste aan.</p>;
+  // The shops block under the mail and the page, so the approval covers them too.
+  const ids = [...new Set(data.flatMap((g) => g.shop_ids))];
+  const { data: shopRows } = ids.length ? await db.from("shops").select("id, name, domain, score, status").in("id", ids) : { data: [] };
+  const shopById = new Map((shopRows ?? []).map((s) => [s.id as string, s]));
   return (
     <ul className="flex flex-col gap-4">
       {data.map((g) => {
@@ -49,6 +54,22 @@ async function Issues() {
                 <p className="text-base font-semibold">{g.title_nl}</p>
                 {g.intro_nl ? <p>{g.intro_nl}</p> : null}
                 <GuideBody md={g.body_md} />
+              </div>
+            ) : null}
+            {g.shop_ids.length ? (
+              <div>
+                <p className="font-medium">Webshops in deze gids</p>
+                <ul className="list-disc pl-5">
+                  {g.shop_ids.map((id) => {
+                    const s = shopById.get(id);
+                    return (
+                      <li key={id}>
+                        {s ? `${s.name} (${s.domain}) · score ${s.score ?? "geen"}` : "onbekende webshop"}
+                        {s && s.status !== "published" ? <span className="text-red-700"> · niet gepubliceerd ({s.status})</span> : null}
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
             ) : null}
             {g.status === "fact_checked" ? (

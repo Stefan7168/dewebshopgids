@@ -41,8 +41,22 @@ export async function getPublishedShops(): Promise<PublicShop[]> {
     const { data, error } = await db.from("shops_public").select(SHOP_COLS).order("id").range(from, from + PAGE - 1);
     if (error) throw new Error(`shops_public: ${error.message}`);
     all.push(...(data as PublicShop[]));
-    if (data.length < PAGE) return all;
+    if (data.length < PAGE) break;
   }
+  const tags = await getShopTags(db);
+  return tags.size ? all.map((s) => (tags.has(s.domain) ? { ...s, tags: tags.get(s.domain) } : s)) : all;
+}
+
+/** Hand-checked tags per domain (migration 0025). RLS returns only listed shops. Missing table: none. */
+async function getShopTags(db: NonNullable<ReturnType<typeof anon>>): Promise<Map<string, string[]>> {
+  const out = new Map<string, string[]>();
+  const { data, error } = await db.from("shop_tags").select("domain, tag").limit(5000);
+  if (error) {
+    if (error.code === "42P01" || error.code === "PGRST205") return out;
+    throw new Error(`shop_tags: ${error.message}`);
+  }
+  for (const r of data as { domain: string; tag: string }[]) out.set(r.domain, [...(out.get(r.domain) ?? []), r.tag]);
+  return out;
 }
 
 export async function getShop(slug: string): Promise<PublicShop | null> {

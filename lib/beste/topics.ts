@@ -127,6 +127,27 @@ const BASE: TopicBase[] = [
     title: "Unieke woonwebshops met een gecontroleerd keurmerk",
     only: (s) => s.keurmerk_status === "verified",
   },
+  {
+    // Coordinator decision 2026-10-30. The tag is hand-checked against the shop's own site (shop_tags, 0025).
+    slug: "vintage-interieur",
+    categorySlug: "wonen",
+    title: "Webshops voor vintage interieur",
+    only: (s) => s.tags?.includes("vintage") === true,
+  },
+  {
+    // Coordinator backlog round 2, 2026-10-30. Tag hand-checked on the shop's own site (shop_tags, 0025).
+    slug: "handgemaakt-servies",
+    categorySlug: "keuken-tafelen",
+    title: "Webshops voor handgemaakt servies",
+    only: (s) => s.tags?.includes("handgemaakt-servies") === true,
+  },
+  {
+    // Coordinator backlog round 3, 2026-10-30. Tag hand-checked on the shop's own site (shop_tags, 0025).
+    slug: "koffiebranderijen",
+    categorySlug: "koffie-thee",
+    title: "Koffiebranderijen met een eigen webshop",
+    only: (s) => s.tags?.includes("eigen-branderij") === true,
+  },
 ];
 
 export const TOPICS: BesteTopic[] = BASE.map((t) => ({ ...t, ...TOPIC_CONTENT[t.slug] }));

@@ -111,6 +111,39 @@ export const TEMPLATES: Record<string, Template> = {
       };
     },
   },
+  // Free monthly report to a published shop whose owner used a claim link (plan v4 section 12, "Launch+").
+  // Facts only, no sales text and no badge mention: that is what the first report promises. `marketing`
+  // so an opted-out shop never gets it.
+  shop_click_report: {
+    recipient: "shop",
+    marketing: true,
+    render: (s) => {
+      const name = str(s.shop_name, 200);
+      const slug = typeof s.shop_slug === "string" && /^[a-z0-9-]{1,100}$/.test(s.shop_slug) ? s.shop_slug : null;
+      const month = typeof s.month === "string" && /^\d{4}-\d{2}$/.test(s.month) ? s.month : null;
+      const clicks = Number(s.clicks);
+      if (!name || !slug || !month || !Number.isInteger(clicks) || clicks < 0) return null;
+      const label = new Intl.DateTimeFormat("nl-NL", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${month}-01T00:00:00Z`));
+      return {
+        subject: `${name} in De Webshopgids: ${label}`,
+        text: [
+          "Hoi,",
+          "",
+          clicks === 0
+            ? `In ${label} klikte nog geen lezer van De Webshopgids door naar ${name}.`
+            : clicks === 1
+              ? `In ${label} klikte een lezer van De Webshopgids door naar ${name}.`
+              : `In ${label} klikten lezers van De Webshopgids ${clicks} keer door naar ${name}.`,
+          `Je pagina met score en feiten: ${SITE.url}/webshop/${slug}`,
+          `Je beschrijving aanpassen kan hier: ${SITE.url}/beheer?shop=${slug}`,
+          "",
+          "Je krijgt dit overzicht omdat je via 'Is dit jouw webshop?' hebt bevestigd dat de webshop van jou is. Liever niet meer? Antwoord op deze mail met \"stop\".",
+          "",
+          "Groet, De Webshopgids",
+        ].join("\n"),
+      };
+    },
+  },
   // Consumed by scripts/ops/digest.ts, never sent on its own.
   digest_summary: { recipient: "internal" },
   // Pre-notice to the shop: `to` is the `prenotice` disputes row, whose email is the shop's contact_email.

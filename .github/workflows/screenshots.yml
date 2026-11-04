@@ -1,0 +1,47 @@
+# Weekly phone check (plan v4 section 5, phase 2): Sunday 17:00 Europe/Amsterdam, one hour before the
+# digest. Home page plus 4 random sitemap pages at 390 px; screenshots kept 14 days as an artifact;
+# one health_checks row the digest reports. Two UTC crons cover summer and winter time.
+name: Weekly screenshots
+
+on:
+  schedule:
+    - cron: "0 15 * * 0" # 17:00 CEST
+    - cron: "0 16 * * 0" # 17:00 CET
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: screenshots
+  cancel-in-progress: false
+
+jobs:
+  screenshots:
+    if: vars.AGENTS_PAUSED != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Not a project dependency: only this job needs a browser.
+      - run: npm install --no-save playwright@1.51.1 && npx playwright install --with-deps chromium
+      - name: Screenshot 5 pages at 390 px
+        env:
+          DATABASE_URL: ${{ secrets.PIPELINE_DATABASE_URL }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          BASIC_AUTH_USER: ${{ secrets.BASIC_AUTH_USER }}
+          BASIC_AUTH_PASSWORD: ${{ secrets.BASIC_AUTH_PASSWORD }}
+        run: npx tsx scripts/ops/screenshots.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshots-390
+          path: screenshots/
+          retention-days: 14
+          if-no-files-found: ignore

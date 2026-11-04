@@ -21,8 +21,8 @@ export const issue24Snapshot: GuideSnapshot = {
 };
 
 export const issue24Draft: Draft = {
-  title_nl: "Koken met gerei van Nederlandse merken",
-  intro_nl: "Deze week vijf Nederlandse merken voor in de keuken: pannen, messen en koffie.",
+  title_nl: "Koken met gerei van eigen merken",
+  intro_nl: "Deze week vijf eigen merken voor in de keuken: pannen, messen en koffie.",
   body_md: `## Waarom deze vijf
 
 Ze ontwerpen of maken hun keukengerei zelf. Dat is wat onze echtheidsscore meet. Hoe dat werkt, lees je op [Hoe wij beoordelen](/hoe-wij-beoordelen).
@@ -41,13 +41,13 @@ Eigen merk van pannen en pannensets. Een set als je opnieuw begint.
 
 ## Studio OOOMS, Geldrop
 
-Keukenmessen die met de hand worden gemaakt. Een mes dat lang meegaat.
+Keukenmessen die met de hand worden gemaakt. Elk mes is met de hand gemaakt.
 
 [Bekijk Studio OOOMS](/webshop/studio-oooms)
 
 ## BK
 
-Eigen merk van pannen, bestek en keukengerei, al heel lang. Een bekende naam in veel keukens.
+Eigen merk van pannen, bestek en keukengerei, al heel lang. Pannen en bestek onder een eigen merk.
 
 [Bekijk BK](/webshop/bk)
 

@@ -1,4 +1,4 @@
-// Reference draft for gids issue 23 (2027 week 15, theme "lampenkappen uit eigen atelier"),
+// Reference draft for gids issue 23 (2027 week 15, theme "lampenkappen uit Nederlandse ateliers"),
 // with lighting makers from Home lists 2 to 4. Needs those shops published; otherwise the Editor uses the week's best new shops. Same rules as issues 1 to 21.
 import type { Draft } from "../check";
 import type { GuideShop, GuideSnapshot } from "../inputs";
@@ -21,15 +21,15 @@ export const issue23Snapshot: GuideSnapshot = {
 };
 
 export const issue23Draft: Draft = {
-  title_nl: "Lampenkappen uit eigen atelier",
-  intro_nl: "Een nieuwe kap verandert een kamer meer dan je denkt. Deze week vijf ateliers die lampenkappen met de hand maken.",
+  title_nl: "Lampenkappen uit Nederlandse ateliers",
+  intro_nl: "Een nieuwe kap verandert een kamer meer dan je denkt. Deze week vijf ateliers die lampenkappen maken.",
   body_md: `## Waarom deze vijf
 
-Ze maken hun kappen zelf, vaak op maat. Dat is wat onze echtheidsscore meet. Hoe dat werkt, lees je op [Hoe wij beoordelen](/hoe-wij-beoordelen).
+Ze maken hun kappen in Nederland, vaak op maat. Dat is wat onze echtheidsscore meet. Hoe dat werkt, lees je op [Hoe wij beoordelen](/hoe-wij-beoordelen).
 
 ## Atelier Alma, Leende
 
-Lampen, lampenkappen en wandlampen, met de hand gemaakt in het eigen atelier. Ook wandlampen in dezelfde stijl.
+Lampen, lampenkappen en wandlampen, met de hand gemaakt in het eigen atelier.
 
 [Bekijk Atelier Alma](/webshop/atelier-alma)
 
@@ -41,7 +41,7 @@ Lampenkappen die in het eigen atelier met de hand worden gemaakt, op maat of uit
 
 ## Studio Limonada, Den Haag
 
-Lampenkappen en lampvoeten met de hand gemaakt in het eigen atelier met winkel. Een kap in een stof die je zelf kiest.
+Lampenkappen en lampvoeten met de hand gemaakt in het eigen atelier met winkel. Kap en voet uit hetzelfde atelier.
 
 [Bekijk Studio Limonada](/webshop/studio-limonada)
 

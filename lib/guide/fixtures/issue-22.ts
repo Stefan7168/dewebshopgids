@@ -16,7 +16,7 @@ export const issue22Snapshot: GuideSnapshot = {
     shop("s-robuust", "robuust-amsterdam", "Robuust Amsterdam", "Slapen", "Amsterdam", "Eigen merk van bedframes, matrassen en meubels, met een studio en showroom in Amsterdam."),
     shop("s-silvana", "silvana", "Silvana", "Slapen", null, "Eigen merk van kussens, dekbedden en beddengoed."),
     shop("s-happybed", "happybed", "HappyBed", "Slapen", null, "Eigen merk van wasbare dekbedden zonder hoes, en kussens."),
-    shop("s-crispsheets", "crisp-sheets", "Crisp Sheets", "Slapen", null, "Eigen merk van hoeslakens, dekbedovertrekken en kussenslopen in stoffen met een eigen naam."),
+    shop("s-crispsheets", "crisp-sheets", "Crisp Sheets", "Slapen", null, "Eigen merk van hoeslakens, dekbedovertrekken en kussenslopen in eigen stofsoorten."),
   ],
 };
 
@@ -53,7 +53,7 @@ Eigen merk van wasbare dekbedden zonder hoes, en kussens. Geen hoes meer om te v
 
 ## Crisp Sheets
 
-Eigen merk van hoeslakens, dekbedovertrekken en kussenslopen in stoffen met een eigen naam. Lakens die je per stof kiest.
+Eigen merk van hoeslakens, dekbedovertrekken en kussenslopen in eigen stofsoorten. Lakens die je per stof kiest.
 
 [Bekijk Crisp Sheets](/webshop/crisp-sheets)
 

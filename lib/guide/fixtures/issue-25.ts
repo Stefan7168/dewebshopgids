@@ -29,7 +29,7 @@ Ze draaien en vormen hun servies zelf. Dat is wat onze echtheidsscore meet. Hoe 
 
 ## BAM Keramiek, Utrecht
 
-Handgemaakt servies met Nederlandse stadstorens, uit eigen ateliers. Een bord met de toren van je eigen stad.
+Handgemaakt servies met Nederlandse stadstorens, uit eigen ateliers. Een bord met een Nederlandse stadstoren.
 
 [Bekijk BAM Keramiek](/webshop/bam-keramiek)
 
@@ -47,13 +47,13 @@ Handgemaakt servies (borden, kommen, kopjes), plus plantenpotten en vazen. Elk s
 
 ## La Salamandre, Weesp
 
-Handgemaakte kopjes en mokken van keramiek, plus glas en mozaiek uit de eigen studio. Ook op bestelling. Een mok op bestelling kan ook.
+Handgemaakte kopjes en mokken van keramiek, plus glas en mozaiek uit de eigen studio. Ook op bestelling.
 
 [Bekijk La Salamandre](/webshop/la-salamandre)
 
 ## LC Keramiek, Heiloo
 
-Handgemaakt servies (kopjes, borden, kommen), vazen en lampen van keramiek. Servies en vazen in dezelfde glazuren.
+Handgemaakt servies (kopjes, borden, kommen), vazen en lampen van keramiek. Ook vazen en lampen van keramiek.
 
 [Bekijk LC Keramiek](/webshop/lc-keramiek)
 

@@ -35,7 +35,7 @@ Dahlia's van de eigen familiekwekerij, plus andere bollen en zaden. Veel soorten
 
 ## Plukkerz, Warnsveld
 
-Dahliaknollen en stekken van de eigen bloemenkwekerij. Ook stekken, voor wie snel bloei wil.
+Dahliaknollen en stekken van de eigen bloemenkwekerij. Knollen en stekken uit eigen kwekerij.
 
 [Bekijk Plukkerz](/webshop/plukkerz)
 

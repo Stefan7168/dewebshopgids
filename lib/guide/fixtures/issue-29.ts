@@ -22,26 +22,26 @@ export const issue29Snapshot: GuideSnapshot = {
 
 export const issue29Draft: Draft = {
   title_nl: "Planten van eigen kwekerij voor tuin en vijver",
-  intro_nl: "Na de IJsheiligen kan alles de grond in. Deze week vijf kwekerijen die hun planten zelf kweken en versturen.",
+  intro_nl: "Na de IJsheiligen kan alles de grond in. Deze week vijf kwekerijen die hun planten zelf kweken.",
   body_md: `## Waarom deze vijf
 
 Ze kweken hun planten zelf. Dat is wat onze echtheidsscore meet. Hoe dat werkt, lees je op [Hoe wij beoordelen](/hoe-wij-beoordelen).
 
 ## Kwekerij Bastin
 
-Vaste planten, kruiden, lavendel en prairieplanten van de eigen kwekerij in Zuid-Limburg. Ook lavendel en kruiden.
+Vaste planten, kruiden, lavendel en prairieplanten van de eigen kwekerij in Zuid-Limburg.
 
 [Bekijk Kwekerij Bastin](/webshop/kwekerij-bastin)
 
 ## Kwekerij De Arend, Almere
 
-Vaste planten, rozen, inheemse planten en kruiden van de eigen kwekerij. Ze versturen planten. Ook inheemse soorten.
+Vaste planten, rozen, inheemse planten en kruiden van de eigen kwekerij. Ze versturen planten.
 
 [Bekijk Kwekerij De Arend](/webshop/kwekerij-de-arend)
 
 ## Ferdinandushof, Overslag
 
-Tuinplanten van de eigen kwekerij, te bestellen in een aparte webshop. Versturen of zelf ophalen.
+Tuinplanten van de eigen kwekerij, te bestellen in een aparte webshop.
 
 [Bekijk Ferdinandushof](/webshop/ferdinandushof)
 

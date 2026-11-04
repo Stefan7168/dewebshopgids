@@ -13,7 +13,9 @@ import { METHOD_NOTE, besteList, liveTopics, siblingTopics, topicBySlug } from "
 import { signupHeadline } from "@/lib/newsletter/core";
 import { getCategories, getPublishedShops } from "@/lib/shops/data";
 import { getEarnedSubScores } from "@/lib/shops/evidence";
-import { keurmerkText, onlineSince, productCountText, rankingExplanation, SUB_SCORE_NAMES, type PublicShop } from "@/lib/shops/present";
+import { keurmerkRowText, shopsByCity } from "@/lib/shops/keurmerk-check";
+import { getKeurmerkCheckDates } from "@/lib/shops/keurmerk-checked";
+import { onlineSince, productCountText, rankingExplanation, SUB_SCORE_NAMES, type PublicShop } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 import { PageLoading } from "@/components/page-loading";
 
@@ -52,11 +54,38 @@ async function Evidence({ shop }: { shop: PublicShop }) {
   );
 }
 
+/** Showroom list only: where the stores are, by city. Alphabetical, not a second ranking. */
+function ByCity({ shops }: { shops: PublicShop[] }) {
+  const groups = shopsByCity(shops);
+  if (groups.length < 2) return null;
+  return (
+    <section className="flex flex-col gap-2">
+      <h2 className="text-xl font-semibold">Per plaats</h2>
+      <p className="text-sm text-muted-foreground">Plaatsen op alfabet. Dit is geen tweede ranglijst; de volgorde staat hierboven.</p>
+      <dl className="flex flex-col gap-2 text-sm">
+        {groups.map(([city, list]) => (
+          <div key={city}>
+            <dt className="font-medium">{city}</dt>
+            <dd className="flex flex-wrap gap-x-3">
+              {list.map((s) => (
+                <Link key={s.id} href={`/webshop/${s.slug}`} className="inline-flex min-h-11 items-center underline">
+                  {s.name}
+                </Link>
+              ))}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
 async function List({ params }: Props) {
   const { slug } = await params;
   const data = await load(slug);
   if (!data) notFound();
   const { topic, list, siblings, category } = data;
+  const checkedOn = await getKeurmerkCheckDates(list.filter((s) => s.keurmerk_status === "verified").map((s) => s.id));
   return (
     <article className="flex flex-col gap-6">
       <h1 className="text-2xl font-bold">{topic.title}</h1>
@@ -68,7 +97,7 @@ async function List({ params }: Props) {
         <RankingDisclosure />
         <ol className="flex flex-col gap-3">
           {list.map((s, i) => {
-            const facts = [onlineSince(s.domain_first_seen) ? `Online sinds ${onlineSince(s.domain_first_seen)}` : null, productCountText(s.product_count_est), keurmerkText(s)].filter(Boolean);
+            const facts = [onlineSince(s.domain_first_seen) ? `Online sinds ${onlineSince(s.domain_first_seen)}` : null, productCountText(s.product_count_est), keurmerkRowText(s, checkedOn.get(s.id)), s.has_physical_store && s.store_city ? `Winkel in ${s.store_city}` : null].filter(Boolean);
             return (
               <li key={s.id} className="rounded-lg border p-4 flex flex-col gap-2">
                 <div className="flex gap-4 items-start">
@@ -104,6 +133,7 @@ async function List({ params }: Props) {
           .
         </p>
       </section>
+      {topic.slug === "met-showroom" && <ByCity shops={list} />}
       <FaqSection faqs={topic.faq} />
       <nav aria-label="Meer lijsten" className="flex flex-col gap-1">
         <h2 className="text-xl font-semibold">Meer lijsten</h2>
@@ -125,6 +155,17 @@ async function List({ params }: Props) {
           itemListOrder: "https://schema.org/ItemListOrderDescending",
           numberOfItems: list.length,
           itemListElement: list.map((s, i) => ({ "@type": "ListItem", position: i + 1, url: `${SITE.url}/webshop/${s.slug}`, name: s.name })),
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: `${SITE.url}/` },
+            { "@type": "ListItem", position: 2, name: category.name_nl, item: `${SITE.url}/categorie/${category.slug}` },
+            { "@type": "ListItem", position: 3, name: topic.title, item: `${SITE.url}/beste/webshops-${topic.slug}` },
+          ],
         }}
       />
     </article>

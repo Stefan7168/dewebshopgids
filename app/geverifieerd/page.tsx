@@ -6,7 +6,7 @@ import { BADGE_MIN_SCORE, BADGE_PLANS, badgePriceText, checkoutConfig, formatEur
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Badge Geverifieerd voor webshops | De Webshopgids",
+  title: "Badge Geverifieerd voor webshops",
   description: `Laat kopers zien dat je webshop bij jou hoort. ${badgePriceText()}. De badge verandert niets aan je score of je plek in een lijst.`,
   alternates: { canonical: "/geverifieerd" },
 };

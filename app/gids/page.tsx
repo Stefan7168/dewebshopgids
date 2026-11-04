@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { JsonLd } from "@/components/json-ld";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -19,15 +20,41 @@ async function GuideList() {
   const guides = await getGuides();
   if (!guides.length) return <p>De eerste gids verschijnt binnenkort. Schrijf je hieronder in, dan krijg je hem als eerste.</p>;
   return (
-    <ul className="flex flex-col divide-y border rounded-md">
-      {guides.map((g) => (
-        <li key={g.id} className="p-4 flex flex-col gap-1">
-          <Link href={`/gids/${g.slug}`} className="font-semibold underline">{g.title_nl ?? `Week ${g.iso_week}`}</Link>
-          <span className="text-sm text-muted-foreground">Week {g.iso_week}, {g.iso_year}</span>
-          {g.intro_nl ? <p className="text-sm">{g.intro_nl}</p> : null}
-        </li>
-      ))}
-    </ul>
+    <>
+      <ul className="flex flex-col divide-y border rounded-md">
+        {guides.map((g) => (
+          <li key={g.id} className="p-4 flex flex-col gap-1">
+            <Link href={`/gids/${g.slug}`} className="font-semibold underline">{g.title_nl ?? `Week ${g.iso_week}`}</Link>
+            <span className="text-sm text-muted-foreground">Week {g.iso_week}, {g.iso_year}</span>
+            {g.intro_nl ? <p className="text-sm">{g.intro_nl}</p> : null}
+          </li>
+        ))}
+      </ul>
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "CollectionPage",
+                name: "De wekelijkse webshopgids",
+                url: `${SITE.url}/gids`,
+                inLanguage: "nl-NL",
+                mainEntity: {
+                  "@type": "ItemList",
+                  itemListElement: guides.map((g, i) => ({ "@type": "ListItem", position: i + 1, url: `${SITE.url}/gids/${g.slug}`, name: g.title_nl ?? `Week ${g.iso_week}` })),
+                },
+              },
+              {
+                "@type": "BreadcrumbList",
+                itemListElement: [
+                  { "@type": "ListItem", position: 1, name: "Home", item: `${SITE.url}/` },
+                  { "@type": "ListItem", position: 2, name: "Webshopgids", item: `${SITE.url}/gids` },
+                ],
+              },
+            ],
+          }}
+        />
+    </>
   );
 }
 

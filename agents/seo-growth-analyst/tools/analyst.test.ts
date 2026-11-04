@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { change, forecastDue, pinProblem } from "./analyst";
+import { change, forecastDue, pinProblem, revenueEstimate } from "./analyst";
 
 describe("forecastDue", () => {
   it("is true in the first 7 days of the month in Amsterdam", () => {
@@ -25,5 +25,12 @@ describe("pinProblem", () => {
     expect(pinProblem({ ...ok, description: "Nu met 20% korting op alles hier." })).toMatch(/banned/);
     expect(pinProblem({ ...ok, description: "Kijk op www.shop.nl voor meer info." })).toMatch(/banned/);
     expect(pinProblem({ ...ok, title: "Kort" })).toMatch(/title/);
+  });
+});
+
+describe("revenueEstimate", () => {
+  it("adds badges at the month price, slots at the Uitgelicht price, and commission", () => {
+    const r = revenueEstimate(4, 2, 12.5);
+    expect(r).toMatchObject({ badge_eur: 60, uitgelicht_eur: 98, commission_eur: 12.5, total_eur: 170.5, north_star_total_eur: 500 });
   });
 });

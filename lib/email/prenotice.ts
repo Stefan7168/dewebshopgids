@@ -37,7 +37,7 @@ export function renderPrenotice(s: Record<string, unknown>): { subject: string; 
     text: [
       "Hoi,",
       "",
-      `We nemen ${name} op in ${SITE.name}, een onafhankelijke gids met unieke Nederlandse webshops voor wonen. Opname is gratis. Vanaf ${date} staat je webshop op ${SITE.url}/webshop/${slug}`,
+      `We nemen ${name} op in ${SITE.name}, een onafhankelijke gids met unieke Nederlandse webshops. Opname is gratis. Vanaf ${date} staat je webshop op ${SITE.url}/webshop/${slug}`,
       "",
       "Dit tonen we op die pagina:",
       ...facts,

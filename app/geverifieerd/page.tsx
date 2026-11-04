@@ -75,7 +75,7 @@ export default function Page(props: { searchParams: Search }) {
       <ul>
         <li>Je score gaat er niet door omhoog. De score komt alleen uit wat op je eigen site staat.</li>
         <li>Je plek in een lijst verandert niet. Betaling heeft nooit invloed op de volgorde.</li>
-        <li>Het is geen keurmerk en geen kopersbescherming. We controleren alleen dat de aanvrager bij de webshop hoort.</li>
+        <li>Het is geen keurmerk en geen kopersbescherming. We controleren alleen dat de aanvrager bij de webshop hoort. <Link href="/geverifieerd/controle">Alle controles</Link>.</li>
       </ul>
 
       <h2>Wie de badge kan krijgen</h2>

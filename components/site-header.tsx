@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MenuCloser } from "@/components/menu-closer";
 import { getGuides } from "@/lib/guide/data";
 import { getCategories, getPublishedShops } from "@/lib/shops/data";
 import { promotedRoots } from "@/lib/shops/present";
@@ -33,7 +34,8 @@ export async function SiteHeader() {
             Zoeken
           </Link>
           {items.length > 2 && (
-            <details className="relative sm:hidden">
+            <details data-menu className="relative sm:hidden">
+              <MenuCloser />
               <summary className="inline-flex min-h-11 cursor-pointer list-none items-center underline-offset-4 hover:underline">Menu</summary>
               <ul className="absolute right-0 z-10 mt-1 flex min-w-40 flex-col rounded-md border bg-background p-2 shadow">
                 {items.map((i) => (

@@ -9,6 +9,9 @@ describe("newsletter core", () => {
   it("uses the pre-launch copy until the guide starts", () => {
     expect(signupHeadline("februari")).toBe("Vanaf februari: elke week 5 unieke woonwinkels in je inbox");
     expect(signupHeadline(null)).toBe("Elke week 5 unieke woonwinkels in je inbox");
+    expect(signupHeadline(null, ["eten-drinken"])).toBe("Elke week 5 unieke webshops in je inbox");
+    expect(signupHeadline(null, ["wonen", "tuin-buiten"])).toBe("Elke week 5 unieke webshops in je inbox");
+    expect(signupHeadline(null, [])).toBe("Elke week 5 unieke webshops in je inbox");
   });
 
   it("normalises and validates email addresses", () => {

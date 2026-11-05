@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { ClaimRequestForm } from "@/components/claim-forms";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { listedEmbed } from "@/lib/badge/svg";
 import { CLAIMABLE_STATUSES } from "@/lib/claims/core";
 import { SITE } from "@/lib/site";
 import { createServiceClient } from "@/lib/supabase/service";
@@ -58,6 +59,23 @@ async function Body({ searchParams }: { searchParams: Search }) {
         </Link>{" "}
         nemen.
       </p>
+      <section className="flex flex-col gap-2 border-t pt-6">
+        <h2 className="text-xl font-semibold">Vermelding op je eigen site</h2>
+        <p>
+          Wil je laten zien dat je in De Webshopgids staat? Plak deze code op je site. Het is gratis en niet verplicht, en het verandert niets aan je score
+          of je plaats in de lijsten.
+        </p>
+        <textarea
+          readOnly
+          aria-label="Code voor je site"
+          rows={4}
+          className="w-full rounded-md border p-3 font-mono text-xs"
+          defaultValue={listedEmbed(shop.slug)}
+        />
+        {shop.status === "prenotified" && (
+          <p className="text-sm text-muted-foreground">De afbeelding verschijnt zodra je pagina in de gids staat.</p>
+        )}
+      </section>
     </>
   );
 }

@@ -101,6 +101,8 @@ async function main() {
         return;
       }
       case "summary": {
+        // Only the Sunday 17:00-hour run: a summary written at another time would go into the next digest stale.
+        if (!digestDue(new Date())) throw new Error("the digest summary is only due in the Sunday 17:00 to 18:00 run");
         await sql`
           insert into public.email_queue ("to", template, slots, priority)
           values ('owner', 'digest_summary', ${sql.json({ text: need("text").slice(0, 3000), run_id: need("run") })}, 9)`;

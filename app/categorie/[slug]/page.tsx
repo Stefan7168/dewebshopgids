@@ -3,16 +3,19 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { JsonLd } from "@/components/json-ld";
+import { FaqSection } from "@/components/faq-section";
 import { FeaturedBlock } from "@/components/featured-block";
 import { ShopFilterBar } from "@/components/shop-filters";
 import { ShopList } from "@/components/shop-list";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { liveTopics } from "@/lib/beste/topics";
+import { CATEGORY_CONTENT } from "@/lib/categories/content";
+import { categoryTitle, freshnessLine, lastUpdated } from "@/lib/categories/freshness";
 import { featuredFor } from "@/lib/featured/select";
 import { getCategories, getFeaturedPlacements, getPublishedShops } from "@/lib/shops/data";
 import { applyFilters, hasFilters, parseFilters } from "@/lib/shops/filters";
-import { MIN_SHOPS_TO_INDEX, rankShops, shopsInCategory } from "@/lib/shops/present";
+import { MIN_SHOPS_TO_INDEX, promotedRoots, rankShops, shopsInCategory } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 import { PageLoading } from "@/components/page-loading";
 
@@ -39,7 +42,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   const { category, shops } = data;
   const filtered = hasFilters(parseFilters(await searchParams));
   return {
-    title: category.seo_title ?? `${category.name_nl}: unieke en betrouwbare webshops`,
+    title: category.seo_title ?? categoryTitle(category.name_nl, CATEGORY_CONTENT[category.slug]?.searchTitle, shops.length),
     description: category.intro_nl ?? `Webshops in ${category.name_nl.toLowerCase()} met de hoogste echtheidsscore, met keurmerk en feiten per shop.`,
     alternates: { canonical: `${SITE.url}/categorie/${category.slug}` },
     // A filtered view is not a separate page for search engines; the canonical is the full list.
@@ -54,6 +57,13 @@ async function CategoryDetails({ params, searchParams }: Props) {
   const filters = parseFilters(await searchParams);
   const shown = applyFilters(shops, filters);
   const crumbs = [parent, category].filter((c) => c !== undefined);
+  const content = CATEGORY_CONTENT[category.slug];
+  const updatedOn = lastUpdated(shops);
+  // Internal link block: sibling subcategories with shops, or for a main category the other promoted
+  // main categories (hidden ones stay unlinked until they have enough shops).
+  const siblings = (category.parent_id ? categories : promotedRoots(categories, allShops)).filter(
+    (c) => c.id !== category.id && c.parent_id === category.parent_id && shopsInCategory(allShops, c, categories).length > 0,
+  );
   // Lists for this category and its subcategories.
   const lists = liveTopics(allShops, categories).filter((t) => {
     const c = categories.find((x) => x.slug === t.categorySlug);
@@ -71,7 +81,8 @@ async function CategoryDetails({ params, searchParams }: Props) {
         )}
       </nav>
       <h1 className="text-2xl font-bold">{category.name_nl}</h1>
-      {category.intro_nl && <p>{category.intro_nl}</p>}
+      {shops.length > 0 && <p className="text-sm text-muted-foreground">{freshnessLine(shops.length, updatedOn)}</p>}
+      {content ? content.intro.map((p) => <p key={p}>{p}</p>) : category.intro_nl && <p>{category.intro_nl}</p>}
       {children.length > 0 && (
         <nav aria-label="Subcategorieën" className="flex flex-wrap gap-2">
           {children.map((c) => {
@@ -105,6 +116,17 @@ async function CategoryDetails({ params, searchParams }: Props) {
           ))}
         </nav>
       )}
+      {content && <FaqSection faqs={content.faq} />}
+      {siblings.length > 0 && (
+        <nav aria-label={category.parent_id ? "Andere subcategorieën" : "Andere categorieën"} className="flex flex-col gap-1">
+          <h2 className="text-lg font-semibold">{category.parent_id ? `Meer in ${parent?.name_nl ?? "deze categorie"}` : "Andere categorieën"}</h2>
+          {siblings.map((c) => (
+            <Link key={c.id} href={`/categorie/${c.slug}`} className="inline-flex min-h-11 items-center underline">
+              {c.name_nl}
+            </Link>
+          ))}
+        </nav>
+      )}
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -113,6 +135,15 @@ async function CategoryDetails({ params, searchParams }: Props) {
             { "@type": "ListItem", position: 1, name: "Home", item: `${SITE.url}/` },
             ...crumbs.map((c, i) => ({ "@type": "ListItem", position: i + 2, name: c.name_nl, item: `${SITE.url}/categorie/${c.slug}` })),
           ],
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: category.name_nl,
+          url: `${SITE.url}/categorie/${category.slug}`,
+          ...(updatedOn ? { dateModified: updatedOn } : {}),
         }}
       />
     </div>

@@ -2,19 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { TextPage } from "@/components/text-page";
+import { CHECKOUT_BLOCK_TEXT, isCheckoutBlock } from "@/lib/badge/eligibility";
 import { BADGE_MIN_SCORE, BADGE_PLANS, badgePriceText, checkoutConfig, formatEur, yearlySavingMonths } from "@/lib/badge/pricing";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Badge Geverifieerd voor webshops | De Webshopgids",
+  title: "Badge Geverifieerd voor webshops",
   description: `Laat kopers zien dat je webshop bij jou hoort. ${badgePriceText()}. De badge verandert niets aan je score of je plek in een lijst.`,
   alternates: { canonical: "/geverifieerd" },
 };
 
-type Search = Promise<{ betaald?: string; fout?: string }>;
+type Search = Promise<{ betaald?: string; fout?: string; portaal?: string }>;
 
 async function Notice({ searchParams }: { searchParams: Search }) {
-  const { betaald, fout } = await searchParams;
+  const { betaald, fout, portaal } = await searchParams;
   if (betaald) {
     return (
       <p role="status" className="rounded-md border p-4">
@@ -22,10 +23,24 @@ async function Notice({ searchParams }: { searchParams: Search }) {
       </p>
     );
   }
+  if (isCheckoutBlock(fout)) {
+    return (
+      <p role="status" className="rounded-md border p-4">
+        {CHECKOUT_BLOCK_TEXT[fout]}
+      </p>
+    );
+  }
   if (fout) {
     return (
       <p role="status" className="rounded-md border p-4">
         Het betalen kon nu niet starten. Open de link uit je e-mail opnieuw, of mail <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+      </p>
+    );
+  }
+  if (portaal) {
+    return (
+      <p role="status" className="rounded-md border p-4">
+        We konden je abonnement nu niet openen. Open de link uit je e-mail opnieuw, of mail <a href={`mailto:${SITE.email}`}>{SITE.email}</a> om op te zeggen.
       </p>
     );
   }
@@ -75,7 +90,7 @@ export default function Page(props: { searchParams: Search }) {
       <ul>
         <li>Je score gaat er niet door omhoog. De score komt alleen uit wat op je eigen site staat.</li>
         <li>Je plek in een lijst verandert niet. Betaling heeft nooit invloed op de volgorde.</li>
-        <li>Het is geen keurmerk en geen kopersbescherming. We controleren alleen dat de aanvrager bij de webshop hoort.</li>
+        <li>Het is geen keurmerk en geen kopersbescherming. We controleren alleen dat de aanvrager bij de webshop hoort. <Link href="/geverifieerd/controle">Alle controles</Link>.</li>
       </ul>
 
       <h2>Wie de badge kan krijgen</h2>
@@ -89,7 +104,7 @@ export default function Page(props: { searchParams: Search }) {
         <li>Ga naar de pagina van je webshop en klik onderaan op &ldquo;Is dit jouw webshop?&rdquo;.</li>
         <li>Vul een e-mailadres op je eigen domein in. We sturen een link naar dat adres, of naar het algemene adres op je site.</li>
         <li>Open de link en kies {BADGE_PLANS.map((p) => `${formatEur(p.eur)} ${p.label}`).join(" of ")}. Je betaalt veilig via Stripe.</li>
-        <li>Binnen een paar minuten staat de badge op je pagina. Opzeggen kan via de link in je Stripe-bon of door ons te mailen; de badge loopt tot het einde van de betaalde periode.</li>
+        <li>Binnen een paar minuten staat de badge op je pagina. Opzeggen kan net zo makkelijk: via &ldquo;Abonnement beheren&rdquo; op dezelfde pagina, via de link in je Stripe-bon of door ons te mailen. De badge loopt tot het einde van de betaalde periode en gaat dan vanzelf uit. Bij een jaarbadge zie je de einddatum op die pagina.</li>
       </ol>
 
       <p className="text-sm text-muted-foreground">

@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
+import { SiteStats } from "@/components/site-stats";
 import { TextPage } from "@/components/text-page";
 import { rankingExplanation } from "@/lib/shops/present";
 import { MIN_VALID_SIGNALS } from "@/lib/scoring/weights";
 
 export const metadata: Metadata = {
-  title: "Hoe wij beoordelen | De Webshopgids",
+  title: "Hoe wij beoordelen",
   description: "Hoe de echtheidsscore van 1 tot 100 wordt berekend, waar de gegevens vandaan komen en wat geen invloed heeft.",
   alternates: { canonical: "/hoe-wij-beoordelen" },
 };
@@ -17,6 +19,10 @@ export default function Page() {
         Per webshop tonen we een echtheidsscore van 1 tot 100. Hoog betekent: een kleine, herkenbare shop die zelf maakt of een eigen merk
         verkoopt. Laag betekent: een grote winkel of marktplaats met van alles. De score zegt niets over de kwaliteit van producten of service.
       </p>
+
+      <Suspense fallback={null}>
+        <SiteStats />
+      </Suspense>
 
       <h2>Waar de gegevens vandaan komen</h2>
       <ul>

@@ -19,3 +19,20 @@ export function badgeSvg(score: number | null): string {
 export function badgeEmbed(slug: string): string {
   return `<a href="${SITE.url}/webshop/${slug}"><img src="${SITE.url}/badge/${slug}" width="200" height="56" alt="Geverifieerd door ${SITE.name}"></a>`;
 }
+
+/**
+ * The free "Vermeld op De Webshopgids" embed (traffic plan 2026-10-29): any published shop may show it.
+ * It is optional, changes nothing about score or order, and is plainly not the paid badge: no
+ * "Geverifieerd", no score.
+ */
+export function listedSvg(): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="56" viewBox="0 0 200 56" role="img" aria-label="${esc(`Vermeld op ${SITE.name}`)}">
+<rect x="0.5" y="0.5" width="199" height="55" rx="8" fill="#ffffff" stroke="#d4d4d4"/>
+<text x="14" y="24" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#525252">Vermeld op</text>
+<text x="14" y="42" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#171717">${esc(SITE.name)}</text>
+</svg>`;
+}
+
+export function listedEmbed(slug: string): string {
+  return `<a href="${SITE.url}/webshop/${slug}"><img src="${SITE.url}/badge/${slug}/vermeld" width="200" height="56" alt="Vermeld op ${SITE.name}"></a>`;
+}

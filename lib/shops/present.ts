@@ -39,6 +39,8 @@ export type PublicShop = {
   updated_at: string;
   /** `disputed` shows "In beoordeling" instead of the score (migration 0008). */
   status: "published" | "disputed";
+  /** Hand-checked facts from `shop_tags` (migration 0025), e.g. "vintage". Absent until that runs. */
+  tags?: string[];
 };
 
 export type Category = {
@@ -81,6 +83,13 @@ export function promotedRoots<T extends Pick<PublicShop, "category_id">>(categor
   return categories.filter(
     (c) => c.parent_id === null && (c.slug === LAUNCH_ROOT_SLUG || shopsInCategory(shops, c, categories).length >= MIN_SHOPS_TO_PROMOTE),
   );
+}
+
+/** Slug of the main category a (sub)category belongs to; null when unknown. */
+export function rootSlugOf(categoryId: string | null, categories: Pick<Category, "id" | "slug" | "parent_id">[]): string | null {
+  const c = categories.find((x) => x.id === categoryId);
+  if (!c) return null;
+  return c.parent_id ? (categories.find((x) => x.id === c.parent_id)?.slug ?? null) : c.slug;
 }
 
 /** Words for each main category in "webshops voor ...". Order follows sort_order. */

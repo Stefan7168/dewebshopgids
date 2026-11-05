@@ -10,11 +10,15 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { KEURMERK_PAGES } from "@/lib/keurmerk/pages";
 import { signupHeadline } from "@/lib/newsletter/core";
+import { rootSlugOf } from "@/lib/shops/present";
 import { cachedToday, getCategories, getPublishedShops, getShop } from "@/lib/shops/data";
 import { getEarnedSubScores } from "@/lib/shops/evidence";
 import { getScoreChanges } from "@/lib/shops/score-history";
 import { dutchDate } from "@/lib/shops/score-history-rules";
 import { countryName, hasVerifiedBadge, keurmerkText, onlineSince, priceLevelText, productCountText, scoreDisplay, similarShops, SUB_SCORE_NAMES, type Category, type PublicShop } from "@/lib/shops/present";
+import { shopAnswer, shopAnswerJsonLd, shopQuestion } from "@/lib/seo/shop-answer";
+import { shopDescription, shopTitle } from "@/lib/seo/shop-meta";
+import { getLastChecked } from "@/lib/shops/last-checked";
 import { SITE } from "@/lib/site";
 import { PageLoading } from "@/components/page-loading";
 
@@ -24,8 +28,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const shop = await getShop((await params).slug);
   if (!shop) return { title: "Webshop niet gevonden", robots: { index: false } };
   return {
-    title: `${shop.name}: echtheidsscore, keurmerk en feiten`,
-    description: shop.description_nl ?? `Echtheidsscore, keurmerk en feiten over ${shop.domain}.`,
+    title: shopTitle(shop),
+    description: shopDescription(shop),
     alternates: { canonical: `${SITE.url}/webshop/${shop.slug}` },
   };
 }
@@ -62,6 +66,17 @@ async function EarnedSubScores({ shop }: { shop: PublicShop }) {
         ))}
       </ul>
     </section>
+  );
+}
+
+/** The last check date and the FAQPage markup; the visible answer itself renders without waiting. */
+async function LastChecked({ shop }: { shop: PublicShop }) {
+  const checkedOn = await getLastChecked(shop.id);
+  return (
+    <>
+      {checkedOn && <p className="text-xs text-muted-foreground">Laatst gecontroleerd op {dutchDate(checkedOn)}</p>}
+      <JsonLd data={shopAnswerJsonLd(shop, checkedOn)} />
+    </>
   );
 }
 
@@ -143,12 +158,27 @@ async function ShopDetails({ params }: Props) {
             <p className="text-sm">
               <span className="rounded-full border px-2 py-0.5 font-medium">Geverifieerd</span>{" "}
               <span className="text-muted-foreground">
-                Deze shop betaalt voor de badge. Dat verandert niets aan de score of de volgorde.
+                Deze shop betaalt voor de badge. Dat verandert niets aan de score of de volgorde.{" "}
+                <Link href="/geverifieerd/controle" className="underline">
+                  Wat we controleren
+                </Link>
               </span>
             </p>
           )}
         </div>
       </div>
+      <section aria-labelledby="kort-antwoord" className="flex flex-col gap-1 rounded-lg border p-4">
+        <h2 id="kort-antwoord" className="font-semibold">{shopQuestion(shop)}</h2>
+        <p>
+          {shopAnswer(shop)}{" "}
+          <Link href="/hoe-wij-beoordelen" className="underline text-sm">
+            Zo beoordelen wij
+          </Link>
+        </p>
+        <Suspense fallback={null}>
+          <LastChecked shop={shop} />
+        </Suspense>
+      </section>
       {shop.description_nl && <p>{shop.description_nl}</p>}
       <div className="flex flex-col gap-2">
         <a
@@ -208,7 +238,7 @@ async function ShopDetails({ params }: Props) {
       <Suspense fallback={null}>
         <SimilarShops shop={shop} categories={categories} />
       </Suspense>
-      <NewsletterForm headline={signupHeadline()} source={`/webshop/${shop.slug}`} />
+      <NewsletterForm headline={signupHeadline(undefined, [rootSlugOf(shop.category_id, categories)])} source={`/webshop/${shop.slug}`} />
       <JsonLd
         data={{
           "@context": "https://schema.org",

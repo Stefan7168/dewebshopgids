@@ -2,7 +2,7 @@
 // agent_scout role over the Supavisor pooler. Commands:
 //   start                         guards + agent_runs row; prints {"run_id"}; exit 3 = paused, stop
 //   pending [--limit 60]          source_lists domains not yet a shop or candidate (untrusted data)
-//   categories                    category slugs to choose from
+//   categories                    category slugs to choose from: main categories first, each sub-category under its main
 //   propose --run ID --domain D --name N --category SLUG --reason R
 //                                 insert one candidate (max 25 per day, enforced here and by RLS status='new')
 //   finish --run ID --status ok|failed --summary S
@@ -52,9 +52,12 @@ async function main() {
         return;
       }
       case "categories": {
-        const rows = await sql<{ slug: string; name_nl: string }[]>`
-          select slug, name_nl from public.categories order by sort_order, slug`;
-        console.log(rows.map((r) => `${r.slug}\t${r.name_nl}`).join("\n"));
+        // Main categories have no parent; each line under one is a sub-category of it.
+        const rows = await sql<{ slug: string; name_nl: string; parent: string | null }[]>`
+          select c.slug, c.name_nl, p.slug as parent
+          from public.categories c left join public.categories p on p.id = c.parent_id
+          order by coalesce(p.sort_order, c.sort_order), coalesce(p.slug, c.slug), c.parent_id nulls first, c.sort_order, c.slug`;
+        console.log(rows.map((r) => (r.parent ? `  ${r.slug}\t${r.name_nl}\t(under ${r.parent})` : `${r.slug}\t${r.name_nl}\t(main category)`)).join("\n"));
         return;
       }
       case "propose": {

@@ -73,6 +73,12 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 - 2026-10-28: Second category is Tuin & buiten (coordinator, under Stefan's autonomy mandate; he can reverse it). Same homeowner audience, many small makers, seasonal demand. The existing sub-category `tuin-buiten` becomes the top level (migration 0016), so its URLs, shops and queued candidates stay valid; new sub-categories: tuinmeubels, potten-plantenbakken, buitenverlichting, vuur-bbq, tuinaccessoires.
 - 2026-10-28: Garden source list: `scripts/pipeline/sources/garden-candidates.csv`, same columns as the launch list plus `source_url` (the page the fit was checked on). 10 strong or medium fits enter the queue with source `scout:garden-list` (`import-launch-candidates.ts garden`); 3 checked shops stay in the file as weak (wholesale only, no webshop, mass-brand reseller). Fewer than planned: many Dutch garden brands (DeWit, BonFeu, Lightpro, Apple Bee, Pottery Pots, WWOO, RB73) sell only through dealers or show no own webshop, so they are left out rather than guessed. Half the list are growers (bulbs, roses, seeds, plants); they get the top-level `tuin-buiten` category because no sub-category fits. No row repeats a launch-list shop. Same production write block, so the insert is in `/mnt/project-files/build/garden-candidates-insert.sql`; it needs migration 0016 first and reports `missing_category` if that is not applied.
 
+## 2026-10-29: QA round 2 (admin)
+- `/admin/kandidaten` ticks every row, so rejecting a few domains meant unticking the rest. Each row now has "Alleen deze afwijzen"; the page says "de eerste 100 van N" when more wait.
+- `/admin/gids` shows the shops of each issue (name, domain, score) and flags one that is not published, because the approval also covers the shop block under the mail.
+- `app/error.tsx` and `app/admin/error.tsx`: a failed read or a refused admin action (such as a second click on a decided item) shows a Dutch message instead of Next.js's English error page.
+- `/AGENTS.md`, written by `next dev`, is ignored so no agent commits it.
+
 ## 2026-10-28: Tuin & buiten stays unpromoted until 30 shops
 - Coordinator call: 10 verified garden shops is too thin to present as a category. The category pages and /beste lists stay built (a /beste list already needs 15 shops to appear).
 - `promotedRoots()` in `lib/shops/present.ts` decides what the home page, the header and llms.txt show: Wonen always, any other main category from 30 published shops (`MIN_SHOPS_TO_PROMOTE`). No code change is needed when garden reaches 30; the next publish shows it.
@@ -131,3 +137,14 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 ## 2026-10-29: Fourth category Sieraden & accessoires
 - Picked by the coordinator under Stefan's autonomy mandate, on the category research thread's recommendation ("handmade jewellery, good 4th"). Same buyer as Home & Living, many goldsmiths, silversmiths and leather workers sell from their own webshop, and "eigen atelier" is easy to verify on their sites. Stefan may reverse it.
 - Migration 0021 adds `sieraden-accessoires` with sieraden, tassen-leer and sjaals-mutsen. Hidden from home page, header and llms.txt until 30 published shops, the same gate as the other new categories. No candidate list yet; that needs a research pass like the food list.
+
+## 2026-10-29: Badge price EUR 15/month or EUR 149/year (revenue model v2)
+- Plan v3 says EUR 19 per month. The affiliate mapping found a usable programme at only 24 of 608 shops, so the badge becomes the main income line. Revenue model v2 (`research/revenue-model-v2-2026-10-29.md`, adopted by the coordinator as working target, Stefan may reverse) sets EUR 15 per month or EUR 149 per year: below WebwinkelKeur Plus, because the badge gives less than a keurmerk. North star becomes EUR 500 monthly revenue by week 52.
+- All prices live in `lib/badge/pricing.ts`. The sales page is `/geverifieerd`. Checkout starts from the claim link page (`/beheer/bewerk`), so only someone with mail on the shop's own domain can buy it, and only for a published shop with score 70+. It uses a Stripe Checkout Session with price IDs from `STRIPE_PRICE_BADGE_MONTH` and `STRIPE_PRICE_BADGE_YEAR` plus `STRIPE_SECRET_KEY`; without them the pages say "binnenkort". Outreach mails keep the fixed Payment Link (`STRIPE_BADGE_LINK`, now at EUR 15).
+- "Geverifieerd" means only that the buyer proved control of mail on the shop's domain. The page says it is paid, not a keurmerk, and changes neither score nor order. VAT wording on the prices and the badge text go on the lawyer-check list.
+
+## 2026-11-05: Work directly on main, no PR queue
+- Stefan (2026-11-05): "let's just work directly in production". Claude lands small, tested changes on `main` (which Vercel deploys to production) instead of leaving a queue of PRs. Each change still passes lint, typecheck, vitest, the database tests and the build before it lands.
+- Still Stefan's call: `.github/` changes and score weight changes (`lib/scoring/weights.ts`).
+- Migrations still reach the production database only when Stefan pastes the matching `build/stefan-*.sql` step.
+- Where the session safety check refuses Claude a push to `main`, Claude prepares the merged result and Stefan runs one merge command.

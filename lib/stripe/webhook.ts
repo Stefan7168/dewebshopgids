@@ -39,7 +39,24 @@ function dateAfter(unixSeconds: number, days: number): string {
   return new Date((unixSeconds + days * 86400) * 1000).toISOString().slice(0, 10);
 }
 
-/** What a verified event means for a badge or placement. Everything else is ignored. */
+/** Subscription states in which the badge (or placement) stops at once. */
+export const ENDED_STATUSES = ["canceled", "unpaid", "incomplete_expired"];
+
+/**
+ * What a verified event means for a badge or placement. Everything else is ignored.
+ *
+ * | Event                              | Condition                                   | Result                          |
+ * |------------------------------------|---------------------------------------------|---------------------------------|
+ * | checkout.session.completed         | paid subscription, shop id in reference     | link, about one month           |
+ * | invoice.paid                       | has a subscription and a period             | extend to period end + 3 days   |
+ * | invoice.payment_failed             | Stripe will retry (next_payment_attempt)    | ignore: the paid period runs on |
+ * | invoice.payment_failed             | no retry left (next_payment_attempt null)   | end                             |
+ * | customer.subscription.updated      | status canceled, unpaid, incomplete_expired | end                             |
+ * | customer.subscription.updated      | active, past_due, cancel_at_period_end      | ignore: the stored date decides |
+ * | customer.subscription.deleted      | always                                      | end                             |
+ *
+ * A badge that is not extended switches itself off when `verified_badge_until` passes, monthly or yearly.
+ */
 export function badgeAction(event: unknown, nowSeconds = Math.floor(Date.now() / 1000)): BadgeAction {
   const e = obj(event);
   const o = obj(obj(e.data).object);
@@ -61,6 +78,19 @@ export function badgeAction(event: unknown, nowSeconds = Math.floor(Date.now() /
       const end = ends.length ? Math.max(...ends) : Number(o.period_end);
       if (!Number.isFinite(end)) return { kind: "ignore", reason: "invoice without period" };
       return { kind: "extend", subscriptionId: sub, until: dateAfter(end, GRACE_DAYS) };
+    }
+    case "invoice.payment_failed": {
+      const parent = obj(o.parent);
+      const sub = idOf(parent.type === "subscription_details" ? obj(parent.subscription_details).subscription : o.subscription);
+      if (!sub) return { kind: "ignore", reason: "invoice without subscription" };
+      // Stripe sets next_payment_attempt to null after its last retry. Until then the paid period runs on.
+      if (o.next_payment_attempt !== null) return { kind: "ignore", reason: "payment failed, Stripe retries" };
+      return { kind: "end", subscriptionId: sub };
+    }
+    case "customer.subscription.updated": {
+      const sub = idOf(o.id);
+      if (!sub) return { kind: "ignore", reason: "no subscription id" };
+      return ENDED_STATUSES.includes(String(o.status)) ? { kind: "end", subscriptionId: sub } : { kind: "ignore", reason: `subscription ${String(o.status)}` };
     }
     case "customer.subscription.deleted": {
       const sub = idOf(o.id);

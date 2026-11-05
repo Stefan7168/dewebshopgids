@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { GuideBody } from "@/components/guide-body";
+import { GuideNav } from "@/components/guide-nav";
 import { JsonLd } from "@/components/json-ld";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { ScoreBadge } from "@/components/score-badge";
@@ -11,7 +12,8 @@ import { SiteHeader } from "@/components/site-header";
 import { getGuide } from "@/lib/guide/data";
 import { parseGuideSlug } from "@/lib/guide/week";
 import { signupHeadline } from "@/lib/newsletter/core";
-import { getPublishedShops } from "@/lib/shops/data";
+import { getCategories, getPublishedShops } from "@/lib/shops/data";
+import { rootSlugOf } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 import { PageLoading } from "@/components/page-loading";
 
@@ -33,7 +35,8 @@ async function Guide({ params }: Props) {
   const g = parseGuideSlug(slug) ? await getGuide(slug) : null;
   if (!g) notFound();
   // In the order the editor chose, which is the order the body mentions them.
-  const shops = (await getPublishedShops())
+  const [allShops, categories] = await Promise.all([getPublishedShops(), getCategories()]);
+  const shops = allShops
     .filter((s) => g.shop_ids.includes(s.id))
     .sort((a, b) => g.shop_ids.indexOf(a.id) - g.shop_ids.indexOf(b.id));
   return (
@@ -41,13 +44,13 @@ async function Guide({ params }: Props) {
       <p className="text-sm text-muted-foreground">
         <Link href="/gids" className="underline">Webshopgids</Link> · week {g.iso_week}, {g.iso_year}
       </p>
-      <h1 className="text-2xl font-bold">{g.title_nl}</h1>
-      {g.intro_nl ? <p className="text-lg">{g.intro_nl}</p> : null}
-      <GuideBody md={g.body_md ?? ""} />
+      <h1 className="text-2xl font-bold md:text-3xl">{g.title_nl}</h1>
+      {g.intro_nl ? <p className="max-w-prose text-lg md:text-xl">{g.intro_nl}</p> : null}
+      <GuideBody md={g.body_md ?? ""} liveShops={new Set((await getPublishedShops()).map((s) => s.slug))} />
       {shops.length ? (
         <section className="flex flex-col gap-3" aria-label="Webshops in deze gids">
           <h2 className="text-xl font-semibold">De webshops van deze week</h2>
-          <ul className="flex flex-col gap-3">
+          <ul className="grid gap-3 md:grid-cols-2">
             {shops.map((s) => (
               <li key={s.id} className="rounded-lg border p-4 flex gap-4 items-start">
                 <ScoreBadge shop={s} />
@@ -63,7 +66,7 @@ async function Guide({ params }: Props) {
       <p className="text-sm text-muted-foreground">
         Alle cijfers komen uit onze eigen controle van de webshops. <Link href="/hoe-wij-beoordelen" className="underline">Zo beoordelen we</Link>.
       </p>
-      <NewsletterForm headline={signupHeadline()} source={`/gids/${g.slug}`} />
+      <NewsletterForm headline={signupHeadline(undefined, shops.map((s) => rootSlugOf(s.category_id, categories)))} source={`/gids/${g.slug}`} />
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -89,6 +92,9 @@ async function Guide({ params }: Props) {
           ],
         }}
       />
+      <Suspense fallback={null}>
+        <GuideNav slug={g.slug} />
+      </Suspense>
     </article>
   );
 }

@@ -97,10 +97,28 @@ async function DisputeList() {
   );
 }
 
-export default function DisputesPage() {
+const FORM_ERRORS: Record<string, string> = {
+  feiten: "Vink eerst aan welke gegevens je hebt nagekeken. Dan kan het antwoord \"geen wijziging\" ze noemen.",
+  dubbel: "Je koos hetzelfde gegeven twee keer. Kies elk gegeven één keer.",
+  waarde: "Een nieuwe waarde past niet bij het gekozen gegeven. Kijk naar de voorbeelden in het invulveld.",
+  score: "De nieuwe echtheidsscore moet een heel getal van 1 tot 100 zijn.",
+  leeg: "Kies een gegeven met een nieuwe waarde, of vul een nieuwe echtheidsscore in.",
+  reden: "Schrijf kort wat je hebt nagekeken.",
+};
+
+async function FormError({ searchParams }: { searchParams: Promise<{ fout?: string }> }) {
+  const { fout } = await searchParams;
+  const text = fout ? FORM_ERRORS[fout] : undefined;
+  return text ? <p role="alert" className="rounded-md border border-red-300 p-3 text-sm text-red-700">Niet opgeslagen: {text}</p> : null;
+}
+
+export default function DisputesPage({ searchParams }: { searchParams: Promise<{ fout?: string }> }) {
   return (
     <div className="flex flex-col gap-4">
       <h1 className="font-bold text-2xl">Herbeoordelingen (G4)</h1>
+      <Suspense>
+        <FormError searchParams={searchParams} />
+      </Suspense>
       <p className="text-sm text-muted-foreground">
         Zolang je niet beslist, toont de pagina &quot;In beoordeling&quot; zonder score. Een correctie geldt meteen voor de gegevens; een nieuwe score staat er na de nachtelijke run. Correcties blijven staan, ook als de webshop opnieuw wordt bekeken.
       </p>

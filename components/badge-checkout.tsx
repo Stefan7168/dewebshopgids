@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { startBadgeCheckout } from "@/app/beheer/actions";
+import { openBadgePortal, startBadgeCheckout } from "@/app/beheer/actions";
 import { Button } from "@/components/ui/button";
 import { badgeEligibility } from "@/lib/badge/eligibility";
 import { BADGE_MIN_SCORE, BADGE_PLANS, checkoutConfig, formatEur } from "@/lib/badge/pricing";
@@ -8,12 +8,28 @@ import { dutchDate } from "@/lib/shops/score-history-rules";
 type Shop = { status: string; score: number | null; verified_badge_until: string | null };
 
 /** Badge offer under the claim edit form. The token comes from the claim link, so only the owner sees it. */
-export function BadgeCheckout({ token, shop }: { token: string; shop: Shop }) {
+export function BadgeCheckout({ token, shop, hasSubscription = false }: { token: string; shop: Shop; hasSubscription?: boolean }) {
   const e = badgeEligibility(shop);
   return (
     <section className="flex flex-col gap-3 border-t pt-6">
       <h2 className="text-xl font-semibold">Badge Geverifieerd</h2>
-      {e.kind === "active" && <p>Je badge staat aan tot en met {dutchDate(e.until)}. Hij verlengt vanzelf zolang je abonnement loopt.</p>}
+      {e.kind === "active" && (
+        <>
+          <p>
+            Je badge staat aan tot en met {dutchDate(e.until)}. Zolang je abonnement loopt, verlengt hij vanzelf. Zeg je op, dan loopt de badge tot
+            het einde van de betaalde periode en gaat dan uit.
+          </p>
+          {hasSubscription && (
+            <form action={openBadgePortal}>
+              <input type="hidden" name="t" value={token} />
+              <Button type="submit" variant="outline" className="h-11">
+                Abonnement beheren
+              </Button>
+              <p className="mt-2 text-sm text-muted-foreground">Opzeggen, je betaalmethode wijzigen of je facturen downloaden, via Stripe.</p>
+            </form>
+          )}
+        </>
+      )}
       {e.kind === "not_published" && <p className="text-muted-foreground">De badge kan pas als je pagina in de gids staat.</p>}
       {e.kind === "score_too_low" && (
         <p className="text-muted-foreground">De badge is voor webshops met een echtheidsscore van {BADGE_MIN_SCORE} of hoger.</p>

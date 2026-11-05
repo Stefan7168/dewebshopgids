@@ -142,3 +142,9 @@ Record every decision that deviates from or adds to the plan. Newest first. Form
 - Plan v3 says EUR 19 per month. The affiliate mapping found a usable programme at only 24 of 608 shops, so the badge becomes the main income line. Revenue model v2 (`research/revenue-model-v2-2026-10-29.md`, adopted by the coordinator as working target, Stefan may reverse) sets EUR 15 per month or EUR 149 per year: below WebwinkelKeur Plus, because the badge gives less than a keurmerk. North star becomes EUR 500 monthly revenue by week 52.
 - All prices live in `lib/badge/pricing.ts`. The sales page is `/geverifieerd`. Checkout starts from the claim link page (`/beheer/bewerk`), so only someone with mail on the shop's own domain can buy it, and only for a published shop with score 70+. It uses a Stripe Checkout Session with price IDs from `STRIPE_PRICE_BADGE_MONTH` and `STRIPE_PRICE_BADGE_YEAR` plus `STRIPE_SECRET_KEY`; without them the pages say "binnenkort". Outreach mails keep the fixed Payment Link (`STRIPE_BADGE_LINK`, now at EUR 15).
 - "Geverifieerd" means only that the buyer proved control of mail on the shop's domain. The page says it is paid, not a keurmerk, and changes neither score nor order. VAT wording on the prices and the badge text go on the lawyer-check list.
+
+## 2026-11-05: Work directly on main, no PR queue
+- Stefan (2026-11-05): "let's just work directly in production". Claude lands small, tested changes on `main` (which Vercel deploys to production) instead of leaving a queue of PRs. Each change still passes lint, typecheck, vitest, the database tests and the build before it lands.
+- Still Stefan's call: `.github/` changes and score weight changes (`lib/scoring/weights.ts`).
+- Migrations still reach the production database only when Stefan pastes the matching `build/stefan-*.sql` step.
+- Where the session safety check refuses Claude a push to `main`, Claude prepares the merged result and Stefan runs one merge command.

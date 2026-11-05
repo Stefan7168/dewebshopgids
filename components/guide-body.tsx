@@ -25,10 +25,11 @@ function Inlines({ items, live }: { items: Inline[]; live: Live }) {
 /**
  * The gids body as React elements: only the safe Markdown subset, never raw HTML.
  * With liveShops (slugs of shops that still have a page), links to any other /webshop/ page become plain text.
+ * `max-w-prose` keeps lines readable on a tablet (about 65 characters instead of 90+ across the full column).
  */
 export function GuideBody({ md, liveShops }: { md: string; liveShops?: ReadonlySet<string> }) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex max-w-prose flex-col gap-4 md:text-lg md:leading-8">
       {parseGuideMarkdown(md).map((b, n) =>
         b.kind === "heading" ? (
           <h2 key={n} className="text-xl font-semibold mt-2"><Inlines items={b.inlines} live={liveShops} /></h2>

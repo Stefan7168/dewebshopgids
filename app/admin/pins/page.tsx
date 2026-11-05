@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { pinImagePath } from "@/lib/pinterest/card";
-import { SITE } from "@/lib/site";
 import { createServiceClient } from "@/lib/supabase/service";
 import { approvePins, rejectPins } from "./actions";
 import { draftCutoff } from "./expiry";
@@ -47,7 +46,7 @@ async function Pins() {
                 <img src={pinImagePath(p.target_path)} alt={`Pin-afbeelding voor ${p.title}`} width={160} height={240} className="rounded border" />
                 <p className="text-xs text-muted-foreground">
                   Bord {p.board} · naar{" "}
-                  <a href={`${SITE.url}${p.target_path}`} className="underline break-all">
+                  <a href={p.target_path} className="underline break-all">
                     {p.target_path}
                   </a>
                 </p>

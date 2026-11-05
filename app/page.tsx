@@ -92,7 +92,7 @@ export default async function Home() {
         <p>
           Elke donderdag zetten we 5 webshops op een rij in <Link href="/gids" className="underline">de wekelijkse webshopgids</Link>.
         </p>
-        <NewsletterForm headline={signupHeadline()} source="/" />
+        <NewsletterForm headline={signupHeadline(undefined, roots.map((r) => r.slug))} source="/" />
       </main>
       <SiteFooter />
       <JsonLd

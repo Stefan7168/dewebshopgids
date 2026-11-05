@@ -4,7 +4,7 @@ import { TextPage } from "@/components/text-page";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Over De Webshopgids",
+  title: "Over ons",
   description:
     "Wie wij zijn en hoe De Webshopgids Nederlandse webshops beoordeelt.",
 };

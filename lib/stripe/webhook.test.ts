@@ -53,4 +53,27 @@ describe("badgeAction", () => {
     expect(badgeAction({ type: "customer.subscription.deleted", data: { object: { id: "sub_1" } } })).toEqual({ kind: "end", subscriptionId: "sub_1" });
     expect(badgeAction({ type: "charge.refunded", data: { object: {} } }).kind).toBe("ignore");
   });
+
+  it("follows the lifecycle state table after payment", () => {
+    const sub = (status: string, extra = {}) => ({ type: "customer.subscription.updated", data: { object: { id: "sub_1", status, ...extra } } });
+    const failed = (next: number | null | undefined) => ({
+      type: "invoice.payment_failed",
+      data: { object: { parent: { type: "subscription_details", subscription_details: { subscription: "sub_1" } }, next_payment_attempt: next } },
+    });
+    const table: [string, unknown, string][] = [
+      ["subscription canceled", sub("canceled"), "end"],
+      ["subscription unpaid after retries", sub("unpaid"), "end"],
+      ["first payment never completed", sub("incomplete_expired"), "end"],
+      ["subscription active", sub("active"), "ignore"],
+      ["payment late, Stripe retrying", sub("past_due"), "ignore"],
+      ["cancelled at period end: runs to the paid date", sub("active", { cancel_at_period_end: true }), "ignore"],
+      ["payment failed, retry planned", failed(1_793_100_000), "ignore"],
+      ["payment failed, no retry left", failed(null), "end"],
+      ["payment failed, field missing: keep", failed(undefined), "ignore"],
+    ];
+    for (const [name, event, kind] of table) expect(badgeAction(event).kind, name).toBe(kind);
+    expect(badgeAction(failed(null))).toEqual({ kind: "end", subscriptionId: "sub_1" });
+    expect(badgeAction({ type: "invoice.payment_failed", data: { object: { subscription: "sub_2", next_payment_attempt: null } } })).toEqual({ kind: "end", subscriptionId: "sub_2" });
+    expect(badgeAction({ type: "invoice.payment_failed", data: { object: { next_payment_attempt: null } } }).kind).toBe("ignore");
+  });
 });

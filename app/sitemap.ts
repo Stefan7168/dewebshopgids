@@ -16,7 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const newest = newestUpdate(shops);
   return [
     { url: `${SITE.url}/`, lastModified: newest, changeFrequency: "daily", priority: 1 },
-    ...["over", "hoe-wij-beoordelen", "informatie-voor-webshops", "geverifieerd", "privacy"].map((p) => ({ url: `${SITE.url}/${p}`, changeFrequency: "monthly" as const, priority: 0.3 })),
+    ...["over", "hoe-wij-beoordelen", "informatie-voor-webshops", "geverifieerd", "geverifieerd/controle", "privacy"].map((p) => ({ url: `${SITE.url}/${p}`, changeFrequency: "monthly" as const, priority: 0.3 })),
     ...categories
       .filter((c) => listed.includes(c))
       .map((c) => ({ url: `${SITE.url}/categorie/${c.slug}`, lastModified: lastmod(c.slug), changeFrequency: "daily" as const, priority: 0.8 })),

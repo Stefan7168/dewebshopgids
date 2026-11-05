@@ -3,16 +3,18 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { JsonLd } from "@/components/json-ld";
+import { FaqSection } from "@/components/faq-section";
 import { FeaturedBlock } from "@/components/featured-block";
 import { ShopFilterBar } from "@/components/shop-filters";
 import { ShopList } from "@/components/shop-list";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { liveTopics } from "@/lib/beste/topics";
+import { CATEGORY_CONTENT } from "@/lib/categories/content";
 import { featuredFor } from "@/lib/featured/select";
 import { getCategories, getFeaturedPlacements, getPublishedShops } from "@/lib/shops/data";
 import { applyFilters, hasFilters, parseFilters } from "@/lib/shops/filters";
-import { MIN_SHOPS_TO_INDEX, rankShops, shopsInCategory } from "@/lib/shops/present";
+import { MIN_SHOPS_TO_INDEX, promotedRoots, rankShops, shopsInCategory } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 import { PageLoading } from "@/components/page-loading";
 
@@ -54,6 +56,12 @@ async function CategoryDetails({ params, searchParams }: Props) {
   const filters = parseFilters(await searchParams);
   const shown = applyFilters(shops, filters);
   const crumbs = [parent, category].filter((c) => c !== undefined);
+  const content = CATEGORY_CONTENT[category.slug];
+  // Internal link block: sibling subcategories with shops, or for a main category the other promoted
+  // main categories (hidden ones stay unlinked until they have enough shops).
+  const siblings = (category.parent_id ? categories : promotedRoots(categories, allShops)).filter(
+    (c) => c.id !== category.id && c.parent_id === category.parent_id && shopsInCategory(allShops, c, categories).length > 0,
+  );
   // Lists for this category and its subcategories.
   const lists = liveTopics(allShops, categories).filter((t) => {
     const c = categories.find((x) => x.slug === t.categorySlug);
@@ -71,7 +79,7 @@ async function CategoryDetails({ params, searchParams }: Props) {
         )}
       </nav>
       <h1 className="text-2xl font-bold">{category.name_nl}</h1>
-      {category.intro_nl && <p>{category.intro_nl}</p>}
+      {content ? content.intro.map((p) => <p key={p}>{p}</p>) : category.intro_nl && <p>{category.intro_nl}</p>}
       {children.length > 0 && (
         <nav aria-label="Subcategorieën" className="flex flex-wrap gap-2">
           {children.map((c) => {
@@ -101,6 +109,17 @@ async function CategoryDetails({ params, searchParams }: Props) {
           {lists.map((t) => (
             <Link key={t.slug} href={`/beste/webshops-${t.slug}`} className="inline-flex min-h-11 items-center underline">
               {t.title}
+            </Link>
+          ))}
+        </nav>
+      )}
+      {content && <FaqSection faqs={content.faq} />}
+      {siblings.length > 0 && (
+        <nav aria-label={category.parent_id ? "Andere subcategorieën" : "Andere categorieën"} className="flex flex-col gap-1">
+          <h2 className="text-lg font-semibold">{category.parent_id ? `Meer in ${parent?.name_nl ?? "deze categorie"}` : "Andere categorieën"}</h2>
+          {siblings.map((c) => (
+            <Link key={c.id} href={`/categorie/${c.slug}`} className="inline-flex min-h-11 items-center underline">
+              {c.name_nl}
             </Link>
           ))}
         </nav>

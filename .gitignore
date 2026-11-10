@@ -40,3 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Claude Code: personal settings can hold approved commands with secrets in them
+.claude/settings.local.json
+.claude/*.local.json
+CLAUDE.local.md

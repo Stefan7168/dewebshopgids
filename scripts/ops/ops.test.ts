@@ -66,5 +66,14 @@ describe("digest", () => {
     expect(text).toContain("crawl: 7 ok");
     expect(text).toContain("Schema-gaten: shop-scout");
     expect(text).toContain("(2%)");
+    expect(text).not.toContain("Telefooncheck");
+  });
+
+  it("reports the weekly 390 px check", () => {
+    const base = {
+      week: "2026-W44", runs: [], gaps: [], spendUsd: 0, budgetUsd: 150, escalations: [], prs: null, gates: {}, pauses: [], watchdogSummary: null,
+    };
+    expect(renderDigest({ ...base, screenshots: { status: "fail", problems: ["/x: status 500"] } })).toContain("Telefooncheck 390 px: fail (/x: status 500)");
+    expect(renderDigest({ ...base, screenshots: null })).toContain("Telefooncheck 390 px: deze week niet gedraaid");
   });
 });

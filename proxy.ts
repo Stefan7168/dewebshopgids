@@ -2,7 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 import { isAuthorized, isPublicPath } from "@/lib/auth/basic-auth";
 import { goneResponse, removedSlugs } from "@/lib/shops/removed";
-import { isUnlistedShop } from "@/lib/shops/listed";
+import { isUnlisted } from "@/lib/shops/listed";
+import { keurmerkPageBySlug } from "@/lib/keurmerk/pages";
 
 export async function proxy(request: NextRequest) {
   const user = process.env.BASIC_AUTH_USER;
@@ -26,12 +27,22 @@ export async function proxy(request: NextRequest) {
   if (shop && (await removedSlugs()).has(shop[1])) {
     return goneResponse();
   }
-  // Any other unknown shop: a real 404 (the page alone streams a 200). The rewrite target has no route.
-  if (shop && (await isUnlistedShop(shop[1]))) {
-    return NextResponse.rewrite(new URL("/webshop-niet-gevonden", request.url));
+  // Any other unknown shop, category, gids issue or keurmerk: a real 404 (the pages alone stream a 200).
+  // The rewrite target has no route, so Next.js serves the not-found page with status 404.
+  if (await isUnknownPage(pathname)) {
+    return NextResponse.rewrite(new URL("/pagina-niet-gevonden", request.url));
   }
 
   return await updateSession(request);
+}
+
+async function isUnknownPage(pathname: string): Promise<boolean> {
+  const m = pathname.match(/^\/(webshop|categorie|gids|keurmerk)\/([^/]+)\/?$/);
+  if (!m) return false;
+  const [, section, slug] = m;
+  if (section === "keurmerk") return !keurmerkPageBySlug(slug);
+  if (!/^[a-z0-9-]+$/.test(slug)) return false; // odd spellings: let the page decide
+  return isUnlisted(section === "webshop" ? "shop" : section === "categorie" ? "category" : "guide", slug);
 }
 
 export const config = {

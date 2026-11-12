@@ -42,6 +42,7 @@ export async function GET() {
     "",
     `- [Badge Geverifieerd](${SITE.url}/geverifieerd): betaalde vermelding voor webshops met een score van ${BADGE_MIN_SCORE} of hoger, ${badgePriceText()}. De badge verandert de score en de volgorde niet en is geen keurmerk.`,
     `- [Informatie voor webshops](${SITE.url}/informatie-voor-webshops): opname is gratis; herbeoordeling, verwijdering en eigen beschrijving`,
+    `- [Vragen van webshops](${SITE.url}/informatie-voor-webshops/vragen): antwoorden op de vragen die eigenaren het vaakst stellen`,
     "",
   ].join("\n");
   return new Response(body, { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" } });

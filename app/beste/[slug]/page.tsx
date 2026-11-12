@@ -15,7 +15,7 @@ import { getCategories, getPublishedShops } from "@/lib/shops/data";
 import { getEarnedSubScores } from "@/lib/shops/evidence";
 import { keurmerkRowText, shopsByCity } from "@/lib/shops/keurmerk-check";
 import { getKeurmerkCheckDates } from "@/lib/shops/keurmerk-checked";
-import { onlineSince, productCountText, rankingExplanation, SUB_SCORE_NAMES, type PublicShop } from "@/lib/shops/present";
+import { onlineSince, productCountText, rankingExplanation, rootSlugOf, SUB_SCORE_NAMES, type PublicShop } from "@/lib/shops/present";
 import { SITE } from "@/lib/site";
 import { PageLoading } from "@/components/page-loading";
 
@@ -28,7 +28,8 @@ async function load(slug: string) {
   const list = besteList(topic, shops, categories);
   if (!list) return null;
   const siblings = siblingTopics(topic, liveTopics(shops, categories), categories);
-  return { topic, list, siblings, category: categories.find((c) => c.slug === topic.categorySlug)! };
+  const category = categories.find((c) => c.slug === topic.categorySlug)!;
+  return { topic, list, siblings, category, root: rootSlugOf(category.id, categories) };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -84,7 +85,7 @@ async function List({ params }: Props) {
   const { slug } = await params;
   const data = await load(slug);
   if (!data) notFound();
-  const { topic, list, siblings, category } = data;
+  const { topic, list, siblings, category, root } = data;
   const checkedOn = await getKeurmerkCheckDates(list.filter((s) => s.keurmerk_status === "verified").map((s) => s.id));
   return (
     <article className="flex flex-col gap-6">
@@ -146,7 +147,7 @@ async function List({ params }: Props) {
           Alle webshops in {category.name_nl}
         </Link>
       </nav>
-      <NewsletterForm headline={signupHeadline()} source={`/beste/${slug}`} />
+      <NewsletterForm headline={signupHeadline(undefined, [root])} source={`/beste/${slug}`} />
       <JsonLd
         data={{
           "@context": "https://schema.org",

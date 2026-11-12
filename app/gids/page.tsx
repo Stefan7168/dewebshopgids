@@ -12,7 +12,7 @@ import { PageLoading } from "@/components/page-loading";
 
 export const metadata: Metadata = {
   title: "De wekelijkse webshopgids",
-  description: "Elke week 5 unieke Nederlandse woonwinkels, met hun echtheidsscore, keurmerk en hoe lang ze online zijn.",
+  description: "Elke week 5 unieke Nederlandse webshops, met hun echtheidsscore, keurmerk en hoe lang ze online zijn.",
   alternates: { canonical: `${SITE.url}/gids` },
 };
 
@@ -71,7 +71,7 @@ export default function GidsIndex() {
         <Suspense fallback={<PageLoading />}>
           <GuideList />
         </Suspense>
-        <NewsletterForm headline={signupHeadline()} source="/gids" />
+        <NewsletterForm headline={signupHeadline(undefined, [])} source="/gids" />
       </main>
       <SiteFooter />
     </div>

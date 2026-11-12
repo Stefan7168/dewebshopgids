@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 import { isAuthorized, isPublicPath } from "@/lib/auth/basic-auth";
 import { goneResponse, removedSlugs } from "@/lib/shops/removed";
+import { isUnlistedShop } from "@/lib/shops/listed";
 
 export async function proxy(request: NextRequest) {
   const user = process.env.BASIC_AUTH_USER;
@@ -24,6 +25,10 @@ export async function proxy(request: NextRequest) {
   const shop = pathname.match(/^\/webshop\/([a-z0-9-]+)\/?$/);
   if (shop && (await removedSlugs()).has(shop[1])) {
     return goneResponse();
+  }
+  // Any other unknown shop: a real 404 (the page alone streams a 200). The rewrite target has no route.
+  if (shop && (await isUnlistedShop(shop[1]))) {
+    return NextResponse.rewrite(new URL("/webshop-niet-gevonden", request.url));
   }
 
   return await updateSession(request);

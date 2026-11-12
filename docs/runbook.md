@@ -22,7 +22,7 @@ Secrets: GitHub Environment `production` (bound to `main`) for jobs, Vercel env 
 
 ## 2. Set up an agent routine
 
-1. With an admin connection string: `DATABASE_URL=<admin> npx tsx scripts/agents/set-role-password.ts <role>` (role from `agent.json`). It prints the role's connection string once.
+1. Run `npx tsx scripts/agents/set-role-password.ts <role>` (role from `agent.json`) and paste the admin connection string when it asks; it is not echoed. Never type a secret into a command line: Claude Code saves approved commands verbatim in `.claude/settings.local.json`. It prints the role's connection string once.
 2. Create a Claude Code routine on this repo with the cron from `agent.json`, the env var `DATABASE_URL` set to that string, and the prompt `Use the <name> skill.` The skill in `.claude/skills/<name>/` points to `agents/<name>/instructions.md`.
 3. The first run writes an `agent_runs` row. `/admin/agents` shows it; `schedule-gaps.yml` alerts if a run is late.
 

@@ -15,8 +15,29 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Skip, without a failure email, while the production secrets are not set yet.
+  # A manual run still fails, so a missing secret stays visible when you test.
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    environment: production
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - id: check
+        env:
+          PIPELINE_DATABASE_URL: ${{ secrets.PIPELINE_DATABASE_URL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          missing=""
+          for name in PIPELINE_DATABASE_URL ANTHROPIC_API_KEY; do [ -n "${!name}" ] || missing="$missing $name"; done
+          if [ -z "$missing" ]; then echo "ready=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          echo "ready=false" >> "$GITHUB_OUTPUT"
+          echo "::notice::Skipped: secrets not set in the production environment:$missing"
+          [ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]
   check:
-    if: vars.AGENTS_PAUSED != 'true'
+    needs: gate
+    if: needs.gate.outputs.ready == 'true' && vars.AGENTS_PAUSED != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: production

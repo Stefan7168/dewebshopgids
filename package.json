@@ -4,7 +4,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint .",
+    "lint": "eslint . && node scripts/security/check-secrets.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:db": "scripts/db/test.sh",

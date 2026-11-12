@@ -43,3 +43,8 @@ next-env.d.ts
 
 # written by `next dev`
 /AGENTS.md
+
+# Claude Code: personal settings can hold approved commands with secrets in them
+.claude/settings.local.json
+.claude/*.local.json
+CLAUDE.local.md

@@ -2,8 +2,11 @@
 // Prints the password once; paste it into that agent's routine connector or
 // GitHub secret and nowhere else. Re-run after kill-switch.yml to re-enable.
 //
-// Usage: DATABASE_URL=<admin connection string> tsx scripts/agents/set-role-password.ts agent_scout
+// Usage: npx tsx scripts/agents/set-role-password.ts agent_scout
+// It asks for the admin connection string without echo. Never put it in the command line:
+// Claude Code saves approved commands verbatim in .claude/settings.local.json.
 import { randomBytes } from "node:crypto";
+import { createInterface } from "node:readline";
 import { connect } from "../../agents/shared/audit";
 import { AGENT_ROLES } from "./roles";
 
@@ -17,7 +20,7 @@ async function main() {
     process.exit(2);
   }
   const password = randomBytes(32).toString("base64url");
-  const sql = connect();
+  const sql = connect(process.env.DATABASE_URL || (await askHidden("Admin connection string: ")));
   try {
     // role is from the fixed allowlist above; the password is random base64url.
     await sql.unsafe(`alter role "${role}" login password '${password}'`);
@@ -28,6 +31,20 @@ async function main() {
   console.log(`user:     ${role}.${PROJECT_REF}   (Supavisor pooler user name)`);
   console.log(`password: ${password}`);
   console.log("Use the pooler connection string from Supabase > Connect, with this user and password.");
+}
+
+function askHidden(prompt: string): Promise<string> {
+  return new Promise((resolve) => {
+    const rl = createInterface({ input: process.stdin, output: process.stderr, terminal: true });
+    // Print the prompt, then echo nothing while the secret is typed.
+    process.stderr.write(prompt);
+    (rl as unknown as { _writeToOutput: (s: string) => void })._writeToOutput = () => {};
+    rl.question("", (answer) => {
+      rl.close();
+      process.stderr.write("\n");
+      resolve(answer.trim());
+    });
+  });
 }
 
 main().catch((err) => {
